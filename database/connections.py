@@ -1,0 +1,154 @@
+import sqlite3
+
+DB_NAME = "interview.db"
+
+def get_connection():
+    conn = sqlite3.connect(DB_NAME)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+def init_db():
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS interview_sessions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        candidate_name TEXT,
+        domain TEXT,
+        current_question_number INTEGER DEFAULT 1,
+        max_quesiton INTEGER DEFAULT 5,
+        is_completed INTEGER DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+    """)
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS interview_answers (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        session_id INTEGER,
+        question TEXT,
+        answer TEXT,
+        score INTEGER,
+        feedback TEXT,
+        time_taken INTEGER,
+        FOREIGN KEY (session_id) REFERENCES interview_sessions (id)
+    )
+    """)
+
+    conn.commit()
+    conn.close()
+
+
+def create_session(candidate_name:str, domain:str):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    INSERT INTO interview_sessions (candidate_name, domain)
+    VALUES (?, ?)
+    """, (candidate_name, domain))
+
+    conn.commit()    
+    session_id = cursor.lastrowid
+    conn.close()
+    return session_id
+
+def insert_answer(session_id: int, question: str, answer: str, score: int, feedback: str, time_taken: int):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    INSERT INTO interview_answers (session_id, question, answer, score, feedback, time_taken)
+    VALUES (?, ?, ?, ?, ?, ?)
+    """, (session_id, question, answer, score, feedback, time_taken))
+
+    conn.commit()
+    conn.close()
+
+def get_session_with_answer(session_id: int):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    #fetch session info
+    cursor.execute("""
+    SELECT * FROM interview_sessions WHERE id = ?
+                   """, (session_id,))
+    session = cursor.fetchone()
+
+    if not session:
+        conn.close()
+        return None
+    
+    #fetch answers
+
+    cursor.execute("""
+    SELECT question, answer, score, feedback, time_taken
+    FROM interview_answers
+    WHERE session_id = ?
+    """, (session_id,))
+
+    answers = cursor.fetchall()
+
+    return {
+        "session": dict(session),
+        "answers": [dict(row) for row in answers]
+    }
+def migrate_schema():
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    # Add columns safely
+    try:
+        cursor.execute("ALTER TABLE interview_sessions ADD COLUMN current_question_number INTEGER DEFAULT 1")
+    except:
+        pass
+
+    try:
+        cursor.execute("ALTER TABLE interview_sessions ADD COLUMN max_questions INTEGER DEFAULT 5")
+    except:
+        pass
+
+    try:
+        cursor.execute("ALTER TABLE interview_sessions ADD COLUMN is_completed INTEGER DEFAULT 0")
+    except:
+        pass
+    
+    
+    try:
+        cursor.execute("ALTER TABLE interview_answers ADD COLUMN question_embedding TEXT")
+    except:
+        pass
+
+
+    conn.commit()
+    conn.close()
+
+def update_session_progress(session_id:int, new_questoin_number:int, is_completed: int):
+    conn = get_connection()
+    cursor =conn.cursor()
+
+    cursor.execute("""
+    UPDATE interview_sessions
+    SET current_question_number=?, is_completed = ?
+    WHERE id = ?
+    """,(new_questoin_number,is_completed,session_id))
+
+    conn.commit()
+    conn.close()
+
+
+def get_session_state(session_id :int):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT current_question_number, max_questionS
+    FROM interview_sessions
+    WHERE id =?
+
+    """,(session_id,))
+    session = cursor.fetchone()
+    conn.close()
+
+    return session
