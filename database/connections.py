@@ -54,17 +54,14 @@ def create_session(candidate_name:str, domain:str):
     conn.close()
     return session_id
 
-def insert_answer(session_id: int, question: str, answer: str, score: int, feedback: str, time_taken: int):
-    conn = get_connection()
-    cursor = conn.cursor()
+def insert_answer(cursor, session_id: int, question: str, answer: str,
+                  score: int, feedback: str, time_taken: int):
 
     cursor.execute("""
     INSERT INTO interview_answers (session_id, question, answer, score, feedback, time_taken)
     VALUES (?, ?, ?, ?, ?, ?)
     """, (session_id, question, answer, score, feedback, time_taken))
 
-    conn.commit()
-    conn.close()
 
 def get_session_with_answer(session_id: int):
     conn = get_connection()
@@ -120,6 +117,11 @@ def migrate_schema():
     except:
         pass
 
+    try:
+        cursor.execute("ALTER TABLE interview_answers ADD COLUMN  difficulty_level TEXT DEFAULT 'easy'")
+    except:
+        pass
+
 
     conn.commit()
     conn.close()
@@ -152,3 +154,19 @@ def get_session_state(session_id :int):
     conn.close()
 
     return session
+
+def get_last_n_score(session_id :int, n:int):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT score FROM interview_answers
+    WHERE session_id = ?
+    ORDER BY id DESC
+    LIMIT ?
+    """,(session_id,n))
+
+    rows = cursor.fetchall()
+    conn.close()
+
+    return [row[0] for row in rows]

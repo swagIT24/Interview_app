@@ -2,6 +2,9 @@ from database.connections import create_session
 from database.connections import insert_answer
 from database.connections import *
 
+
+SIMILARITY_THRESHOLD = 0.85
+
 def evaluate_answer(answer: str, session_id: int):
     score = len(answer)//10
 
@@ -53,3 +56,15 @@ def fetch_session(session_id:int):
     if not result:
         return {"error":"session not found"}
     return result
+
+def adjust_diff(curr_diff, avg_score):
+    lvl = ['easy','hard','medium']
+    index = lvl.index(curr_diff)
+
+    if avg_score > 12 and index < len(lvl) -1:
+        index +=1
+
+    elif avg_score < 6 and index > 0:
+        index -=1
+
+    return lvl[index]
