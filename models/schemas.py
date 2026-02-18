@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-class AnswerInput(BaseModel):
+class SubmitAnswerRequest(BaseModel):
     answer : str
     session_id : int
 
