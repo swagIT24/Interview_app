@@ -155,18 +155,14 @@ def get_session_state(session_id :int):
 
     return session
 
-def get_last_n_score(session_id :int, n:int):
-    conn = get_connection()
-    cursor = conn.cursor()
-
+def get_last_n_scores(cursor, session_id: int, n: int):
     cursor.execute("""
-    SELECT score FROM interview_answers
-    WHERE session_id = ?
-    ORDER BY id DESC
-    LIMIT ?
-    """,(session_id,n))
+        SELECT score
+        FROM interview_answers
+        WHERE session_id = ?
+        ORDER BY id DESC
+        LIMIT ?
+    """, (session_id, n))
 
     rows = cursor.fetchall()
-    conn.close()
-
     return [row[0] for row in rows]
