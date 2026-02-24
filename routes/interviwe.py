@@ -4,6 +4,9 @@ from services.interview_logic import evaluate_answer
 from models.schemas import SessionCreate
 from services.interview_logic import start_interview
 from services.interview_logic import *
+from services.auth_service import get_current_user
+from fastapi import Depends
+
 router = APIRouter()
 
 @router.get("/ping")
@@ -11,7 +14,7 @@ def ping():
     return {"message":"interviwe router working"}
 
 @router.post("/submit-answer")
-def submit_answer(data: SubmitAnswerRequest):
+def submit_answer(data: SubmitAnswerRequest, user_id: int = Depends(get_current_user)):
 
     evaluation = evaluate_answer(data.answer, data.session_id)
 
@@ -30,10 +33,12 @@ def submit_answer(data: SubmitAnswerRequest):
     }
 
 
-@router.post('/start-session')
-def start_session(data: SessionCreate):
-    return start_interview(data.candidate_name, data.domain)
+@router.post("/start-session")
+def start_session(data: SessionCreate, user_id: int = Depends(get_current_user)):
+    session_id = start_interview(user_id, data.candidate_name, data.domain)
+    return {"session_id": session_id}
+
 
 @router.get("/session/{session_id}")
-def get_session(session_id:int):
-    return fetch_session(session_id)
+def get_session(session_id: int, user_id: int = Depends(get_current_user)):
+    return fetch_session(session_id, user_id)
