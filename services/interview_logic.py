@@ -4,7 +4,7 @@ from database.connections import *
 
 
 SIMILARITY_THRESHOLD = 0.85
-MAX_QUESTIONS = 20
+MAX_QUESTIONS = 10
 ADAPTIVE_WINDOW = 3
 
 # def evaluate_answer(answer: str, session_id: int):
@@ -18,8 +18,8 @@ ADAPTIVE_WINDOW = 3
 #         "session_id":session_id
 #     }
 
-def start_interview(candidate_name:str, domain:str):
-    session_id = create_session(candidate_name,domain)
+def start_interview(user_id: int, candidate_name: str, domain: str):
+    session_id = create_session(user_id, candidate_name, domain)
     return {
         "session_id": session_id,
         "message": "Interview session started"
@@ -126,12 +126,32 @@ def evaluate_answer(answer: str, session_id: int):
     finally:
         conn.close()
 
-def fetch_session(session_id:int):
-    result = get_session_with_answer(session_id)
+def fetch_session(session_id: int, user_id: int):
+
+    result = get_session_with_answer(session_id, user_id)
 
     if not result:
-        return {"error":"session not found"}
-    return result
+        return {"error": "session not found"}
+
+    session = result["session"]
+    answers = result["answers"]
+
+    domain = session["domain"]
+
+    # First question
+    if len(answers) == 0:
+        question = f"Tell me about your experience with {domain}"
+
+        return {
+            "session_id": session_id,
+            "current_question": question
+        }
+
+    # Otherwise show next placeholder
+    return {
+        "session_id": session_id,
+        "current_question": "Next question"
+    }
 
 def adjust_diff(curr_diff, avg_score):
     lvl = ['easy','hard','medium']

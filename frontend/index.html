@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Interview App</title>
+    <link rel="stylesheet" href="/frontend/style.css">
+</head>
+<body>
+
+<h1>AI Interview Practice</h1>
+
+<div id="auth-section">
+    <h2>Login</h2>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+    
+    <p id="auth-message"></p>
+</div>
+
+
+<div>
+    <input type="text" id="name" placeholder="Enter your name">
+    <input type="text" id="domain" placeholder="Domain (Python, ML)">
+    <button onclick="startInterview()">Start Interview</button>
+    <button onclick="logout()">Logout</button>
+</div>
+
+<div id="register">
+    <h2>New user?register</h2>
+    <input type="email" id="register-email" placeholder="Email">
+    <input type="password" id="register-password" placeholder="Password">
+    <button onclick="register()">Register</button>
+    <p id="register-message"></p>
+
+</div>
+
+<hr>
+
+<div id="interview-section" style="display:none;">
+    <h3 id="question"></h3>
+
+    <textarea id="answer" rows="5" cols="50"></textarea>
+    <br>
+    <button onclick="submitAnswer()">Submit Answer</button>
+
+    <h4 id="feedback"></h4>
+</div>
+
+    <script src="/frontend/script.js"></script>
+
+</body>
+</html>

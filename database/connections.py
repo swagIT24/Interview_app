@@ -36,18 +36,61 @@ def init_db():
     )
     """)
 
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        email TEXT UNIQUE NOT NULL,
+        hashed_password TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+        """)
+
+
     conn.commit()
     conn.close()
 
 
-def create_session(candidate_name:str, domain:str):
+def create_user(email: str, hashed_password: str):
     conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
-    INSERT INTO interview_sessions (candidate_name, domain)
-    VALUES (?, ?)
-    """, (candidate_name, domain))
+        INSERT INTO users (email, hashed_password)
+        VALUES (?, ?)
+    """, (email, hashed_password))
+
+    conn.commit()
+    user_id = cursor.lastrowid
+    conn.close()
+
+    return user_id
+
+
+def get_user_by_email(email: str):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT id, email, hashed_password
+        FROM users
+        WHERE email = ?
+    """, (email,))
+
+    user = cursor.fetchone()
+    conn.close()
+
+    return user
+
+
+def create_session(user_id: int, candidate_name:str, domain:str):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    INSERT INTO interview_sessions (user_id, candidate_name, domain)
+    VALUES (?, ?, ?)
+
+    """, (user_id, candidate_name, domain))
 
     conn.commit()    
     session_id = cursor.lastrowid
@@ -63,39 +106,48 @@ def insert_answer(cursor, session_id: int, question: str, answer: str,
     """, (session_id, question, answer, score, feedback, time_taken))
 
 
-def get_session_with_answer(session_id: int):
+def get_session_with_answer(session_id: int, user_id: int):
     conn = get_connection()
+    conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
-    #fetch session info
+    # fetch session info with ownership check
     cursor.execute("""
-    SELECT * FROM interview_sessions WHERE id = ?
-                   """, (session_id,))
+        SELECT * FROM interview_sessions
+        WHERE id = ? AND user_id = ?
+    """, (session_id, user_id))
+
     session = cursor.fetchone()
 
     if not session:
         conn.close()
         return None
-    
-    #fetch answers
 
+    # fetch answers
     cursor.execute("""
-    SELECT question, answer, score, feedback, time_taken
-    FROM interview_answers
-    WHERE session_id = ?
+        SELECT question, answer, score, feedback, time_taken
+        FROM interview_answers
+        WHERE session_id = ?
+        ORDER BY id ASC
     """, (session_id,))
 
     answers = cursor.fetchall()
 
-    return {
+    result = {
         "session": dict(session),
         "answers": [dict(row) for row in answers]
     }
+
+    conn.close()
+    return result
+
+
 def migrate_schema():
     conn = get_connection()
     cursor = conn.cursor()
 
-    # Add columns safely
+    cursor.execute("PRAGMA table_info(interview_sessions)")
+    columns = [col[1] for col in cursor.fetchall()]
     try:
         cursor.execute("ALTER TABLE interview_sessions ADD COLUMN current_question_number INTEGER DEFAULT 1")
     except:
@@ -122,34 +174,39 @@ def migrate_schema():
     except:
         pass
 
+    if "user_id" not in columns:
+        try:
+            cursor.execute("ALTER TABLE interview_sessions ADD COLUMN user_id INTEGER")
+        except:
+            pass
+
 
     conn.commit()
     conn.close()
 
-def update_session_progress(session_id:int, new_questoin_number:int, is_completed: int):
-    conn = get_connection()
-    cursor =conn.cursor()
-
-    cursor.execute("""
-    UPDATE interview_sessions
-    SET current_question_number=?, is_completed = ?
-    WHERE id = ?
-    """,(new_questoin_number,is_completed,session_id))
-
-    conn.commit()
-    conn.close()
-
-
-def get_session_state(session_id :int):
+def update_session_progress(session_id: int, user_id: int, new_question_number: int, is_completed: int):
     conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
-    SELECT current_question_number, max_questionS
-    FROM interview_sessions
-    WHERE id =?
+        UPDATE interview_sessions
+        SET current_question_number = ?, is_completed = ?
+        WHERE id = ? AND user_id = ?
+    """, (new_question_number, is_completed, session_id, user_id))
 
-    """,(session_id,))
+    conn.commit()
+    conn.close()
+
+
+def get_session_state(user_id:int, session_id :int):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT current_question_number, max_questions, difficulty_level, is_completed
+    FROM interview_sessions
+    WHERE id = ? AND user_id = ?
+    """, (session_id, user_id))
     session = cursor.fetchone()
     conn.close()
 

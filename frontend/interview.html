@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Interview Session</title>
+    <link rel="stylesheet" href="/frontend/style.css">
+</head>
+
+<body>
+
+<h1>Interview Session</h1>
+
+<button onclick="logout()">Logout</button>
+
+<hr>
+
+<div class="container">
+  <div class="card">
+
+    <div class="title">AI Interview Platform</div>
+
+    <div id="progress">
+      Question 1 / 20 | Difficulty: Easy
+    </div>
+
+    <div class="question" id="question">
+      Loading question...
+    </div>
+
+    <textarea id="answer" placeholder="Write your answer here"></textarea>
+
+    <br><br>
+
+    <button onclick="submitAnswer()">Submit Answer</button>
+
+    <div id="feedback"></div>
+
+  </div>
+</div>
+
+<script src="/frontend/script.js"></script>
+
+</body>
+</html>
