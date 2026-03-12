@@ -127,11 +127,31 @@ def evaluate_answer(answer: str, session_id: int):
         conn.close()
 
 def fetch_session(session_id: int, user_id: int):
-    result = get_session_with_answer(session_id,user_id)
+
+    result = get_session_with_answer(session_id, user_id)
 
     if not result:
-        return {"error":"session not found"}
-    return result
+        return {"error": "session not found"}
+
+    session = result["session"]
+    answers = result["answers"]
+
+    domain = session["domain"]
+
+    # First question
+    if len(answers) == 0:
+        question = f"Tell me about your experience with {domain}"
+
+        return {
+            "session_id": session_id,
+            "current_question": question
+        }
+
+    # Otherwise show next placeholder
+    return {
+        "session_id": session_id,
+        "current_question": "Next question"
+    }
 
 def adjust_diff(curr_diff, avg_score):
     lvl = ['easy','hard','medium']

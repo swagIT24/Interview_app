@@ -35,8 +35,7 @@ def submit_answer(data: SubmitAnswerRequest, user_id: int = Depends(get_current_
 
 @router.post("/start-session")
 def start_session(data: SessionCreate, user_id: int = Depends(get_current_user)):
-    session_id = start_interview(user_id, data.candidate_name, data.domain)
-    return {"session_id": session_id}
+    return start_interview(user_id, data.candidate_name, data.domain)
 
 
 @router.get("/session/{session_id}")

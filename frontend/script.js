@@ -25,6 +25,7 @@ async function login() {
 }
 
 async function startInterview() {
+
     const name = document.getElementById("name").value;
     const domain = document.getElementById("domain").value;
 
@@ -40,21 +41,17 @@ async function startInterview() {
         })
     });
 
-    if (response.status === 401) {
-        alert("Please login first.");
-        return;
-    }
-
     const data = await response.json();
-    sessionId = data.session_id;
+    console.log("Start session response:", data);
+    sessionStorage.setItem("session_id", data.session_id);
 
-    document.getElementById("interview-section").style.display = "block";
-    document.getElementById("question").innerText = "Question 1";
+    window.location.href = "/frontend/interview.html";
 }
 
-async function submitAnswer() {
-    const answerText = document.getElementById("answer").value;
 
+async function submitAnswer() {
+    const sessionId = sessionStorage.getItem("session_id");
+    const answerText = document.getElementById("answer").value;
     const response = await fetch("/submit-answer", {
         method: "POST",
         credentials: "include",
@@ -68,11 +65,6 @@ async function submitAnswer() {
     });
 
     const data = await response.json();
-
-    if (data.error) {
-        document.getElementById("feedback").innerText = data.error;
-        return;
-    }
 
     document.getElementById("feedback").innerText =
         "Score: " + data.score + " | " + data.feedback;
@@ -117,4 +109,30 @@ window.logout = async function () {
     sessionStorage.clear();
     alert("Logged out successfully");
     window.location.href = "/";
+};
+
+async function loadFirstQuestion() {
+
+    const sessionId = sessionStorage.getItem("session_id");
+
+    console.log("Session ID from storage:", sessionId);
+
+    const response = await fetch(`/session/${sessionId}`, {
+        method: "GET",
+        credentials: "include"
+    });
+
+    const data = await response.json();
+
+    console.log("Session API response:", data);
+
+    document.getElementById("question").innerText = data.current_question;
+}
+
+window.onload = function () {
+
+    if (window.location.pathname.includes("interview.html")) {
+        loadFirstQuestion();
+    }
+
 };
