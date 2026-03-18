@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Interview Session</title>
     <link rel="stylesheet" href="/frontend/style.css">
@@ -7,37 +8,75 @@
 
 <body>
 
-<h1>Interview Session</h1>
+<!-- Sidebar -->
 
-<button onclick="logout()">Logout</button>
+<div class="sidebar">
+    <h2>Interview</h2>
 
-<hr>
+    <div class="sidebar-bottom">
+        <button onclick="logout()">Logout</button>
+    </div>
+</div>
 
-<div class="container">
-  <div class="card">
+<!-- Main Content -->
 
-    <div class="title">AI Interview Platform</div>
+<div class="main-content">
 
-    <div id="progress">
-      Question 1 / 20 | Difficulty: Easy
+    <!-- Top Bar -->
+
+    <div class="top-bar">
+
+        <div class="interview-info">
+            <span id="domain-title">Interview</span>
+            <span id="difficulty">Easy</span>
+        </div>
+
+        <div class="timer">
+            ⏱ Time: <span id="time">10:00</span>
+        </div>
+
     </div>
 
-    <div class="question" id="question">
-      Loading question...
+    <!-- Question Card -->
+
+    <div class="question-card">
+
+        <div class="question-header">
+           Question <span id="question-number">1</span> / <span id="total-questions">20</span>
+        </div>
+
+        <div class="question-text" id="question">
+            Loading question...
+        </div>
+
     </div>
 
-    <textarea id="answer" placeholder="Write your answer here"></textarea>
+    <!-- Answer Section -->
 
-    <br><br>
+    <div class="answer-card">
 
-    <button onclick="submitAnswer()">Submit Answer</button>
+        <textarea id="answer" placeholder="Write your answer here..."></textarea>
 
-    <div id="feedback"></div>
+        <div class="actions">
 
-  </div>
+            <button type="button" onclick="submitAnswer()">Submit Answer</button>
+            <button type="button" id="next-btn" class="secondary-btn" style="display:none;">Next</button>
+
+            <button type="button" class="secondary-btn">Skip</button>
+
+        </div>
+
+    </div>
+
+    <!-- Feedback -->
+
+    <div class="feedback-card" id="feedback">
+         <!-- Feedback will appear here -->
+    </div>
+
 </div>
 
 <script src="/frontend/script.js"></script>
-
 </body>
+
 </html>

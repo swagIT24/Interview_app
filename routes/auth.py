@@ -1,8 +1,9 @@
-from fastapi import APIRouter, HTTPException, Response
+from fastapi import APIRouter, HTTPException, Response, Request
 from models.auth_schemas import RegisterRequest, LoginRequest, TokenResponse
 from services.auth_service import hash_password, verify_password, create_access_token
 from database.connections import create_user, get_user_by_email
-
+from services.auth_service import create_refresh_token
+from database.connections import get_connection
 router = APIRouter()
 
 
@@ -32,27 +33,80 @@ def login(data: LoginRequest, response: Response):
     if not verify_password(data.password, hashed_pw):
         raise HTTPException(status_code=400, detail="Invalid credentials")
 
-    token = create_access_token({"sub": str(user_id)})
+    # ✅ create tokens
+    access_token = create_access_token({"sub": str(user_id)})
+    refresh_token = create_refresh_token()
 
+    # ✅ save refresh token in DB
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        UPDATE users
+        SET refresh_token = ?
+        WHERE id = ?
+    """, (refresh_token, user_id))
+
+    conn.commit()
+    conn.close()
+
+    # ✅ set access token cookie
     response.set_cookie(
         key="access_token",
-        value=token,
+        value=access_token,
         httponly=True,
         samesite="strict",
-        secure=False  # set True in production (HTTPS)
+        secure=False
     )
 
+    # ✅ RETURN refresh token (THIS WAS MISSING)
     return {
         "message": "Login successful",
         "user_id": user_id,
-        "email": email
+        "email": email,
+        "refresh_token": refresh_token
     }
 
 @router.post("/logout")
 def logout(response: Response):
-    response.delete_cookie(
+    response.delete_cookie("access_token")
+    return {"message": "Logged out"}
+
+
+@router.post("/refresh-token")
+async def refresh_token(request: Request, response: Response):
+
+    # ✅ FIXED LINE
+    body = await request.json()
+
+    refresh_token = body.get("refresh_token")
+
+    if not refresh_token:
+        raise HTTPException(status_code=401, detail="No refresh token provided")
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT id FROM users WHERE refresh_token = ?
+    """, (refresh_token,))
+
+    row = cursor.fetchone()
+    conn.close()
+
+    if not row:
+        raise HTTPException(status_code=401, detail="Invalid refresh token")
+
+    user_id = row[0]
+
+    new_access_token = create_access_token({"sub": str(user_id)})
+
+    response.set_cookie(
         key="access_token",
+        value=new_access_token,
         httponly=True,
         samesite="strict",
+        secure=False
     )
-    return {"message": "Logged out successfully"}
+
+    return {"message": "Token refreshed"}
