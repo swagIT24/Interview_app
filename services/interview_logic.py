@@ -1,6 +1,10 @@
 from database.connections import create_session
 from database.connections import insert_answer
 from database.connections import *
+from services.questions import *
+import random
+import json
+from services.llm_service import evaluate_with_llm
 
 
 SIMILARITY_THRESHOLD = 0.85
@@ -20,12 +24,23 @@ ADAPTIVE_WINDOW = 3
 
 def start_interview(user_id: int, candidate_name: str, domain: str):
     session_id = create_session(user_id, candidate_name, domain)
+
     return {
         "session_id": session_id,
-        "message": "Interview session started"
+        "message": "Interview session started",
+        "asked_questions": [] 
     }
 
 def evaluate_answer(answer: str, session_id: int):
+
+    if not answer or answer.strip() == "":
+        return {
+            "score": 0,
+            "feedback": "Please provide an answer before submitting.",
+            "is_completed": False,
+            "current_question_number": None,
+            "difficulty_level": None
+        }
     conn = get_connection()
     cursor = conn.cursor()
 
@@ -44,14 +59,35 @@ def evaluate_answer(answer: str, session_id: int):
         current_q, max_q, difficulty, is_completed = session
         if is_completed:
             return {"error": "Interview already completed"}
-        score = len(answer) // 10
-        feedback = (
-            "Excellent answer"
-            if score > 10
-            else "Improve structure and add examples"
-        )
+        # score = len(answer) // 10
+        # feedback = (
+        #     "Excellent answer"
+        #     if score > 10
+        #     else "Improve structure and add examples"
+        # )
+        
 
-        question_text = f"Question {current_q}"
+        #question_text = f"Question {current_q}"
+        cursor.execute("""
+            SELECT question
+            FROM interview_answers
+            WHERE session_id = ?
+            ORDER BY id DESC
+            LIMIT 1
+        """, (session_id,))
+
+        row = cursor.fetchone()
+
+        if row:
+            question_text = row[0]
+        else:
+            question_text = "Unknown question"
+        try:
+            score, feedback = evaluate_with_llm(question_text, answer)
+        except Exception as e:
+            print("LLM failed:", e)
+            score = len(answer) // 10
+            feedback = "Fallback evaluation"
         time_taken = 30 
         insert_answer(
             cursor,
@@ -136,21 +172,14 @@ def fetch_session(session_id: int, user_id: int):
     session = result["session"]
     answers = result["answers"]
 
-    domain = session["domain"]
-
-    # First question
-    if len(answers) == 0:
-        question = f"Tell me about your experience with {domain}"
-
-        return {
-            "session_id": session_id,
-            "current_question": question
-        }
-
-    # Otherwise show next placeholder
     return {
         "session_id": session_id,
-        "current_question": "Next question"
+        "domain": session["domain"],
+        "difficulty_level": session["difficulty_level"],
+        "current_question_number": session["current_question_number"],
+        "total_questions": session["max_questions"],
+        "is_completed": bool(session["is_completed"]),
+        "current_question": answers[-1]["question"] if answers else None
     }
 
 def adjust_diff(curr_diff, avg_score):
@@ -191,3 +220,62 @@ def generate_next_question(session_id: int):
     question = f"{difficulty.capitalize()} question {current_q} in {domain}"
 
     return question
+
+def get_next_question(domain, difficulty, asked_questions):
+
+    difficulty = difficulty.lower()
+
+    domain_map = {
+        "ML": "Machine Learning",
+        "Machine Learning": "Machine Learning",
+        "Python": "Python",
+        "Java": "Java"
+    }
+
+    domain = domain_map.get(domain, domain)
+
+    questions = QUESTION_BANK.get(domain, {}).get(difficulty, [])
+
+    remaining_questions = [
+        q for q in questions if q["id"] not in asked_questions
+    ]
+
+    if not remaining_questions:
+        return None
+
+    return random.choice(remaining_questions)
+
+def get_first_question(domain):
+
+    questions = QUESTION_BANK.get(domain, {}).get("easy", [])
+
+    if not questions:
+        return None
+
+    return random.choice(questions)
+
+
+def update_asked_questions(session_id, question_id):
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT asked_questions FROM interview_sessions
+        WHERE id = ?
+    """, (session_id,))
+
+    row = cursor.fetchone()
+
+    asked = json.loads(row[0]) if row and row[0] else []
+
+    asked.append(question_id)
+
+    cursor.execute("""
+        UPDATE interview_sessions
+        SET asked_questions = ?
+        WHERE id = ?
+    """, (json.dumps(asked), session_id))
+
+    conn.commit()
+    conn.close()

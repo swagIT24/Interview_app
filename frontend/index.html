@@ -6,47 +6,49 @@
 </head>
 <body>
 
-<h1>AI Interview Practice</h1>
-
-<div id="auth-section">
-    <h2>Login</h2>
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Password">
-    <button onclick="login()">Login</button>
+<div class="auth-container">
     
-    <p id="auth-message"></p>
+    <button id="theme-toggle">🌙 Dark Mode</button>
+
+    <h1 class="app-title">AI Interview Practice</h1>
+
+    <!-- LOGIN CARD -->
+
+    <div class="auth-card">
+
+        <h2>Login</h2>
+
+        <input id="email" type="email" placeholder="Email">
+        <input id="password" type="password" placeholder="Password">
+
+
+        <button type="button" onclick="login()">Login</button>
+
+
+        <div id="auth-message"></div>
+
+    </div>
+
+    <!-- REGISTER CARD -->
+
+    <div class="auth-card">
+
+        <h2>New User? Register</h2>
+
+        <input id="register-email" type="email" placeholder="Email">
+        <input id="register-password" type="password" placeholder="Password">
+
+        <button type="button" onclick="register()">Register</button>
+
+
+        <div id="register-message"></div>
+
+    </div>
+
 </div>
 
-
-<div>
-    <input type="text" id="name" placeholder="Enter your name">
-    <input type="text" id="domain" placeholder="Domain (Python, ML)">
-    <button onclick="startInterview()">Start Interview</button>
-    <button onclick="logout()">Logout</button>
-</div>
-
-<div id="register">
-    <h2>New user?register</h2>
-    <input type="email" id="register-email" placeholder="Email">
-    <input type="password" id="register-password" placeholder="Password">
-    <button onclick="register()">Register</button>
-    <p id="register-message"></p>
-
-</div>
-
-<hr>
-
-<div id="interview-section" style="display:none;">
-    <h3 id="question"></h3>
-
-    <textarea id="answer" rows="5" cols="50"></textarea>
-    <br>
-    <button onclick="submitAnswer()">Submit Answer</button>
-
-    <h4 id="feedback"></h4>
-</div>
-
-    <script src="/frontend/script.js"></script>
+<script src="/frontend/script.js"></script>
 
 </body>
+
 </html>

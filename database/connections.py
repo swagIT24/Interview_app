@@ -1,27 +1,36 @@
 import sqlite3
+import json
 
 DB_NAME = "interview.db"
 
 def get_connection():
-    conn = sqlite3.connect(DB_NAME)
+    conn = sqlite3.connect(
+        DB_NAME,
+        timeout=30,
+        check_same_thread=False,
+        isolation_level=None   # 🔥 ADD THIS
+    )
     conn.row_factory = sqlite3.Row
     return conn
 
 def init_db():
     conn = get_connection()
     cursor = conn.cursor()
-
+    cursor.execute("PRAGMA journal_mode=WAL;")
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS interview_sessions (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        candidate_name TEXT,
-        domain TEXT,
-        current_question_number INTEGER DEFAULT 1,
-        max_quesiton INTEGER DEFAULT 5,
-        is_completed INTEGER DEFAULT 0,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-    """)
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    candidate_name TEXT,
+    domain TEXT,
+    current_question_number INTEGER DEFAULT 1,
+    max_questions INTEGER DEFAULT 20,
+    difficulty_level TEXT DEFAULT 'easy',   -- 🔥 ADD THIS
+    is_completed INTEGER DEFAULT 0,
+    asked_questions TEXT DEFAULT '[]',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)
+""")
 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS interview_answers (
@@ -41,6 +50,7 @@ def init_db():
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         email TEXT UNIQUE NOT NULL,
         hashed_password TEXT NOT NULL,
+        refresh_token TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
         """)
@@ -86,16 +96,18 @@ def create_session(user_id: int, candidate_name:str, domain:str):
     conn = get_connection()
     cursor = conn.cursor()
 
-    cursor.execute("""
-    INSERT INTO interview_sessions (user_id, candidate_name, domain)
-    VALUES (?, ?, ?)
+    try:
+        cursor.execute("""
+        INSERT INTO interview_sessions (user_id, candidate_name, domain, asked_questions)
+        VALUES (?, ?, ?, ?)
+        """, (user_id, candidate_name, domain, "[]"))
 
-    """, (user_id, candidate_name, domain))
+        conn.commit()
+        return cursor.lastrowid
 
-    conn.commit()    
-    session_id = cursor.lastrowid
-    conn.close()
-    return session_id
+    finally:
+        cursor.close()
+        conn.close()
 
 def insert_answer(cursor, session_id: int, question: str, answer: str,
                   score: int, feedback: str, time_taken: int):
@@ -132,9 +144,11 @@ def get_session_with_answer(session_id: int, user_id: int):
     """, (session_id,))
 
     answers = cursor.fetchall()
+    session_dict = dict(session)
+    session_dict["asked_questions"] = json.loads(session_dict.get("asked_questions", "[]"))
 
     result = {
-        "session": dict(session),
+        "session": session_dict,
         "answers": [dict(row) for row in answers]
     }
 
@@ -154,7 +168,7 @@ def migrate_schema():
         pass
 
     try:
-        cursor.execute("ALTER TABLE interview_sessions ADD COLUMN max_questions INTEGER DEFAULT 5")
+        cursor.execute("ALTER TABLE interview_sessions ADD COLUMN max_questions INTEGER DEFAULT 20")
     except:
         pass
 
@@ -171,6 +185,11 @@ def migrate_schema():
 
     try:
         cursor.execute("ALTER TABLE interview_answers ADD COLUMN  difficulty_level TEXT DEFAULT 'easy'")
+    except:
+        pass
+
+    try:
+        cursor.execute("ALTER TABLE interview_sessions ADD COLUMN asked_questions TEXT DEFAULT '[]'")
     except:
         pass
 
