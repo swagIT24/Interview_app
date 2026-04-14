@@ -1,4 +1,4 @@
-/* Reset */
+/* ================= RESET ================= */
 
 * {
     box-sizing: border-box;
@@ -7,13 +7,14 @@
     font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Body */
+/* ================= BODY ================= */
 
 body {
-    background: #F5F7FB;
+    background-color: #f5f5f5;
+    color: black;
 }
 
-/* Sidebar */
+/* ================= SIDEBAR ================= */
 
 .sidebar {
     width: 220px;
@@ -34,64 +35,83 @@ body {
     font-size: 24px;
 }
 
-/* Sidebar bottom area */
-
 .sidebar-bottom {
     margin-top: auto;
 }
 
-/* Main Content */
+/* ================= MAIN CONTENT ================= */
 
 .main-content {
     margin-left: 220px;
     padding: 60px;
 }
 
-/* Interview Card */
+/* ================= TOP BAR ================= */
 
-.card {
-    max-width: 700px;
-    background: white;
-    padding: 40px;
-    border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+.top-bar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
 }
 
-/* Title */
-
-h1 {
-    margin-bottom: 25px;
+.interview-info span{
+    margin-right:15px;
+    font-weight:600;
 }
 
-/* Progress */
-
-#progress {
-    margin-bottom: 20px;
-    font-weight: bold;
+.timer{
+    font-weight:600;
 }
 
-/* Question box */
+/* ================= QUESTION CARD ================= */
 
-.question {
-    background: #F9FAFB;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 20px;
+.question-card{
+    background:#F9FAFB;
+    color:black;
+    padding:25px;
+    border-radius:10px;
+    margin-bottom:20px;
 }
 
-/* Answer area */
+/* 🔥 IMPORTANT FIX */
 
-textarea {
-    width: 100%;
-    height: 130px;
-    padding: 12px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    margin-bottom: 20px;
-    font-size: 14px;
+.question-header{
+    font-size:18px;
+    margin-bottom:10px;
+    color:black;
 }
 
-/* Buttons */
+.question-text{
+    font-size:16px;
+    color:black;
+}
+
+/* ================= ANSWER CARD ================= */
+
+.answer-card{
+    background:white;
+    color:black;
+    padding:25px;
+    border-radius:10px;
+    margin-bottom:20px;
+}
+
+/* ================= TEXTAREA ================= */
+
+textarea{
+    width:100%;
+    height:160px;
+    padding:12px;
+    border-radius:8px;
+    border:1px solid #ccc;
+    margin-bottom:15px;
+    background:white;
+    color:black;
+    font-size:14px;
+}
+
+/* ================= BUTTONS ================= */
 
 button {
     width: 100%;
@@ -108,16 +128,26 @@ button:hover {
     background: #4338CA;
 }
 
-/* Feedback */
-/* 
-#feedback {
-    margin-top: 20px;
-    padding: 12px;
-    background: #F3F4F6;
-    border-radius: 6px;
-} */
+.actions{
+    display:flex;
+    gap:10px;
+}
 
-/* AUTH PAGE */
+.secondary-btn{
+    background:#555;
+}
+
+/* ================= FEEDBACK ================= */
+
+.feedback-card {
+    background-color: #F3F4F6;
+    color: black;
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+/* ================= AUTH PAGE ================= */
 
 .auth-container{
     width:400px;
@@ -131,6 +161,7 @@ button:hover {
 
 .auth-card{
     background:white;
+    color:black;
     padding:25px;
     border-radius:10px;
     margin-bottom:25px;
@@ -149,21 +180,7 @@ button:hover {
     border:1px solid #ccc;
 }
 
-.auth-card button{
-    width:100%;
-    padding:12px;
-    background:#4F46E5;
-    color:white;
-    border:none;
-    border-radius:6px;
-    cursor:pointer;
-}
-
-.auth-card button:hover{
-    background:#4338CA;
-}
-
-/* THEME TOGGLE BUTTON */
+/* ================= THEME BUTTON ================= */
 
 #theme-toggle{
     position:absolute;
@@ -177,15 +194,47 @@ button:hover {
     cursor:pointer;
 }
 
-/* DARK MODE */
+/* ================= DARK MODE ================= */
 
-.dark-mode{
-    background:#121212;
+.dark-mode {
+    background-color: #0f0f0f;
+    color: white;
+}
+
+/* QUESTION CARD */
+
+.dark-mode .question-card{
+    background:#1e1e1e;
     color:white;
 }
 
+.dark-mode .question-header{
+    color:white;
+}
+
+.dark-mode .question-text{
+    color:white;
+}
+
+/* ANSWER CARD */
+
+.dark-mode .answer-card{
+    background:#1e1e1e;
+    color:white;
+}
+
+/* TEXTAREA */
+
+.dark-mode textarea{
+    background:#2a2a2a;
+    color:white;
+    border:1px solid #444;
+}
+
+/* AUTH */
+
 .dark-mode .auth-card{
-    background:#1E1E1E;
+    background:#1e1e1e;
     color:white;
 }
 
@@ -195,85 +244,9 @@ button:hover {
     border:1px solid #444;
 }
 
-.dark-mode textarea{
-    background:#2a2a2a;
-    color:white;
-    border:1px solid #444;
-}
-
-/* TOP BAR */
-
-.top-bar{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:20px;
-}
-
-.interview-info span{
-    margin-right:15px;
-    font-weight:600;
-}
-
-.timer{
-    font-weight:600;
-}
-
-/* QUESTION CARD */
-
-.question-card{
-    background:#1e1e1e;
-    padding:25px;
-    border-radius:10px;
-    margin-bottom:20px;
-}
-
-.question-header{
-    font-size:18px;
-    margin-bottom:10px;
-}
-
-.question-text{
-    font-size:16px;
-}
-
-/* ANSWER CARD */
-
-.answer-card{
-    background:#1e1e1e;
-    padding:25px;
-    border-radius:10px;
-    margin-bottom:20px;
-}
-
-textarea{
-    width:100%;
-    height:160px;
-    padding:12px;
-    border-radius:8px;
-    border:1px solid #444;
-    margin-bottom:15px;
-    background:#2a2a2a;
-    color:white;
-}
-
-/* ACTION BUTTONS */
-
-.actions{
-    display:flex;
-    gap:10px;
-}
-
-.secondary-btn{
-    background:#555;
-}
-
 /* FEEDBACK */
 
-.feedback-card {
+.dark-mode .feedback-card {
     background-color: #1e1e1e;
     color: #ffffff;
-    padding: 12px;
-    border-radius: 8px;
-    margin-top: 20px;
 }

@@ -42,7 +42,8 @@
     <div class="question-card">
 
         <div class="question-header">
-           Question <span id="question-number">1</span> / <span id="total-questions">20</span>
+            Question <span id="question-number">1</span> /
+            <span id="total-questions">20</span>
         </div>
 
         <div class="question-text" id="question">
@@ -60,9 +61,14 @@
         <div class="actions">
 
             <button type="button" onclick="submitAnswer()">Submit Answer</button>
-            <button type="button" id="next-btn" class="secondary-btn" style="display:none;">Next</button>
 
-            <button type="button" class="secondary-btn">Skip</button>
+            <button type="button" id="next-btn" class="secondary-btn" style="display:none;">
+                Next
+            </button>
+
+            <button type="button" class="secondary-btn" onclick="skipQuestion()">
+                Skip
+            </button>
 
         </div>
 
@@ -71,12 +77,20 @@
     <!-- Feedback -->
 
     <div class="feedback-card" id="feedback">
-         <!-- Feedback will appear here -->
+        <!-- Feedback will appear here -->
     </div>
 
 </div>
 
 <script src="/frontend/script.js"></script>
+
+<script>
+    // Optional: Skip handler (you can connect backend later)
+    function skipQuestion() {
+        alert("Skip feature not implemented yet");
+    }
+</script>
+
 </body>
 
 </html>

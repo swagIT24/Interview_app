@@ -43,35 +43,35 @@ async function login() {
 
 /* ================= START INTERVIEW ================= */
 
-async function startInterview() {
+// async function startInterview() {
 
-    const name = document.getElementById("name").value;
-    const domain = document.getElementById("domain").value;
+//     const name = document.getElementById("name").value;
+//     const domain = document.getElementById("domain").value;
 
-    const response = await fetch("/start-session", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            candidate_name: name,
-            domain: domain
-        })
-    });
+//     const response = await fetch("/start-session", {
+//         method: "POST",
+//         credentials: "include",
+//         headers: {
+//             "Content-Type": "application/json"
+//         },
+//         body: JSON.stringify({
+//             candidate_name: name,
+//             domain: domain
+//         })
+//     });
     
 
-    const data = await response.json();
-    sessionStorage.setItem("current_question", data.current_question);
+//     const data = await response.json();
+//     sessionStorage.setItem("current_question", data.current_question);
 
-    console.log("Start session response:", data);
+//     console.log("Start session response:", data);
 
-    sessionStorage.setItem("session_id", data.session_id);
+//     sessionStorage.setItem("session_id", data.session_id);
 
-    console.log("Saved session_id:", data.session_id);
+//     console.log("Saved session_id:", data.session_id);
 
-    window.location.href = "/frontend/interview.html";
-}
+//     window.location.href = "/frontend/interview.html";
+// }
 
 
 /* ================= LOAD QUESTION ================= */
@@ -310,18 +310,14 @@ window.addEventListener("load", () => {
 
     const savedTheme = localStorage.getItem("theme");
 
+    const toggleButton = document.getElementById("theme-toggle");
+
     if (savedTheme === "dark") {
-
         document.body.classList.add("dark-mode");
-
-        const toggleButton = document.getElementById("theme-toggle");
-
-        if (toggleButton) {
-
-            toggleButton.innerText = "☀️ Light Mode";
-
-        }
-
+        if (toggleButton) toggleButton.innerText = "☀️ Light Mode";
+    } else {
+        document.body.classList.remove("dark-mode");   // 🔥 IMPORTANT
+        if (toggleButton) toggleButton.innerText = "🌙 Dark Mode";
     }
 
 });
