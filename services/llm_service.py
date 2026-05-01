@@ -3,10 +3,8 @@ import os
 import json
 from openai import OpenAI
 
-# ✅ LOAD ENV FIRST
 load_dotenv()
 
-# ✅ THEN create client
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 def evaluate_with_llm(question: str, answer: str):
@@ -46,11 +44,11 @@ Return ONLY JSON:
             score = result["score"]
 
             feedback = f"""
-        ✅ Strengths: {result['strengths']}
+        Strengths: {result['strengths']}
 
-        ❌ Weaknesses: {result['weaknesses']}
+        Weaknesses: {result['weaknesses']}
 
-        💡 Improve: {result['improvement']}
+        Improve: {result['improvement']}
         """
 
             return score, feedback
