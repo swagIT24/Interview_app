@@ -33,4 +33,5 @@ app.mount("/frontend", StaticFiles(directory="frontend"), name="frontend")
 def serve_home():
     return FileResponse("frontend/index.html")
 
-
+#to activate venv : source venv/bin/activate
+# to run app : python -m uvicorn main:app --reload

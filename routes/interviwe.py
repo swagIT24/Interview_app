@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from models.schemas import SubmitAnswerRequest
-from services.interview_logic import evaluate_answer
+from services.interview_logic import process_answer
 from models.schemas import SessionCreate
 from services.interview_logic import start_interview
 from services.interview_logic import *
@@ -40,7 +40,7 @@ def submit_answer(data: SubmitAnswerRequest, user_id: int = Depends(get_current_
         }
         
     # 1️⃣ Evaluate answer (updates DB: score, question number, difficulty, completion)
-    evaluation = evaluate_answer(data.answer, data.session_id)
+    evaluation = process_answer(data.answer, data.session_id)
 
     # 2️⃣ Handle error
     if "error" in evaluation:

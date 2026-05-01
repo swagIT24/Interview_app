@@ -325,28 +325,28 @@ window.addEventListener("load", () => {
 
 /* ================= TIMER ================= */
 
-let timeLeft = 600;
+// let timeLeft = 600;
 
-function startTimer(){
+// function startTimer(){
 
-    const timerElement = document.getElementById("time");
+//     const timerElement = document.getElementById("time");
 
-    if(!timerElement) return;
+//     if(!timerElement) return;
 
-    setInterval(() => {
+//     setInterval(() => {
 
-        timeLeft--;
+//         timeLeft--;
 
-        const minutes = Math.floor(timeLeft/60);
+//         const minutes = Math.floor(timeLeft/60);
 
-        const seconds = timeLeft % 60;
+//         const seconds = timeLeft % 60;
 
-        timerElement.innerText =
-            `${minutes}:${seconds.toString().padStart(2,"0")}`;
+//         timerElement.innerText =
+//             `${minutes}:${seconds.toString().padStart(2,"0")}`;
 
-    },1000)
+//     },1000)
 
-}
+// }
 
 
 /* ================= PAGE LOAD ================= */
@@ -362,7 +362,6 @@ window.onload = function () {
             document.getElementById("question").innerText = question;
         }
 
-        startTimer();
     }
 
 };

@@ -4,7 +4,7 @@ from database.connections import *
 from services.questions import *
 import random
 import json
-from services.llm_service import evaluate_with_llm
+from services.evaluation_service import evaluate_answer
 
 
 SIMILARITY_THRESHOLD = 0.85
@@ -31,7 +31,7 @@ def start_interview(user_id: int, candidate_name: str, domain: str):
         "asked_questions": [] 
     }
 
-def evaluate_answer(answer: str, session_id: int):
+def process_answer(answer: str, session_id: int):
 
     if not answer or answer.strip() == "":
         return {
@@ -83,7 +83,8 @@ def evaluate_answer(answer: str, session_id: int):
         else:
             question_text = "Unknown question"
         try:
-            score, feedback = evaluate_with_llm(question_text, answer)
+            result = evaluate_answer(question_text, answer)
+            score, feedback = result["score"], result["feedback"]
         except Exception as e:
             print("LLM failed:", e)
             score = len(answer) // 10
