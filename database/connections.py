@@ -16,58 +16,111 @@ def get_connection():
 def init_db():
     conn = get_connection()
     cursor = conn.cursor()
+
     cursor.execute("PRAGMA journal_mode=WAL;")
+
+    # ================= USERS =================
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+        name TEXT NOT NULL,
+
+        email TEXT UNIQUE NOT NULL,
+        hashed_password TEXT NOT NULL,
+
+        refresh_token TEXT,
+
+        profile_completed INTEGER DEFAULT 0,
+
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+    """)
+
+    # ================= INTERVIEW PROFILES =================
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS interview_profiles (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+        user_id INTEGER NOT NULL,
+
+        target_role TEXT NOT NULL,
+        experience_level REAL NOT NULL,
+
+        desired_goals TEXT NOT NULL DEFAULT '[]',
+
+        skills TEXT DEFAULT '[]',
+        strong_areas TEXT DEFAULT '[]',
+        weak_areas TEXT DEFAULT '[]',
+        areas_to_improve TEXT DEFAULT '[]',
+
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+        UNIQUE(user_id, target_role),
+
+        FOREIGN KEY (user_id) REFERENCES users(id)
+    )
+    """)
+
+    # ================= INTERVIEW SESSIONS =================
+
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS interview_sessions (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER,
-    candidate_name TEXT,
-    domain TEXT,
-    current_question_number INTEGER DEFAULT 1,
-    max_questions INTEGER DEFAULT 20,
-    difficulty_level TEXT DEFAULT 'easy',   -- 🔥 ADD THIS
-    is_completed INTEGER DEFAULT 0,
-    asked_questions TEXT DEFAULT '[]',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)
-""")
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+        user_id INTEGER,
+
+        candidate_name TEXT,
+        domain TEXT,
+
+        current_question_number INTEGER DEFAULT 1,
+        max_questions INTEGER DEFAULT 20,
+
+        difficulty_level TEXT DEFAULT 'easy',
+
+        is_completed INTEGER DEFAULT 0,
+
+        asked_questions TEXT DEFAULT '[]',
+
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+    """)
+
+    # ================= INTERVIEW ANSWERS =================
 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS interview_answers (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+
         session_id INTEGER,
+
         question TEXT,
         answer TEXT,
+
         score INTEGER,
         feedback TEXT,
+
         time_taken INTEGER,
-        FOREIGN KEY (session_id) REFERENCES interview_sessions (id)
+
+        FOREIGN KEY (session_id) REFERENCES interview_sessions(id)
     )
     """)
-
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        email TEXT UNIQUE NOT NULL,
-        hashed_password TEXT NOT NULL,
-        refresh_token TEXT,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-        """)
-
 
     conn.commit()
     conn.close()
 
 
-def create_user(email: str, hashed_password: str):
+def create_user(name: str, email: str, hashed_password: str):
     conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
-        INSERT INTO users (email, hashed_password)
-        VALUES (?, ?)
-    """, (email, hashed_password))
+        INSERT INTO users (name, email, hashed_password)
+        VALUES (?, ?, ?)
+    """, (name, email, hashed_password))
 
     conn.commit()
     user_id = cursor.lastrowid
@@ -92,7 +145,7 @@ def get_user_by_email(email: str):
     return user
 
 
-def create_session(user_id: int, candidate_name:str, domain:str):
+def create_session(user_id: int, candidate_name: str, domain: str):
     conn = get_connection()
     cursor = conn.cursor()
 
@@ -108,6 +161,7 @@ def create_session(user_id: int, candidate_name:str, domain:str):
     finally:
         cursor.close()
         conn.close()
+
 
 def insert_answer(cursor, session_id: int, question: str, answer: str,
                   score: int, feedback: str, time_taken: int):
@@ -217,15 +271,16 @@ def update_session_progress(session_id: int, user_id: int, new_question_number: 
     conn.close()
 
 
-def get_session_state(user_id:int, session_id :int):
+def get_session_state(user_id: int, session_id: int):
     conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
-    SELECT current_question_number, max_questions, difficulty_level, is_completed
+    SELECT current_question_number, difficulty_level, is_completed
     FROM interview_sessions
     WHERE id = ? AND user_id = ?
     """, (session_id, user_id))
+
     session = cursor.fetchone()
     conn.close()
 

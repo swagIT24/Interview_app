@@ -1,31 +1,47 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-    <title>Dashboard</title>
-    <link rel="stylesheet" href="/frontend/style.css">
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="/frontend/style.css">
 </head>
-
 <body>
 
-<div class="main-content">
-
-    <h1>Welcome to AI Interview Practice</h1>
-
-    <input id="name" placeholder="Enter your name">
-
-    <select id="domain">
-        <option value="Java">Java</option>
-        <option value="Python">Python</option>
-        <option value="ML">Machine Learning</option>
-    </select>
-
-    <button onclick="startInterview()">Start Interview</button>
-
+<div class="welcome-section">
+  <h1 id="welcome-text">Hey 👋</h1>
+  <p>Let's continue your interview journey.</p>
 </div>
 
+<div class="main-content">
+  <h1>Welcome to AI Interview Practice</h1>
+
+  <!-- hidden input auto-filled from /me -->
+  <input type="hidden" id="name">
+
+  <select id="domain">
+    <option value="Java">Java</option>
+    <option value="Python">Python</option>
+    <option value="ML">Machine Learning</option>
+  </select>
+
+  <button onclick="startInterview()">Start Interview</button>
+  <button onclick="logout()">Logout</button>
+</div>
+
+<script>
+  let currentUser = null;
+
+  fetch("/me")
+    .then(res => {
+      if (!res.ok) window.location.href = "/";
+      return res.json();
+    })
+    .then(user => {
+      currentUser = user;
+      document.getElementById("welcome-text").textContent = `Hey ${user.name}, Welcome! 👋`;
+      document.getElementById("name").value = user.name;
+    });
+</script>
+
 <script src="/frontend/script.js"></script>
-
 </body>
-
 </html>

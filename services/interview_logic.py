@@ -6,21 +6,8 @@ import random
 import json
 from services.evaluation_service import evaluate_answer
 
-
-SIMILARITY_THRESHOLD = 0.85
-MAX_QUESTIONS = 10
 ADAPTIVE_WINDOW = 3
 
-# def evaluate_answer(answer: str, session_id: int):
-#     score = len(answer)//10
-
-#     feedback = "Good effort. Expand more with examples" if score<5 else "exellent answer"
-
-#     return{
-#         "score":score,
-#         "feedback":feedback,
-#         "session_id":session_id
-#     }
 
 def start_interview(user_id: int, candidate_name: str, domain: str):
     session_id = create_session(user_id, candidate_name, domain)
@@ -28,10 +15,11 @@ def start_interview(user_id: int, candidate_name: str, domain: str):
     return {
         "session_id": session_id,
         "message": "Interview session started",
-        "asked_questions": [] 
+        "asked_questions": []
     }
 
-def process_answer(answer: str, session_id: int):
+
+def process_answer(answer: str, session_id: int, question_text: str):
 
     if not answer or answer.strip() == "":
         return {
@@ -41,47 +29,28 @@ def process_answer(answer: str, session_id: int):
             "current_question_number": None,
             "difficulty_level": None
         }
+
     conn = get_connection()
     cursor = conn.cursor()
 
     try:
         cursor.execute("""
-            SELECT current_question_number, max_questions, difficulty_level, is_completed
+            SELECT current_question_number, difficulty_level, is_completed
             FROM interview_sessions
             WHERE id = ?
         """, (session_id,))
-        
+
         session = cursor.fetchone()
 
         if not session:
             return {"error": "Session not found"}
 
-        current_q, max_q, difficulty, is_completed = session
+        current_q, difficulty, is_completed = session
+
         if is_completed:
             return {"error": "Interview already completed"}
-        # score = len(answer) // 10
-        # feedback = (
-        #     "Excellent answer"
-        #     if score > 10
-        #     else "Improve structure and add examples"
-        # )
-        
 
-        #question_text = f"Question {current_q}"
-        cursor.execute("""
-            SELECT question
-            FROM interview_answers
-            WHERE session_id = ?
-            ORDER BY id DESC
-            LIMIT 1
-        """, (session_id,))
-
-        row = cursor.fetchone()
-
-        if row:
-            question_text = row[0]
-        else:
-            question_text = "Unknown question"
+        # Evaluate via LLM using question passed directly
         try:
             result = evaluate_answer(question_text, answer)
             score, feedback = result["score"], result["feedback"]
@@ -89,7 +58,9 @@ def process_answer(answer: str, session_id: int):
             print("LLM failed:", e)
             score = len(answer) // 10
             feedback = "Fallback evaluation"
-        time_taken = 30 
+
+        # Save answer with correct question_text
+        time_taken = 30
         insert_answer(
             cursor,
             session_id,
@@ -100,37 +71,26 @@ def process_answer(answer: str, session_id: int):
             time_taken
         )
 
-        # 5️⃣ Atomic increment question number
+        # Increment question number
         cursor.execute("""
             UPDATE interview_sessions
             SET current_question_number = current_question_number + 1
             WHERE id = ?
         """, (session_id,))
 
-        # 6️⃣ Fetch updated question number
         cursor.execute("""
             SELECT current_question_number
             FROM interview_sessions
             WHERE id = ?
         """, (session_id,))
-        
+
         new_q = cursor.fetchone()[0]
 
-        # 7️⃣ Mark session completed if needed
-        if new_q > max_q:
-            cursor.execute("""
-                UPDATE interview_sessions
-                SET is_completed = 1
-                WHERE id = ?
-            """, (session_id,))
-            is_completed = 1
-
+        # Adaptive difficulty every 3 answers
         scores = get_last_n_scores(cursor, session_id, ADAPTIVE_WINDOW)
-
 
         if len(scores) == ADAPTIVE_WINDOW:
             avg_score = sum(scores) / len(scores)
-
             levels = ["easy", "medium", "hard"]
             index = levels.index(difficulty)
 
@@ -145,7 +105,6 @@ def process_answer(answer: str, session_id: int):
                 WHERE id = ?
             """, (difficulty, session_id))
 
-        # 🔟 Commit entire transaction
         conn.commit()
 
         return {
@@ -153,7 +112,7 @@ def process_answer(answer: str, session_id: int):
             "feedback": feedback,
             "current_question_number": new_q,
             "difficulty_level": difficulty,
-            "is_completed": bool(is_completed)
+            "is_completed": False
         }
 
     except Exception as e:
@@ -162,6 +121,7 @@ def process_answer(answer: str, session_id: int):
 
     finally:
         conn.close()
+
 
 def fetch_session(session_id: int, user_id: int):
 
@@ -178,49 +138,10 @@ def fetch_session(session_id: int, user_id: int):
         "domain": session["domain"],
         "difficulty_level": session["difficulty_level"],
         "current_question_number": session["current_question_number"],
-        "total_questions": session["max_questions"],
         "is_completed": bool(session["is_completed"]),
         "current_question": answers[-1]["question"] if answers else None
     }
 
-def adjust_diff(curr_diff, avg_score):
-    lvl = ['easy','hard','medium']
-    index = lvl.index(curr_diff)
-
-    if avg_score > 12 and index < len(lvl) -1:
-        index +=1
-
-    elif avg_score < 6 and index > 0:
-        index -=1
-
-    return lvl[index]
-
-
-def generate_next_question(session_id: int):
-
-    conn = get_connection()
-    cursor = conn.cursor()
-
-    cursor.execute("""
-        SELECT current_question_number, difficulty_level, domain, is_completed
-        FROM interview_sessions
-        WHERE id = ?
-    """, (session_id,))
-
-    session = cursor.fetchone()
-    conn.close()
-
-    if not session:
-        return {"error": "Session not found"}
-
-    current_q, difficulty, domain, is_completed = session
-
-    if is_completed:
-        return None
-
-    question = f"{difficulty.capitalize()} question {current_q} in {domain}"
-
-    return question
 
 def get_next_question(domain, difficulty, asked_questions):
 
@@ -230,30 +151,26 @@ def get_next_question(domain, difficulty, asked_questions):
         "ML": "Machine Learning",
         "Machine Learning": "Machine Learning",
         "Python": "Python",
-        "Java": "Java"
+        "Java": "Java",
+        "Statistics": "Statistics"
     }
 
     domain = domain_map.get(domain, domain)
 
-    questions = QUESTION_BANK.get(domain, {}).get(difficulty, [])
+    level_order = ["easy", "medium", "hard"]
+    current_index = level_order.index(difficulty)
 
-    remaining_questions = [
-        q for q in questions if q["id"] not in asked_questions
-    ]
+    for level in level_order[current_index:]:
+        questions = QUESTION_BANK.get(domain, {}).get(level, [])
+        remaining = [q for q in questions if q["id"] not in asked_questions]
 
-    if not remaining_questions:
-        return None
+        if remaining:
+            return {
+                "question": random.choice(remaining),
+                "actual_difficulty": level
+            }
 
-    return random.choice(remaining_questions)
-
-def get_first_question(domain):
-
-    questions = QUESTION_BANK.get(domain, {}).get("easy", [])
-
-    if not questions:
-        return None
-
-    return random.choice(questions)
+    return None
 
 
 def update_asked_questions(session_id, question_id):
@@ -267,9 +184,7 @@ def update_asked_questions(session_id, question_id):
     """, (session_id,))
 
     row = cursor.fetchone()
-
     asked = json.loads(row[0]) if row and row[0] else []
-
     asked.append(question_id)
 
     cursor.execute("""

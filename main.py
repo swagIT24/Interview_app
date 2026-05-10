@@ -5,6 +5,7 @@ from routes import auth
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
+from routes import voice
 
 
 
@@ -24,6 +25,7 @@ init_db()
 
 app.include_router(interviwe.router)
 app.include_router(auth.router)
+app.include_router(voice.router)
 
 migrate_schema()
 
@@ -32,6 +34,10 @@ app.mount("/frontend", StaticFiles(directory="frontend"), name="frontend")
 @app.get("/")
 def serve_home():
     return FileResponse("frontend/index.html")
+
+@app.get("/dashboard")
+def serve_dashboard():
+    return FileResponse("frontend/dashboard.html")
 
 #to activate venv : source venv/bin/activate
 # to run app : python -m uvicorn main:app --reload

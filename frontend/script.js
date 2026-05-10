@@ -1,5 +1,6 @@
 let sessionId = null;
 let nextQuestionData = null;
+let currentQuestion = null;
 /* ================= LOGIN ================= */
 
 async function login() {
@@ -141,6 +142,7 @@ window.startInterview = async function () {
     // store session + question
     sessionStorage.setItem("session_id", data.session_id);
     sessionStorage.setItem("current_question", data.current_question);
+    currentQuestion = data.current_question;
 
     // go to interview page
     window.location.href = "interview.html";
@@ -150,6 +152,7 @@ async function submitAnswer() {
 
     const sessionId = sessionStorage.getItem("session_id");
     const answerText = document.getElementById("answer").value;
+    console.log("SESSION ID:", sessionId);
 
     if (!answerText.trim()) {
         alert("Please write an answer first");
@@ -164,11 +167,11 @@ async function submitAnswer() {
         },
         body: JSON.stringify({
             answer: answerText,
-            session_id: sessionId
+            session_id: sessionId,
+            question_text: currentQuestion
         })
     });
 
-    // 🔥 HANDLE TOKEN EXPIRED
     if (response.status === 401) {
 
         console.log("Access token expired, trying refresh...");
@@ -188,7 +191,6 @@ async function submitAnswer() {
 
             console.log("Token refreshed, retrying submit...");
 
-            // 🔁 retry original request
             response = await fetch("/submit-answer", {
                 method: "POST",
                 credentials: "include",
@@ -197,7 +199,8 @@ async function submitAnswer() {
                 },
                 body: JSON.stringify({
                     answer: answerText,
-                    session_id: sessionId
+                    session_id: sessionId,
+                    question_text: currentQuestion
                 })
             });
 
@@ -209,21 +212,23 @@ async function submitAnswer() {
     }
 
     const data = await response.json();
+    console.log("SUBMIT RESPONSE:", JSON.stringify(data));
 
-    // ✅ store next question for NEXT button
     nextQuestionData = data;
 
-    // ✅ show feedback ONLY
     document.getElementById("feedback").innerText =
         "Score: " + data.score + " | " + data.feedback;
 
     // ✅ DO NOT update question here anymore
+    console.log("NEXT QUESTION:", data.next_question);
     if (data.next_question) {
+
+        nextQuestionData = data;
+
+        document.getElementById("next-btn").style.display = "inline-block";
 
         document.getElementById("difficulty").innerText =
             data.difficulty_level;
-
-        //document.getElementById("answer").value = "";
 
     } else if (data.is_completed) {
 
@@ -233,17 +238,20 @@ async function submitAnswer() {
 /* ================= REGISTER ================= */
 
 async function register() {
-
+    console.log("REGISTER FUNCTION RUNNING")
+    
+    const name = document.getElementById("register-name").value;
     const email = document.getElementById("register-email").value;
-
     const password = document.getElementById("register-password").value;
+
+    console.log(name)
 
     const response = await fetch("/register", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({name, email, password })
     });
 
     const data = await response.json();
@@ -355,13 +363,161 @@ window.onload = function () {
 
     if (window.location.pathname.includes("interview.html")) {
 
-        // ✅ Get first question from sessionStorage
         const question = sessionStorage.getItem("current_question");
 
         if (question) {
             document.getElementById("question").innerText = question;
+            currentQuestion = question;
         }
 
-    }
 
+        const recordBtn = document.getElementById("recordBtn");
+        const recordStatus = document.getElementById("recordStatus");
+        const answerBox = document.getElementById("answer");
+
+        let mediaRecorder;
+        let audioChunks = [];
+        let stream;
+
+        let recognition;
+
+        if ('webkitSpeechRecognition' in window) {
+
+            recognition = new webkitSpeechRecognition();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+
+            recognition.onresult = (event) => {
+                let transcript = "";
+
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    transcript += event.results[i][0].transcript;
+                }
+
+                answerBox.value = transcript; // live typing
+            };
+
+        } else {
+            console.log("Speech recognition not supported");
+        }
+
+        recordBtn.addEventListener("click", async () => {
+
+            if (!mediaRecorder || mediaRecorder.state === "inactive") {
+
+                // 🎤 Start recording
+                stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+
+                mediaRecorder.ondataavailable = event => {
+                    audioChunks.push(event.data);
+                };
+
+                mediaRecorder.onstop = () => {
+
+                    const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
+                    
+
+                    recordStatus.innerText = "Processing...";
+
+                    const formData = new FormData();
+                    formData.append("file", audioBlob, "recording.webm");
+                    formData.append("question_text", currentQuestion);  // ← ADD THIS
+
+                    const sessionId = sessionStorage.getItem("session_id");
+
+                    console.log("SESSION ID USED:", sessionId);
+
+                    fetch(`/voice/upload?session_id=${sessionId}`, {
+                        method: "POST",
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+
+                        console.log("Voice API response:", data);
+                        console.log("FULL RESPONSE:", data);
+
+                        // ✅ overwrite with final accurate transcript
+                        answerBox.value = data.transcript;
+
+                        document.getElementById("feedback").innerText =
+                            "Score: " + data.evaluation.score + " | " + data.evaluation.feedback;
+                        
+                        if (data.next_question) {
+                            nextQuestionData = {
+                                next_question: data.next_question,
+                                current_question_number: data.evaluation.current_question_number,
+                                difficulty_level: data.evaluation.difficulty_level
+                            };
+
+                            // Update currentQuestion so text submit also knows
+                            currentQuestion = data.next_question;
+
+                            document.getElementById("next-btn").style.display = "inline-block";
+                            document.getElementById("difficulty").innerText =
+                                data.evaluation.difficulty_level;
+
+                        } else if (data.is_completed) {
+                            document.getElementById("question").innerText = "Interview Completed!";
+                            document.getElementById("next-btn").style.display = "none";
+                        }
+                        recordStatus.innerText = "Ready";
+                    })
+                    .catch(err => {
+                        console.error("Error:", err);
+                        recordStatus.innerText = "Error";
+                    });
+
+                    // 🔐 release mic
+                    stream.getTracks().forEach(track => track.stop());
+                };
+
+                mediaRecorder.start();
+
+                // 🧠 start real-time transcription
+                if (recognition) recognition.start();
+
+                recordStatus.innerText = "Recording...";
+                recordBtn.innerText = "⏹ Stop Recording";
+
+            } else {
+
+                // ⏹ Stop recording
+                mediaRecorder.stop();
+
+                // 🧠 stop real-time transcription
+                if (recognition) recognition.stop();
+
+                recordStatus.innerText = "Stopping...";
+                recordBtn.innerText = "🎤 Start Recording";
+            }
+
+        });
+
+        document.getElementById("next-btn").addEventListener("click", () => {
+
+            if (!nextQuestionData) return;
+
+            // Update displayed question
+            document.getElementById("question").innerText =
+                nextQuestionData.next_question;
+
+            // ✅ Save it so submitAnswer can send it back
+            currentQuestion = nextQuestionData.next_question;
+
+            document.getElementById("question-number").innerText =
+                nextQuestionData.current_question_number;
+
+            // Clear answer and feedback
+            document.getElementById("answer").value = "";
+            document.getElementById("feedback").innerText = "";
+
+            document.getElementById("next-btn").style.display = "none";
+
+            nextQuestionData = null;
+        });
+    }
 };

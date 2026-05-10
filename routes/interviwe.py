@@ -38,22 +38,14 @@ def submit_answer(data: SubmitAnswerRequest, user_id: int = Depends(get_current_
             "message": "Interview already completed",
             "is_completed": True
         }
-        
-    # 1️⃣ Evaluate answer (updates DB: score, question number, difficulty, completion)
-    evaluation = process_answer(data.answer, data.session_id)
 
-    # 2️⃣ Handle error
+    # Evaluate answer — pass question_text directly from request
+    evaluation = process_answer(data.answer, data.session_id, data.question_text)
+
     if "error" in evaluation:
         return evaluation
 
-    # 3️⃣ If interview completed → no next question
-    if evaluation["is_completed"]:
-        return {
-            **evaluation,
-            "next_question": None
-        }
-
-    # 4️⃣ Fetch session state from DB
+    # Fetch updated session state
     conn = get_connection()
     cursor = conn.cursor()
 
@@ -70,25 +62,59 @@ def submit_answer(data: SubmitAnswerRequest, user_id: int = Depends(get_current_
         return {"error": "Session not found"}
 
     domain, difficulty, asked = row
-
-    # 5️⃣ Convert asked_questions from string → list
     asked_questions = json.loads(asked) if asked else []
 
-    # 6️⃣ Get next question (NO repetition)
+    # Get next question
     question_data = get_next_question(domain, difficulty, asked_questions)
 
     if not question_data:
-        next_question = "No more questions available"
-    else:
-        # 7️⃣ Save question ID to DB
-        update_asked_questions(data.session_id, question_data["id"])
-        next_question = question_data["question"]
+        # All easy + medium + hard exhausted → end session
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            UPDATE interview_sessions
+            SET is_completed = 1
+            WHERE id = ? AND user_id = ?
+        """, (data.session_id, user_id))
+        conn.commit()
+        conn.close()
 
-    # 8️⃣ Return response
+        return {
+            **evaluation,
+            "next_question": None,
+            "is_completed": True
+        }
+
+    # Question found
+    actual_level = question_data["actual_difficulty"]
+    next_question = question_data["question"]["question"]
+    question_id = question_data["question"]["id"]
+
+    # If difficulty was promoted (easy ran out → medium, etc.)
+    # update DB so next fetch starts from correct level
+    if actual_level != difficulty:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            UPDATE interview_sessions
+            SET difficulty_level = ?
+            WHERE id = ? AND user_id = ?
+        """, (actual_level, data.session_id, user_id))
+        conn.commit()
+        conn.close()
+
+    # Save question ID to asked list
+    update_asked_questions(data.session_id, question_id)
+
     return {
         **evaluation,
-        "next_question": next_question
+        "next_question": next_question,
+        "is_completed": False
     }
+
+
+
+
 
 @router.post("/start-session")
 def start_session(data: SessionCreate, user_id: int = Depends(get_current_user)):
@@ -120,22 +146,20 @@ def start_session(data: SessionCreate, user_id: int = Depends(get_current_user))
     question_data = get_next_question(domain, difficulty, asked_questions)
 
     if question_data:
-        first_question = question_data["question"]   # ✅ DEFINE FIRST
+        first_question = question_data["question"]["question"]
+        question_id = question_data["question"]["id"]
 
-        update_asked_questions(session_id, question_data["id"])
+        update_asked_questions(session_id, question_id)
 
         conn = get_connection()
         cursor = conn.cursor()
-
         cursor.execute("""
-        INSERT INTO interview_answers (session_id, question, answer, score, feedback, time_taken)
-        VALUES (?, ?, ?, ?, ?, ?)
+            INSERT INTO interview_answers (session_id, question, answer, score, feedback, time_taken)
+            VALUES (?, ?, ?, ?, ?, ?)
         """, (session_id, first_question, "", 0, "", 0))
-
         conn.commit()
         conn.close()
-        
-        first_question = question_data["question"]
+
     else:
         first_question = "No questions available"
 
