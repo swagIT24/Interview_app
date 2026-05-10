@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Response, Request
 from models.auth_schemas import RegisterRequest, LoginRequest, TokenResponse
 from services.auth_service import hash_password, verify_password, create_access_token
 from database.connections import create_user, get_user_by_email
-from services.auth_service import create_refresh_token
+from services.auth_service import create_refresh_token, decode_access_token
 from database.connections import get_connection
 router = APIRouter()
 
@@ -15,7 +15,7 @@ def register(data: RegisterRequest):
         raise HTTPException(status_code=400, detail="Email already registered")
 
     hashed_pw = hash_password(data.password)
-    user_id = create_user(data.email, hashed_pw)
+    user_id = create_user(data.name, data.email, hashed_pw)
 
     return {"message": "User registered successfully", "user_id": user_id}
 
@@ -110,3 +110,29 @@ async def refresh_token(request: Request, response: Response):
     )
 
     return {"message": "Token refreshed"}
+
+
+@router.get("/me")
+def get_me(request: Request):
+    token = request.cookies.get("access_token")
+
+    if not token:
+        raise HTTPException(status_code=401, detail="Not logged in")
+
+    payload = decode_access_token(token)
+    user_id = payload.get("sub")
+
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, name, email FROM users WHERE id = ?", (user_id,))
+    row = cursor.fetchone()
+    conn.close()
+
+    if not row:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return {
+        "id": row[0],
+        "name": row[1],
+        "email": row[2]
+    }
