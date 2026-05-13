@@ -3,6 +3,9 @@ let nextQuestionData = null;
 let currentQuestion = null;
 /* ================= LOGIN ================= */
 
+let currentAudio;
+let currentAudioB64 = null;
+
 async function login() {
 
     console.log("LOGIN FUNCTION TRIGGERED");
@@ -142,6 +145,7 @@ window.startInterview = async function () {
     // store session + question
     sessionStorage.setItem("session_id", data.session_id);
     sessionStorage.setItem("current_question", data.current_question);
+    sessionStorage.setItem("current_audio", data.audio);
     currentQuestion = data.current_question;
 
     // go to interview page
@@ -224,7 +228,7 @@ async function submitAnswer() {
     if (data.next_question) {
 
         nextQuestionData = data;
-
+        currentAudioB64 = data.audio;
         document.getElementById("next-btn").style.display = "inline-block";
 
         document.getElementById("difficulty").innerText =
@@ -357,6 +361,26 @@ window.addEventListener("load", () => {
 // }
 
 
+
+async function preloadQuestionAudio(questionText) {
+    const response = await fetch("/tts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: questionText })
+    });
+    const data = await response.json();
+    currentAudioB64 = data.audio;
+}
+
+function playQuestionAudio() {
+    if (!currentAudioB64) return;
+    if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+    }
+    currentAudio = new Audio("data:audio/mp3;base64," + currentAudioB64);
+    currentAudio.play();
+}
 /* ================= PAGE LOAD ================= */
 
 window.onload = function () {
@@ -368,6 +392,16 @@ window.onload = function () {
         if (question) {
             document.getElementById("question").innerText = question;
             currentQuestion = question;
+            fetch("/tts", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ text: question })
+            })
+            .then(res => res.json())
+            .then(data => {
+                currentAudioB64 = data.audio;
+                console.log("First question audio ready");
+            });
         }
 
 
@@ -500,13 +534,15 @@ window.onload = function () {
         document.getElementById("next-btn").addEventListener("click", () => {
 
             if (!nextQuestionData) return;
-
-            // Update displayed question
+            console.log("nextQuestionData.audio:", nextQuestionData.audio);  // ← add
+            currentAudioB64 = null; 
             document.getElementById("question").innerText =
                 nextQuestionData.next_question;
 
             // ✅ Save it so submitAnswer can send it back
             currentQuestion = nextQuestionData.next_question;
+            currentAudioB64 = nextQuestionData.audio; 
+            console.log("currentAudioB64 after set:", currentAudioB64);
 
             document.getElementById("question-number").innerText =
                 nextQuestionData.current_question_number;
@@ -521,3 +557,5 @@ window.onload = function () {
         });
     }
 };
+
+

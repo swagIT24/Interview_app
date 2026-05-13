@@ -1,13 +1,9 @@
 from fastapi import FastAPI
-from routes import interviwe
-from database.connections import *
-from routes import auth
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
-from routes import voice
-
-
+from database.connections import init_db, migrate_schema
+from routes import interviwe, auth, voice
 
 app = FastAPI()
 
@@ -19,9 +15,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 init_db()
-
 
 app.include_router(interviwe.router)
 app.include_router(auth.router)
@@ -39,5 +33,10 @@ def serve_home():
 def serve_dashboard():
     return FileResponse("frontend/dashboard.html")
 
+# to activate venv : source venv/bin/activate
+# to run app : python -m uvicorn main:app --reload
+
 #to activate venv : source venv/bin/activate
 # to run app : python -m uvicorn main:app --reload
+
+#261885335630

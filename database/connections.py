@@ -79,8 +79,6 @@ def init_db():
         current_question_number INTEGER DEFAULT 1,
         max_questions INTEGER DEFAULT 20,
 
-        difficulty_level TEXT DEFAULT 'easy',
-
         is_completed INTEGER DEFAULT 0,
 
         asked_questions TEXT DEFAULT '[]',

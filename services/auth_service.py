@@ -1,17 +1,19 @@
-from datetime import datetime, timedelta
-from jose import jwt
-from passlib.context import CryptContext
-
-from fastapi import Depends, HTTPException, Request
-#from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from jose import JWTError
+import os
 import secrets
+from datetime import datetime, timedelta
+from dotenv import load_dotenv
+from jose import jwt, JWTError
+from passlib.context import CryptContext
+from fastapi import HTTPException, Request
 
-#security = HTTPBearer()
+load_dotenv()
 
-SECRET_KEY = "super-secret-key-change-later"
+SECRET_KEY = os.getenv("SECRET_KEY")
+if not SECRET_KEY:
+    raise RuntimeError("SECRET_KEY not set in .env")
+
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 6
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -30,8 +32,10 @@ def create_access_token(data: dict):
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
+
 def create_refresh_token():
     return secrets.token_hex(32)
+
 
 def get_current_user(request: Request):
     token = request.cookies.get("access_token")
@@ -51,7 +55,7 @@ def get_current_user(request: Request):
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
 
-    
+
 def decode_access_token(token: str):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])

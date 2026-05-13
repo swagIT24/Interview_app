@@ -5,6 +5,8 @@ from services.questions import *
 import random
 import json
 from services.evaluation_service import evaluate_answer
+from services.question_generation_service import generate_question
+from services.tts_service import text_to_speech
 
 ADAPTIVE_WINDOW = 3
 
@@ -35,7 +37,7 @@ def process_answer(answer: str, session_id: int, question_text: str):
 
     try:
         cursor.execute("""
-            SELECT current_question_number, difficulty_level, is_completed
+            SELECT current_question_number, is_completed
             FROM interview_sessions
             WHERE id = ?
         """, (session_id,))
@@ -45,7 +47,7 @@ def process_answer(answer: str, session_id: int, question_text: str):
         if not session:
             return {"error": "Session not found"}
 
-        current_q, difficulty, is_completed = session
+        current_q, is_completed = session
 
         if is_completed:
             return {"error": "Interview already completed"}
@@ -89,29 +91,28 @@ def process_answer(answer: str, session_id: int, question_text: str):
         # Adaptive difficulty every 3 answers
         scores = get_last_n_scores(cursor, session_id, ADAPTIVE_WINDOW)
 
-        if len(scores) == ADAPTIVE_WINDOW:
-            avg_score = sum(scores) / len(scores)
-            levels = ["easy", "medium", "hard"]
-            index = levels.index(difficulty)
+        # if len(scores) == ADAPTIVE_WINDOW:
+        #     avg_score = sum(scores) / len(scores)
+        #     levels = ["easy", "medium", "hard"]
+        #     index = levels.index(difficulty)
 
-            if avg_score > 12 and index < len(levels) - 1:
-                difficulty = levels[index + 1]
-            elif avg_score < 6 and index > 0:
-                difficulty = levels[index - 1]
+        #     if avg_score > 12 and index < len(levels) - 1:
+        #         difficulty = levels[index + 1]
+        #     elif avg_score < 6 and index > 0:
+        #         difficulty = levels[index - 1]
 
-            cursor.execute("""
-                UPDATE interview_sessions
-                SET difficulty_level = ?
-                WHERE id = ?
-            """, (difficulty, session_id))
+        #     cursor.execute("""
+        #         UPDATE interview_sessions
+        #         SET difficulty_level = ?
+        #         WHERE id = ?
+        #     """, (difficulty, session_id))
 
-        conn.commit()
+        # conn.commit()
 
         return {
             "score": score,
             "feedback": feedback,
             "current_question_number": new_q,
-            "difficulty_level": difficulty,
             "is_completed": False
         }
 
@@ -143,34 +144,47 @@ def fetch_session(session_id: int, user_id: int):
     }
 
 
-def get_next_question(domain, difficulty, asked_questions):
+# def get_next_question(domain, difficulty, asked_questions):
 
-    difficulty = difficulty.lower()
+#     difficulty = difficulty.lower()
 
-    domain_map = {
-        "ML": "Machine Learning",
-        "Machine Learning": "Machine Learning",
-        "Python": "Python",
-        "Java": "Java",
-        "Statistics": "Statistics"
+#     domain_map = {
+#         "ML": "Machine Learning",
+#         "Machine Learning": "Machine Learning",
+#         "Python": "Python",
+#         "Java": "Java",
+#         "Statistics": "Statistics"
+#     }
+
+#     domain = domain_map.get(domain, domain)
+
+#     level_order = ["easy", "medium", "hard"]
+#     current_index = level_order.index(difficulty)
+
+#     for level in level_order[current_index:]:
+#         questions = QUESTION_BANK.get(domain, {}).get(level, [])
+#         remaining = [q for q in questions if q["id"] not in asked_questions]
+
+#         if remaining:
+#             return {
+#                 "question": random.choice(remaining),
+#                 "actual_difficulty": level
+#             }
+
+#     return None
+
+
+def get_next_question(domain, asked_questions):
+
+    question_text = generate_question(domain, asked_questions)
+
+    return {
+        "question": {
+            "id": question_text,
+            "question": question_text,
+            "topic": domain
+        }
     }
-
-    domain = domain_map.get(domain, domain)
-
-    level_order = ["easy", "medium", "hard"]
-    current_index = level_order.index(difficulty)
-
-    for level in level_order[current_index:]:
-        questions = QUESTION_BANK.get(domain, {}).get(level, [])
-        remaining = [q for q in questions if q["id"] not in asked_questions]
-
-        if remaining:
-            return {
-                "question": random.choice(remaining),
-                "actual_difficulty": level
-            }
-
-    return None
 
 
 def update_asked_questions(session_id, question_id):

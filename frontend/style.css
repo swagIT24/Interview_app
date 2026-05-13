@@ -17,7 +17,7 @@ body {
 /* ================= SIDEBAR ================= */
 
 .sidebar {
-    width: 220px;
+    width: 180px;
     height: 100vh;
     background: linear-gradient(180deg,#4F46E5,#6366F1);
     position: fixed;
@@ -42,8 +42,8 @@ body {
 /* ================= MAIN CONTENT ================= */
 
 .main-content {
-    margin-left: 220px;
-    padding: 60px;
+    margin-left: 180px;
+    padding: 10px;
 }
 
 /* ================= TOP BAR ================= */
@@ -249,4 +249,69 @@ button:hover {
 .dark-mode .feedback-card {
     background-color: #1e1e1e;
     color: #ffffff;
+}
+
+
+/* ================= DASHBOARD ================= */
+
+.dashboard-container{
+    max-width:900px;
+    margin:40px auto;
+    padding:20px;
+}
+
+.welcome-section{
+    margin-bottom:40px;
+}
+
+.welcome-section h1{
+    font-size:52px;
+    margin-bottom:10px;
+}
+
+.welcome-section p{
+    font-size:22px;
+    color:#b0b0b0;
+}
+
+.dashboard-container .main-content{
+    margin-left:0;
+    padding:0;
+}
+
+.dashboard-card{
+    background:#1a1a1a;
+    padding:30px;
+    border-radius:20px;
+    border:1px solid #2a2a2a;
+}
+
+.dashboard-card h2{
+    margin-bottom:25px;
+    font-size:28px;
+}
+
+#domain{
+    width:100%;
+    padding:14px;
+    border-radius:12px;
+    background:#2a2a2a;
+    color:white;
+    border:1px solid #444;
+    margin-bottom:20px;
+    font-size:16px;
+}
+
+/* dashboard buttons only */
+
+.dashboard-btn{
+    width:auto;
+    padding:14px 28px;
+    border-radius:12px;
+    font-size:16px;
+}
+
+.logout-btn{
+    background:#2f2f2f;
+    margin-left:10px;
 }
