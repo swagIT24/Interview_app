@@ -50,7 +50,6 @@ def login(data: LoginRequest, response: Response):
     conn.commit()
     conn.close()
 
-    # ✅ set access token cookie
     response.set_cookie(
         key="access_token",
         value=access_token,

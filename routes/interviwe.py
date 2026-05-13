@@ -8,12 +8,24 @@ from services.auth_service import get_current_user
 from fastapi import Depends
 from services.interview_logic import *
 import json
+from services.tts_service import text_to_speech
+from fastapi import Body
+
+from pydantic import BaseModel
+
+class TTSRequest(BaseModel):
+    text: str
 
 router = APIRouter()
 
 @router.get("/ping")
 def ping():
     return {"message":"interviwe router working"}
+
+@router.post("/tts")
+def tts(data: TTSRequest):
+    audio_b64 = text_to_speech(data.text)
+    return {"audio": audio_b64}
 
 @router.post("/submit-answer")
 def submit_answer(data: SubmitAnswerRequest, user_id: int = Depends(get_current_user)):
@@ -39,7 +51,7 @@ def submit_answer(data: SubmitAnswerRequest, user_id: int = Depends(get_current_
             "is_completed": True
         }
 
-    # Evaluate answer — pass question_text directly from request
+    # Evaluate answer
     evaluation = process_answer(data.answer, data.session_id, data.question_text)
 
     if "error" in evaluation:
@@ -50,7 +62,7 @@ def submit_answer(data: SubmitAnswerRequest, user_id: int = Depends(get_current_
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT domain, difficulty_level, asked_questions
+        SELECT domain, asked_questions
         FROM interview_sessions
         WHERE id = ? AND user_id = ?
     """, (data.session_id, user_id))
@@ -61,14 +73,14 @@ def submit_answer(data: SubmitAnswerRequest, user_id: int = Depends(get_current_
     if not row:
         return {"error": "Session not found"}
 
-    domain, difficulty, asked = row
+    domain, asked = row
     asked_questions = json.loads(asked) if asked else []
 
     # Get next question
-    question_data = get_next_question(domain, difficulty, asked_questions)
+    question_data = get_next_question(domain, asked_questions)
+    print("question_data:", question_data)
 
     if not question_data:
-        # All easy + medium + hard exhausted → end session
         conn = get_connection()
         cursor = conn.cursor()
         cursor.execute("""
@@ -82,33 +94,29 @@ def submit_answer(data: SubmitAnswerRequest, user_id: int = Depends(get_current_
         return {
             **evaluation,
             "next_question": None,
+            "audio": None,
             "is_completed": True
         }
 
     # Question found
-    actual_level = question_data["actual_difficulty"]
     next_question = question_data["question"]["question"]
     question_id = question_data["question"]["id"]
 
-    # If difficulty was promoted (easy ran out → medium, etc.)
-    # update DB so next fetch starts from correct level
-    if actual_level != difficulty:
-        conn = get_connection()
-        cursor = conn.cursor()
-        cursor.execute("""
-            UPDATE interview_sessions
-            SET difficulty_level = ?
-            WHERE id = ? AND user_id = ?
-        """, (actual_level, data.session_id, user_id))
-        conn.commit()
-        conn.close()
+    # Save question to asked list
+    update_asked_questions(data.session_id, next_question)
 
-    # Save question ID to asked list
-    update_asked_questions(data.session_id, question_id)
+    # Generate TTS
+    try:
+        audio_b64 = text_to_speech(next_question)
+        print("TTS SUCCESS, length:", len(audio_b64))
+    except Exception as e:
+        print("TTS FAILED:", e)
+        audio_b64 = None
 
     return {
         **evaluation,
         "next_question": next_question,
+        "audio": audio_b64,
         "is_completed": False
     }
 
@@ -128,7 +136,7 @@ def start_session(data: SessionCreate, user_id: int = Depends(get_current_user))
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT domain, difficulty_level, asked_questions
+        SELECT domain, asked_questions
         FROM interview_sessions
         WHERE id = ? AND user_id = ?
     """, (session_id, user_id))
@@ -139,11 +147,11 @@ def start_session(data: SessionCreate, user_id: int = Depends(get_current_user))
     if not row:
         return {"error": "Session not found"}
 
-    domain, difficulty, asked = row
+    domain, asked = row
     asked_questions = json.loads(asked) if asked else []
 
     # 3️⃣ Generate FIRST question
-    question_data = get_next_question(domain, difficulty, asked_questions)
+    question_data = get_next_question(domain, asked_questions)
 
     if question_data:
         first_question = question_data["question"]["question"]
@@ -163,12 +171,14 @@ def start_session(data: SessionCreate, user_id: int = Depends(get_current_user))
     else:
         first_question = "No questions available"
 
+    audio_b64 = text_to_speech(first_question)
+
     # 4️⃣ Return response
     return {
         "session_id": session_id,
         "current_question": first_question,
         "current_question_number": 1,
-        "difficulty_level": difficulty
+        "audio": audio_b64
     }
 
 

@@ -1,0 +1,18 @@
+from openai import OpenAI
+import uuid
+import base64
+client = OpenAI()
+
+
+
+def text_to_speech(text):
+    print("TTS INPUT:", text)
+    response = client.audio.speech.create(
+        model="gpt-4o-mini-tts",
+        voice="alloy",
+        input=text
+    )
+    audio_bytes = response.read()
+    b64 = base64.b64encode(audio_bytes).decode("utf-8")
+    print("TTS OUTPUT LENGTH:", len(b64))
+    return b64

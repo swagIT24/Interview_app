@@ -4,27 +4,37 @@
   <title>Dashboard</title>
   <link rel="stylesheet" href="/frontend/style.css">
 </head>
-<body>
+<body class="dashboard-container">
 
 <div class="welcome-section">
   <h1 id="welcome-text">Hey 👋</h1>
-  <p>Let's continue your interview journey.</p>
+  <p>Let's start your interview journey.</p>
 </div>
 
 <div class="main-content">
-  <h1>Welcome to AI Interview Practice</h1>
 
-  <!-- hidden input auto-filled from /me -->
-  <input type="hidden" id="name">
+  <div class="dashboard-card">
 
-  <select id="domain">
-    <option value="Java">Java</option>
-    <option value="Python">Python</option>
-    <option value="ML">Machine Learning</option>
-  </select>
+    <h2>Start Your Practice</h2>
 
-  <button onclick="startInterview()">Start Interview</button>
-  <button onclick="logout()">Logout</button>
+    <input type="hidden" id="name">
+
+    <input
+        type="text"
+        id="domain"
+        placeholder="Enter any topic (e.g. React, DevOps, AI)"
+    >
+
+    <button class="dashboard-btn" onclick="startInterview()">
+      Start Interview
+    </button>
+
+    <button class="dashboard-btn logout-btn" onclick="logout()">
+      Logout
+    </button>
+
+  </div>
+
 </div>
 
 <script>
