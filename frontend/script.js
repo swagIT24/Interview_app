@@ -5,6 +5,7 @@ let currentQuestion = null;
 
 let currentAudio;
 let currentAudioB64 = null;
+let questionCount = 1;
 
 async function login() {
 
@@ -156,19 +157,21 @@ async function submitAnswer() {
 
     const sessionId = sessionStorage.getItem("session_id");
     const answerText = document.getElementById("answer").value;
-    console.log("SESSION ID:", sessionId);
 
     if (!answerText.trim()) {
         alert("Please write an answer first");
         return;
     }
 
+    const feedbackEl = document.getElementById("feedback");
+    feedbackEl.innerText = "Evaluating...";
+
+    console.time("submit-answer");
+
     let response = await fetch("/submit-answer", {
         method: "POST",
         credentials: "include",
-        headers: {
-            "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             answer: answerText,
             session_id: sessionId,
@@ -183,9 +186,7 @@ async function submitAnswer() {
         const refreshResponse = await fetch("/refresh-token", {
             method: "POST",
             credentials: "include",
-            headers: {
-                "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 refresh_token: localStorage.getItem("refresh_token")
             })
@@ -198,9 +199,7 @@ async function submitAnswer() {
             response = await fetch("/submit-answer", {
                 method: "POST",
                 credentials: "include",
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     answer: answerText,
                     session_id: sessionId,
@@ -216,28 +215,28 @@ async function submitAnswer() {
     }
 
     const data = await response.json();
-    console.log("SUBMIT RESPONSE:", JSON.stringify(data));
 
-    nextQuestionData = data;
+    console.timeEnd("submit-answer");
 
-    document.getElementById("feedback").innerText =
-        "Score: " + data.score + " | " + data.feedback;
+    // ← CHANGED: format feedback with sections
+    feedbackEl.innerHTML = "<b>Score: " + data.score + " / 15</b><br><br>" +
+        data.feedback
+            .replace(/Strengths:/g, "<b>Strengths:</b>")
+            .replace(/Weaknesses:/g, "<br><br><b>Weaknesses:</b>")
+            .replace(/Tip:/g, "<br><br><b>Tip:</b>")
+            .replace(/Example:/g, "<br><br><b>Example:</b>");
 
-    // ✅ DO NOT update question here anymore
     console.log("NEXT QUESTION:", data.next_question);
-    if (data.next_question) {
 
+    if (data.next_question) {
         nextQuestionData = data;
-        currentAudioB64 = data.audio;
         document.getElementById("next-btn").style.display = "inline-block";
 
-        document.getElementById("difficulty").innerText =
-            data.difficulty_level;
-
     } else if (data.is_completed) {
-
         document.getElementById("question").innerText = "Interview Completed!";
     }
+
+    nextQuestionData = nextQuestionData || {};
 }
 /* ================= REGISTER ================= */
 
@@ -392,6 +391,10 @@ window.onload = function () {
         if (question) {
             document.getElementById("question").innerText = question;
             currentQuestion = question;
+
+            const btn = document.querySelector('[onclick="playQuestionAudio()"]');
+            if (btn) btn.innerText = "⏳ Loading audio...";
+
             fetch("/tts", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -400,6 +403,7 @@ window.onload = function () {
             .then(res => res.json())
             .then(data => {
                 currentAudioB64 = data.audio;
+                if (btn) btn.innerText = "🔊 Read Question";
                 console.log("First question audio ready");
             });
         }
@@ -471,14 +475,15 @@ window.onload = function () {
                     .then(response => response.json())
                     .then(data => {
 
-                        console.log("Voice API response:", data);
-                        console.log("FULL RESPONSE:", data);
-
-                        // ✅ overwrite with final accurate transcript
                         answerBox.value = data.transcript;
 
-                        document.getElementById("feedback").innerText =
-                            "Score: " + data.evaluation.score + " | " + data.evaluation.feedback;
+                        document.getElementById("feedback").innerHTML = 
+                            "<b>Score: " + data.evaluation.score + " / 15</b><br><br>" +
+                            data.evaluation.feedback
+                                .replace(/Strengths:/g, "<b>Strengths:</b>")
+                                .replace(/Weaknesses:/g, "<br><br><b>Weaknesses:</b>")
+                                .replace(/Tip:/g, "<br><br><b>Tip:</b>")
+                                .replace(/Example:/g, "<br><br><b>Example:</b>");
                         
                         if (data.next_question) {
                             nextQuestionData = {
@@ -534,18 +539,16 @@ window.onload = function () {
         document.getElementById("next-btn").addEventListener("click", () => {
 
             if (!nextQuestionData) return;
-            console.log("nextQuestionData.audio:", nextQuestionData.audio);  // ← add
+            console.log("nextQuestionData:", nextQuestionData);
             currentAudioB64 = null; 
             document.getElementById("question").innerText =
                 nextQuestionData.next_question;
 
-            // ✅ Save it so submitAnswer can send it back
             currentQuestion = nextQuestionData.next_question;
             currentAudioB64 = nextQuestionData.audio; 
-            console.log("currentAudioB64 after set:", currentAudioB64);
 
-            document.getElementById("question-number").innerText =
-                nextQuestionData.current_question_number;
+            questionCount++;
+            document.getElementById("question-number").innerText = questionCount;
 
             // Clear answer and feedback
             document.getElementById("answer").value = "";
