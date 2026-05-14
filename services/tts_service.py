@@ -14,5 +14,4 @@ def text_to_speech(text):
     )
     audio_bytes = response.read()
     b64 = base64.b64encode(audio_bytes).decode("utf-8")
-    print("TTS OUTPUT LENGTH:", len(b64))
     return b64
