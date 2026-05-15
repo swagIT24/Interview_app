@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from database.connections import init_db, migrate_schema
-from routes import interviwe, auth, voice
+from routes import interviwe, auth, voice, resume
 
 app = FastAPI()
 
@@ -20,6 +20,7 @@ init_db()
 app.include_router(interviwe.router)
 app.include_router(auth.router)
 app.include_router(voice.router)
+app.include_router(resume.router)
 
 migrate_schema()
 

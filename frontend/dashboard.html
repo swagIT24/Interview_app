@@ -7,8 +7,8 @@
 <body class="dashboard-container">
 
 <div class="welcome-section">
-  <h1 id="welcome-text">Hey 👋</h1>
-  <p>Let's start your interview journey.</p>
+  <h1 id="welcome-text">Good evening 👋</h1>
+  <p>Your AI career coach is ready. Let's continue improving your interview confidence.</p>
 </div>
 
 <div class="main-content">
@@ -22,11 +22,14 @@
     <input
         type="text"
         id="domain"
-        placeholder="Enter any topic (e.g. React, DevOps, AI)"
+        placeholder="What topic would you like to practice today?"
     >
+    <button class="dashboard-btn" onclick="uploadResume()">
+      Upload Resume
+    </button>
 
     <button class="dashboard-btn" onclick="startInterview()">
-      Start Interview
+      Start Practicing
     </button>
 
     <button class="dashboard-btn logout-btn" onclick="logout()">
