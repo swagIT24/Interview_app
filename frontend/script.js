@@ -380,6 +380,32 @@ function playQuestionAudio() {
     currentAudio = new Audio("data:audio/mp3;base64," + currentAudioB64);
     currentAudio.play();
 }
+
+
+function uploadResume() {                        // define function
+    const input = document.createElement("input"); // create a hidden file input
+    input.type = "file";                          // make it a file picker
+    input.accept = ".pdf";                        // only accept PDFs
+    
+    input.onchange = async function() {           // when user picks a file
+        const file = input.files[0];              // get the selected file
+        if (!file) return;                        // if no file, stop
+
+        const formData = new FormData();          // create a container
+        formData.append("file", file);            // put the file in it
+
+        const response = await fetch("/upload-resume", {  // send to backend
+            method: "POST",                       // POST request
+            body: formData                        // attach the file
+        });
+
+        const data = await response.json();       // read backend response
+        console.log("Resume upload response:", data); // print to console
+        alert("Resume uploaded!");                // show popup to user
+    };
+
+    input.click();                                // programmatically click the file picker
+}
 /* ================= PAGE LOAD ================= */
 
 window.onload = function () {
