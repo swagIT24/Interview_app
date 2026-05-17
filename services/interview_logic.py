@@ -174,9 +174,20 @@ def fetch_session(session_id: int, user_id: int):
 #     return None
 
 
-def get_next_question(domain, asked_questions):
+def get_next_question(domain, asked_questions, user_id=None):  # ← add user_id
 
-    question_text = generate_question(domain, asked_questions)
+    # ← fetch resume text if user_id provided
+    resume_text = None
+    if user_id:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT resume_text FROM users WHERE id = ?", (user_id,))
+        row = cursor.fetchone()
+        conn.close()
+        if row and row[0]:
+            resume_text = row[0]
+
+    question_text = generate_question(domain, asked_questions=asked_questions, resume_text=resume_text)
 
     return {
         "question": {

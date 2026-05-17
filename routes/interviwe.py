@@ -76,7 +76,7 @@ def submit_answer(data: SubmitAnswerRequest, user_id: int = Depends(get_current_
             process_answer, data.answer, data.session_id, data.question_text
         )
         question_future = executor.submit(
-            get_next_question, domain, asked_questions
+            get_next_question, domain, asked_questions, user_id
         )
 
         # get question first so we can start TTS immediately
@@ -132,11 +132,9 @@ def submit_answer(data: SubmitAnswerRequest, user_id: int = Depends(get_current_
 @router.post("/start-session")
 def start_session(data: SessionCreate, user_id: int = Depends(get_current_user)):
 
-    # 1️⃣ Create session
     session = start_interview(user_id, data.candidate_name, data.domain)
     session_id = session["session_id"]
 
-    # 2️⃣ Get session details
     conn = get_connection()
     cursor = conn.cursor()
 
@@ -155,8 +153,7 @@ def start_session(data: SessionCreate, user_id: int = Depends(get_current_user))
     domain, asked = row
     asked_questions = json.loads(asked) if asked else []
 
-    # 3️⃣ Generate FIRST question
-    question_data = get_next_question(domain, asked_questions)
+    question_data = get_next_question(domain, asked_questions,user_id)
 
     if question_data:
         first_question = question_data["question"]["question"]
@@ -178,7 +175,6 @@ def start_session(data: SessionCreate, user_id: int = Depends(get_current_user))
 
     audio_b64 = text_to_speech(first_question)
 
-    # 4️⃣ Return response
     return {
         "session_id": session_id,
         "current_question": first_question,
