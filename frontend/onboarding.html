@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome — CareerQuest</title>
+
+<style>
+
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+background:
+radial-gradient(circle at top,#15182b 0%,#08080f 45%);
+min-height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+color:white;
+overflow:hidden;
+}
+
+.container{
+width:100%;
+max-width:560px;
+padding:32px;
+}
+
+.progress-bar{
+display:flex;
+gap:6px;
+margin-bottom:40px;
+}
+
+.p-seg{
+height:3px;
+flex:1;
+background:rgba(255,255,255,.08);
+border-radius:10px;
+transition:.4s;
+}
+
+.p-seg.active{
+background:#818cf8;
+box-shadow:0 0 12px rgba(129,140,248,.5);
+}
+
+.p-seg.done{
+background:#6366f1;
+}
+
+.scene{
+display:none;
+animation:fade .5s;
+}
+
+.scene.active{
+display:block;
+}
+
+@keyframes fade{
+from{
+opacity:0;
+transform:translateY(8px);
+}
+to{
+opacity:1;
+transform:none;
+}
+}
+
+.scene-tag{
+font-size:11px;
+letter-spacing:.14em;
+text-transform:uppercase;
+color:#9aa0ff;
+margin-bottom:18px;
+}
+
+.scene-title{
+font-size:34px;
+line-height:1.3;
+margin-bottom:14px;
+font-weight:600;
+}
+
+.scene-body{
+font-size:15px;
+line-height:1.9;
+color:rgba(255,255,255,.55);
+margin-bottom:28px;
+}
+
+.field-label{
+font-size:13px;
+margin-bottom:8px;
+color:rgba(255,255,255,.8);
+}
+
+.field-input{
+width:100%;
+padding:15px;
+background:rgba(255,255,255,.04);
+border:1px solid rgba(255,255,255,.08);
+border-radius:12px;
+color:white;
+margin-bottom:12px;
+outline:none;
+}
+
+.field-input:focus{
+border-color:#818cf8;
+}
+
+.helper{
+font-size:12px;
+opacity:.45;
+margin-bottom:22px;
+line-height:1.7;
+}
+
+.highlight{
+padding:22px;
+background:rgba(99,102,241,.08);
+border:1px solid rgba(99,102,241,.2);
+border-radius:14px;
+margin-bottom:24px;
+}
+
+.quote{
+margin-top:12px;
+color:#a5b4fc;
+font-style:italic;
+}
+
+.mode-card{
+padding:20px;
+border-radius:14px;
+border:1px solid rgba(255,255,255,.08);
+margin-bottom:12px;
+cursor:pointer;
+transition:.3s;
+}
+
+.mode-card:hover{
+transform:translateY(-2px);
+border-color:#818cf8;
+}
+
+.selected{
+background:rgba(99,102,241,.08);
+}
+
+.badge{
+font-size:10px;
+padding:4px 10px;
+border-radius:20px;
+background:rgba(99,102,241,.12);
+display:inline-block;
+margin-top:10px;
+color:#a5b4fc;
+}
+
+.footer{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-top:32px;
+}
+
+.next-btn{
+padding:14px 28px;
+background:#4f46e5;
+border:none;
+border-radius:12px;
+color:white;
+cursor:pointer;
+font-size:14px;
+}
+
+.next-btn:hover{
+background:#5b54f5;
+}
+
+.skip{
+background:none;
+border:none;
+color:rgba(255,255,255,.3);
+cursor:pointer;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="progress-bar">
+<div class="p-seg active" id="ps0"></div>
+<div class="p-seg" id="ps1"></div>
+<div class="p-seg" id="ps2"></div>
+<div class="p-seg" id="ps3"></div>
+</div>
+
+
+<!-- SCENE 0 -->
+
+<div class="scene active" id="scene-0">
+
+<div class="scene-tag">
+Your Growth Space
+</div>
+
+<div class="scene-title">
+Your AI partner for interviews, growth, and career confidence.
+</div>
+
+<div class="scene-body">
+
+Prepare for interviews, improve communication,
+discover weak areas, and grow with feedback that adapts to you.
+
+</div>
+
+<div class="helper">
+✓ Personalized interviews  
+✓ Voice practice  
+✓ Progress tracking  
+✓ AI remembers your growth
+</div>
+
+</div>
+
+
+
+<!-- SCENE 1 -->
+
+<div class="scene" id="scene-1">
+
+<div class="scene-tag">
+Personalization
+</div>
+
+<div class="scene-title">
+Let's set up your space.
+</div>
+
+<div class="scene-body">
+
+The more we know about where you're headed,
+the better we can prepare you for getting there.
+
+</div>
+
+<div class="field-label">
+What should we call you?
+</div>
+
+<input
+id="input-name"
+class="field-input"
+placeholder="The name you'll see throughout your journey"
+/>
+
+<div class="helper">
+Your progress and improvements will feel personal.
+</div>
+
+
+<div class="field-label">
+What future are you preparing for?
+</div>
+
+<input
+id="input-role"
+class="field-input"
+placeholder="Data Scientist • Backend Engineer • Product Manager..."
+/>
+
+<div class="helper">
+This helps AI tailor interviews, feedback and learning paths.
+</div>
+
+</div>
+
+
+
+<!-- SCENE 2 -->
+
+<div class="scene" id="scene-2">
+
+<div class="scene-tag">
+Mindset
+</div>
+
+<div class="scene-title">
+
+The goal isn’t perfection.
+It’s becoming a little more prepared each time.
+
+</div>
+
+<div class="highlight">
+
+Most people wait until opportunity arrives.
+
+The prepared ones build before it comes.
+
+<div class="quote">
+
+"Confidence grows quietly,
+long before results appear."
+
+</div>
+
+</div>
+
+<div class="scene-body">
+
+Confidence rarely comes from talent alone.
+
+It grows from repetition,
+reflection,
+and showing up before opportunity arrives.
+
+</div>
+
+</div>
+
+
+
+<!-- SCENE 3 -->
+
+<div class="scene" id="scene-3">
+
+<div class="scene-tag">
+Your Experience
+</div>
+
+<div class="scene-title">
+Choose how you'd like to practice
+</div>
+
+<div class="scene-body">
+
+Pick the experience that helps you stay consistent.
+
+</div>
+
+
+<div class="mode-card selected">
+
+💼 Professional
+
+<br><br>
+
+Focused practice,
+structured feedback,
+steady improvement.
+
+<div class="badge">
+Recommended
+</div>
+
+</div>
+
+
+<div class="mode-card">
+
+⚔️ Game Mode
+
+<br><br>
+
+Turn preparation into momentum
+with streaks and milestones.
+
+<div class="badge">
+Early access
+</div>
+
+</div>
+
+</div>
+
+
+
+<div class="footer">
+
+<button
+class="skip"
+onclick="skipOnboarding()">
+
+I'll do this later
+
+</button>
+
+
+<button
+class="next-btn"
+id="next-btn"
+onclick="nextScene()">
+
+Continue →
+
+</button>
+
+</div>
+
+</div>
+
+
+
+<script>
+
+let current=0;
+
+function nextScene(){
+
+if(current===1){
+
+const name=document.getElementById("input-name").value.trim();
+
+if(!name){
+alert("Tell us your name first");
+return;
+}
+
+}
+
+document
+.getElementById("scene-"+current)
+.classList.remove("active");
+
+document
+.getElementById("ps"+current)
+.classList.remove("active");
+
+document
+.getElementById("ps"+current)
+.classList.add("done");
+
+current++;
+
+if(current<=3){
+
+document
+.getElementById("scene-"+current)
+.classList.add("active");
+
+document
+.getElementById("ps"+current)
+.classList.add("active");
+
+}
+
+if(current===3){
+
+document
+.getElementById("next-btn")
+.innerText=
+"Start your preparation journey →";
+
+}
+
+if(current>3){
+
+window.location.href="/frontend/dashboard.html";
+
+}
+
+}
+
+
+function skipOnboarding(){
+
+window.location.href="/frontend/dashboard.html";
+
+}
+
+</script>
+
+</body>
+</html>

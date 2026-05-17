@@ -123,7 +123,7 @@ def get_me(request: Request):
 
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT id, name, email FROM users WHERE id = ?", (user_id,))
+    cursor.execute("SELECT id, name, email, onboarding_completed FROM users WHERE id = ?", (user_id,))
     row = cursor.fetchone()
     conn.close()
 
@@ -133,5 +133,18 @@ def get_me(request: Request):
     return {
         "id": row[0],
         "name": row[1],
-        "email": row[2]
+        "email": row[2],
+        "onboarding_completed": row[3] 
     }
+
+
+    @router.post("/complete-onboarding")
+    def complete_onboarding(user_id: int = Depends(get_current_user)):
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            UPDATE users SET onboarding_completed = 1 WHERE id = ?
+        """, (user_id,))
+        conn.commit()
+        conn.close()
+        return {"message": "Onboarding complete"}

@@ -34,6 +34,10 @@ def serve_home():
 def serve_dashboard():
     return FileResponse("frontend/dashboard.html")
 
+@app.get("/onboarding")
+def serve_onboarding():
+    return FileResponse("frontend/onboarding.html")
+
 # to activate venv : source venv/bin/activate
 # to run app : python -m uvicorn main:app --reload
 
