@@ -29,9 +29,13 @@ async function login() {
     if (response.ok) {
 
         console.log("Login success");
-
-        // go to dashboard page
-       window.location.href = "/frontend/dashboard.html";
+        const meResponse = await fetch("/me", { credentials: "include" });
+        const user = await meResponse.json();
+        if (user.onboarding_completed === 0) {
+            window.location.href = "/onboarding";
+        } else { 
+            window.location.href = "/frontend/dashboard.html";
+        }
 
     } else {
 

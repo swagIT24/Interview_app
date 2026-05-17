@@ -250,6 +250,11 @@ def migrate_schema():
     except:
         pass
 
+    try:
+        cursor.execute("ALTER TABLE users ADD COLUMN onboarding_completed INTEGER DEFAULT 0")
+    except:
+        pass
+
     if "user_id" not in columns:
         try:
             cursor.execute("ALTER TABLE interview_sessions ADD COLUMN user_id INTEGER")
