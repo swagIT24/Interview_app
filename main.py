@@ -38,6 +38,17 @@ def serve_dashboard():
 def serve_onboarding():
     return FileResponse("frontend/onboarding.html")
 
+@app.get("/practice")
+def serve_practice():
+    return FileResponse("frontend/practice.html")
+
+@app.get("/progress")
+def serve_progress():
+    return FileResponse("frontend/progress.html")
+
+@app.get("/profile")
+def serve_profile():
+    return FileResponse("frontend/profile.html")
 # to activate venv : source venv/bin/activate
 # to run app : python -m uvicorn main:app --reload
 

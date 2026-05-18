@@ -1,9 +1,10 @@
-from fastapi import APIRouter, HTTPException, Response, Request
+from fastapi import APIRouter, HTTPException, Response, Request, Depends
 from models.auth_schemas import RegisterRequest, LoginRequest, TokenResponse
 from services.auth_service import hash_password, verify_password, create_access_token
 from database.connections import create_user, get_user_by_email
 from services.auth_service import create_refresh_token, decode_access_token
 from database.connections import get_connection
+from services.auth_service import get_current_user
 router = APIRouter()
 
 
@@ -138,13 +139,13 @@ def get_me(request: Request):
     }
 
 
-    @router.post("/complete-onboarding")
-    def complete_onboarding(user_id: int = Depends(get_current_user)):
-        conn = get_connection()
-        cursor = conn.cursor()
-        cursor.execute("""
-            UPDATE users SET onboarding_completed = 1 WHERE id = ?
-        """, (user_id,))
-        conn.commit()
-        conn.close()
-        return {"message": "Onboarding complete"}
+@router.post("/complete-onboarding")
+def complete_onboarding(user_id: int = Depends(get_current_user)):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        UPDATE users SET onboarding_completed = 1 WHERE id = ?
+    """, (user_id,))
+    conn.commit()
+    conn.close()
+    return {"message": "Onboarding complete"}

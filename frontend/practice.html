@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Practice — CareerQuest</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif;}
+html{font-size:16px;}
+body{background:#111118;color:#fff;min-height:100vh;display:flex;flex-direction:column;}
+
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;border-bottom:0.5px solid rgba(255,255,255,0.07);}
+.logo{display:flex;align-items:center;gap:8pxƒ;}
+.lm{width:28px;height:28px;background:#6366f1;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.ln{font-size:15px;font-weight:600;color:#fff;}
+.pills{display:flex;gap:2px;background:rgba(255,255,255,0.05);border-radius:10px;padding:3px;}
+.pill{padding:7px 16px;border-radius:8px;font-size:13px;color:rgba(255,255,255,0.4);cursor:pointer;border:none;background:none;transition:all .2s;}
+.pill:hover{color:rgba(255,255,255,0.7);}
+.pill.active{background:#1e1e2e;color:#fff;}
+.av{width:32px;height:32px;border-radius:50%;background:#4f46e5;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;}
+
+.body{flex:1;padding:22px 28px;display:grid;grid-template-columns:320px 1fr;gap:20px;}
+
+/* LEFT PANEL */
+.left{display:flex;flex-direction:column;gap:12px;}
+.card{background:#1a1a26;border-radius:12px;padding:16px 18px;}
+.ctitle{font-size:11px;font-weight:600;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:14px;}
+.field-lbl{font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:8px;}
+.field-inp{width:100%;padding:12px 14px;background:rgba(255,255,255,0.05);border:0.5px solid rgba(255,255,255,0.1);border-radius:9px;color:#fff;font-size:14px;outline:none;margin-bottom:14px;font-family:Arial,sans-serif;}
+.field-inp:focus{border-color:rgba(99,102,241,0.5);}
+.field-inp::placeholder{color:rgba(255,255,255,0.2);}
+.resume-badge{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:8px;margin-bottom:14px;}
+.resume-badge.ok{background:rgba(52,211,153,0.08);border:0.5px solid rgba(52,211,153,0.2);}
+.resume-badge.warn{background:rgba(245,158,11,0.08);border:0.5px solid rgba(245,158,11,0.2);}
+.resume-badge-txt{font-size:12px;color:rgba(255,255,255,0.5);flex:1;}
+.resume-badge-action{font-size:11px;color:#818cf8;cursor:pointer;white-space:nowrap;}
+.start-btn{width:100%;padding:13px;background:#f59e0b;border:none;border-radius:9px;color:#1a0f00;font-size:14px;font-weight:600;cursor:pointer;}
+.start-btn:hover{background:#d97706;}
+.start-btn:disabled{opacity:0.5;cursor:not-allowed;}
+
+.tip-card{background:#1d4ed8;border-radius:12px;padding:16px 18px;}
+.tip-icon{font-size:20px;margin-bottom:8px;}
+.tip-title{font-size:13px;font-weight:500;color:#fff;margin-bottom:6px;}
+.tip-text{font-size:12px;color:rgba(255,255,255,0.6);line-height:1.7;}
+
+/* RIGHT PANEL */
+.right{display:flex;flex-direction:column;gap:14px;}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;text-align:center;padding:60px 20px;}
+.empty-icon{font-size:48px;margin-bottom:16px;opacity:0.3;}
+.empty-title{font-size:18px;font-weight:500;color:rgba(255,255,255,0.4);margin-bottom:8px;}
+.empty-sub{font-size:13px;color:rgba(255,255,255,0.25);line-height:1.7;}
+
+.session-area{display:none;flex-direction:column;gap:14px;}
+.session-area.active{display:flex;}
+
+.question-card{background:#1a1a26;border-radius:12px;padding:20px 22px;}
+.q-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.q-num{font-size:12px;color:rgba(255,255,255,0.35);font-weight:500;}
+.q-domain{font-size:11px;padding:3px 10px;background:rgba(99,102,241,0.15);color:#818cf8;border-radius:10px;}
+.q-text{font-size:16px;color:#fff;line-height:1.7;font-weight:500;}
+
+.answer-card{background:#1a1a26;border-radius:12px;padding:20px 22px;}
+.answer-lbl{font-size:12px;color:rgba(255,255,255,0.35);margin-bottom:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;}
+textarea#answer{width:100%;height:140px;padding:12px 14px;background:rgba(255,255,255,0.04);border:0.5px solid rgba(255,255,255,0.1);border-radius:9px;color:#fff;font-size:14px;outline:none;resize:none;font-family:Arial,sans-serif;line-height:1.6;}
+textarea#answer:focus{border-color:rgba(99,102,241,0.4);}
+textarea#answer::placeholder{color:rgba(255,255,255,0.2);}
+.actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
+.btn-primary{padding:10px 20px;background:#4f46e5;border:none;border-radius:8px;color:#fff;font-size:13px;font-weight:500;cursor:pointer;}
+.btn-primary:hover{background:#4338ca;}
+.btn-secondary{padding:10px 16px;background:rgba(255,255,255,0.06);border:0.5px solid rgba(255,255,255,0.1);border-radius:8px;color:rgba(255,255,255,0.6);font-size:13px;cursor:pointer;}
+.btn-secondary:hover{background:rgba(255,255,255,0.1);}
+.btn-next{padding:10px 20px;background:#f59e0b;border:none;border-radius:8px;color:#1a0f00;font-size:13px;font-weight:600;cursor:pointer;display:none;}
+.btn-next:hover{background:#d97706;}
+.record-status{font-size:12px;color:rgba(255,255,255,0.4);align-self:center;}
+
+.feedback-card{background:#1a1a26;border-radius:12px;padding:20px 22px;}
+.feedback-score{font-size:22px;font-weight:700;color:#fff;margin-bottom:14px;}
+.feedback-body{font-size:14px;color:rgba(255,255,255,0.7);line-height:1.8;}
+.feedback-body b{color:#fff;}
+
+/* ANIMATIONS */
+.ft{opacity:0;transform:translateY(-30px);transition:opacity 0.4s ease,transform 0.4s ease;}
+.fl{opacity:0;transform:translateX(-40px);transition:opacity 0.4s ease,transform 0.4s ease;}
+.fr{opacity:0;transform:translateX(40px);transition:opacity 0.4s ease,transform 0.4s ease;}
+.fb{opacity:0;transform:translateY(30px);transition:opacity 0.4s ease,transform 0.4s ease;}
+.in{opacity:1!important;transform:translate(0,0)!important;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">
+    <div class="lm">🧠</div>
+    <span class="ln">CareerQuest</span>
+  </div>
+  <div class="pills">
+    <button class="pill" onclick="window.location.href='/dashboard'">Overview</button>
+    <button class="pill active">Practice</button>
+    <button class="pill" onclick="window.location.href='/progress'">Progress</button>
+    <button class="pill" onclick="window.location.href='/profile'">Profile</button>
+  </div>
+  <div class="av" id="user-avatar">?</div>
+</div>
+
+<div class="body">
+
+  <!-- LEFT PANEL -->
+  <div class="left">
+
+    <div class="card fl" id="l-setup">
+      <div class="ctitle">Setup session</div>
+      <div class="field-lbl">Topic or domain</div>
+      <input class="field-inp" id="domain" placeholder="e.g. Machine Learning, Python, SQL..." />
+      <input type="hidden" id="name" />
+      <div class="resume-badge warn" id="resume-badge">
+        <span style="font-size:16px;">📄</span>
+        <div class="resume-badge-txt" id="resume-txt">No resume uploaded</div>
+        <div class="resume-badge-action" onclick="uploadResume()">Upload</div>
+      </div>
+      <button class="start-btn" id="start-btn" onclick="startSession()">Start session →</button>
+    </div>
+
+    <div class="tip-card fl" id="l-tip">
+      <div class="tip-icon">💡</div>
+      <div class="tip-title">How to get the most out of this</div>
+      <div class="tip-text">Speak your answer out loud before typing. Structure it as: Definition → Example → Real world use. Aim for answers between 3-5 sentences.</div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right">
+
+    <div class="empty-state ft" id="empty-state">
+      <div class="empty-icon">🎯</div>
+      <div class="empty-title">Ready when you are</div>
+      <div class="empty-sub">Enter a topic on the left and click Start session.<br>Your first question will appear here.</div>
+    </div>
+
+    <div class="session-area" id="session-area">
+
+      <div class="question-card fr" id="q-card">
+        <div class="q-header">
+          <div class="q-num">Question <span id="q-num">1</span></div>
+          <div class="q-domain" id="q-domain">—</div>
+        </div>
+        <div class="q-text" id="question">Loading...</div>
+      </div>
+
+      <div class="answer-card fb" id="a-card">
+        <div class="answer-lbl">Your answer</div>
+        <textarea id="answer" placeholder="Write your answer here... Take your time and be specific."></textarea>
+        <div class="actions">
+          <button class="btn-primary" onclick="submitAnswer()">Submit Answer</button>
+          <button class="btn-next" id="next-btn" onclick="nextQuestion()">Next Question →</button>
+          <button class="btn-secondary" id="recordBtn">🎤 Start Recording</button>
+          <button class="btn-secondary" onclick="playQuestionAudio()">🔊 Read Question</button>
+          <button class="btn-secondary" onclick="skipQuestion()">Skip</button>
+          <span class="record-status" id="recordStatus"></span>
+        </div>
+      </div>
+
+      <div class="feedback-card fb" id="feedback-card" style="display:none;">
+        <div class="feedback-score" id="feedback-score"></div>
+        <div class="feedback-body" id="feedback-body"></div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+var sessionId = null;
+var currentQuestion = null;
+var currentAudioB64 = null;
+var nextQuestionData = null;
+var questionCount = 1;
+var currentAudio = null;
+var domainName = '';
+
+// Load user info
+fetch('/me', {credentials:'include'})
+  .then(function(r){ if(!r.ok) window.location.href='/'; return r.json(); })
+  .then(function(user){
+    document.getElementById('user-avatar').textContent = user.name.charAt(0).toUpperCase();
+    document.getElementById('name').value = user.name;
+    if(user.resume_text){
+      document.getElementById('resume-badge').className = 'resume-badge ok';
+      document.getElementById('resume-txt').textContent = 'Resume uploaded — questions personalized';
+      document.getElementById('resume-badge').querySelector('.resume-badge-action').textContent = 'Change';
+    }
+  });
+
+// Page load animations
+setTimeout(function(){
+  document.getElementById('l-setup').classList.add('in');
+  setTimeout(function(){ document.getElementById('l-tip').classList.add('in'); }, 150);
+  setTimeout(function(){ document.getElementById('empty-state').classList.add('in'); }, 100);
+}, 100);
+
+async function startSession(){
+  var domain = document.getElementById('domain').value.trim();
+  var name = document.getElementById('name').value;
+  if(!domain){ alert('Please enter a topic'); return; }
+
+  domainName = domain;
+  var btn = document.getElementById('start-btn');
+  btn.textContent = 'Loading...';
+  btn.disabled = true;
+
+  var response = await fetch('/start-session', {
+    method: 'POST',
+    credentials: 'include',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({candidate_name: name, domain: domain})
+  });
+
+  var data = await response.json();
+  sessionId = data.session_id;
+  currentQuestion = data.current_question;
+  currentAudioB64 = data.audio;
+
+  document.getElementById('q-domain').textContent = domain;
+  document.getElementById('question').textContent = data.current_question;
+  document.getElementById('q-num').textContent = questionCount;
+
+  // Show session area
+  document.getElementById('empty-state').style.display = 'none';
+  document.getElementById('session-area').classList.add('active');
+
+  setTimeout(function(){
+    document.getElementById('q-card').classList.add('in');
+    setTimeout(function(){ document.getElementById('a-card').classList.add('in'); }, 150);
+  }, 100);
+
+  btn.textContent = 'New session →';
+  btn.disabled = false;
+}
+
+async function submitAnswer(){
+  var answerText = document.getElementById('answer').value;
+  if(!answerText.trim()){ alert('Please write an answer first'); return; }
+
+  var feedbackCard = document.getElementById('feedback-card');
+  var feedbackScore = document.getElementById('feedback-score');
+  var feedbackBody = document.getElementById('feedback-body');
+
+  feedbackScore.textContent = 'Evaluating...';
+  feedbackBody.textContent = '';
+  feedbackCard.style.display = 'block';
+  document.getElementById('feedback-card').classList.add('in');
+
+  var response = await fetch('/submit-answer', {
+    method: 'POST',
+    credentials: 'include',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      answer: answerText,
+      session_id: sessionId,
+      question_text: currentQuestion
+    })
+  });
+
+  if(response.status === 401){
+    var refreshRes = await fetch('/refresh-token', {
+      method: 'POST',
+      credentials: 'include',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({refresh_token: localStorage.getItem('refresh_token')})
+    });
+    if(refreshRes.ok){
+      response = await fetch('/submit-answer', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          answer: answerText,
+          session_id: sessionId,
+          question_text: currentQuestion
+        })
+      });
+    } else {
+      window.location.href = '/';
+      return;
+    }
+  }
+
+  var data = await response.json();
+
+  feedbackScore.innerHTML = '<b>Score: ' + data.score + ' / 15</b>';
+  feedbackBody.innerHTML = data.feedback
+    .replace(/Strengths:/g, '<b>Strengths:</b>')
+    .replace(/Weaknesses:/g, '<br><br><b>Weaknesses:</b>')
+    .replace(/Tip:/g, '<br><br><b>Tip:</b>')
+    .replace(/Example:/g, '<br><br><b>Example:</b>');
+
+  if(data.next_question){
+    nextQuestionData = data;
+    document.getElementById('next-btn').style.display = 'inline-block';
+  } else if(data.is_completed){
+    document.getElementById('question').textContent = 'Session complete! Great work.';
+    document.getElementById('next-btn').style.display = 'none';
+  }
+}
+
+function nextQuestion(){
+  if(!nextQuestionData) return;
+
+  questionCount++;
+  currentQuestion = nextQuestionData.next_question;
+  currentAudioB64 = nextQuestionData.audio;
+
+  document.getElementById('question').textContent = currentQuestion;
+  document.getElementById('q-num').textContent = questionCount;
+  document.getElementById('answer').value = '';
+  document.getElementById('feedback-card').style.display = 'none';
+  document.getElementById('next-btn').style.display = 'none';
+  nextQuestionData = null;
+}
+
+function playQuestionAudio(){
+  if(!currentAudioB64) return;
+  if(currentAudio){ currentAudio.pause(); currentAudio.currentTime = 0; }
+  currentAudio = new Audio('data:audio/mp3;base64,' + currentAudioB64);
+  currentAudio.play();
+}
+
+function skipQuestion(){
+  document.getElementById('answer').value = '';
+  document.getElementById('feedback-card').style.display = 'none';
+  alert('Skip feature coming soon');
+}
+
+function uploadResume(){
+  var input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.pdf';
+  input.onchange = async function(){
+    var file = input.files[0];
+    if(!file) return;
+    var formData = new FormData();
+    formData.append('file', file);
+    var response = await fetch('/upload-resume', {
+      method: 'POST',
+      credentials: 'include',
+      body: formData
+    });
+    var data = await response.json();
+    if(response.ok){
+      document.getElementById('resume-badge').className = 'resume-badge ok';
+      document.getElementById('resume-txt').textContent = 'Resume uploaded — questions personalized';
+      document.getElementById('resume-badge').querySelector('.resume-badge-action').textContent = 'Change';
+    }
+  };
+  input.click();
+}
+
+// Voice recording
+window.addEventListener('load', function(){
+  var recordBtn = document.getElementById('recordBtn');
+  var recordStatus = document.getElementById('recordStatus');
+  var answerBox = document.getElementById('answer');
+  var mediaRecorder, audioChunks = [], stream;
+  var questionAtRecordingStart = null;
+
+  recordBtn.addEventListener('click', async function(){
+    if(!mediaRecorder || mediaRecorder.state === 'inactive'){
+      questionAtRecordingStart = currentQuestion;
+      stream = await navigator.mediaDevices.getUserMedia({audio: true});
+      mediaRecorder = new MediaRecorder(stream);
+      audioChunks = [];
+      mediaRecorder.ondataavailable = function(e){ audioChunks.push(e.data); };
+      mediaRecorder.onstop = function(){
+        var audioBlob = new Blob(audioChunks, {type: 'audio/webm'});
+        recordStatus.textContent = 'Processing...';
+        var formData = new FormData();
+        formData.append('file', audioBlob, 'recording.webm');
+        formData.append('question_text', questionAtRecordingStart);
+        fetch('/voice/upload?session_id=' + sessionId, {method:'POST', body: formData})
+          .then(function(r){ return r.json(); })
+          .then(function(data){
+            answerBox.value = data.transcript;
+            if(data.evaluation){
+              var feedbackCard = document.getElementById('feedback-card');
+              var feedbackScore = document.getElementById('feedback-score');
+              var feedbackBody = document.getElementById('feedback-body');
+              feedbackScore.innerHTML = '<b>Score: ' + data.evaluation.score + ' / 15</b>';
+              feedbackBody.innerHTML = data.evaluation.feedback
+                .replace(/Strengths:/g, '<b>Strengths:</b>')
+                .replace(/Weaknesses:/g, '<br><br><b>Weaknesses:</b>')
+                .replace(/Tip:/g, '<br><br><b>Tip:</b>')
+                .replace(/Example:/g, '<br><br><b>Example:</b>');
+              feedbackCard.style.display = 'block';
+              if(data.next_question){
+                nextQuestionData = {next_question: data.next_question, audio: data.audio};
+                currentAudioB64 = null;
+                document.getElementById('next-btn').style.display = 'inline-block';
+              }
+            }
+            recordStatus.textContent = 'Ready';
+          })
+          .catch(function(){ recordStatus.textContent = 'Error'; });
+        stream.getTracks().forEach(function(t){ t.stop(); });
+      };
+      mediaRecorder.start();
+      recordStatus.textContent = 'Recording...';
+      recordBtn.textContent = '⏹ Stop Recording';
+    } else {
+      mediaRecorder.stop();
+      recordStatus.textContent = 'Stopping...';
+      recordBtn.textContent = '🎤 Start Recording';
+    }
+  });
+});
+</script>
+</body>
+</html>
