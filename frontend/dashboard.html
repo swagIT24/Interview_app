@@ -1,60 +1,569 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Dashboard</title>
-  <link rel="stylesheet" href="/frontend/style.css">
-</head>
-<body class="dashboard-container">
+<title>CareerQuest — Dashboard</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif;}
+html{font-size:19px;}
+body{background:#111118;color:#fff;min-height:100vh;display:flex;flex-direction:column;}
 
-<div class="welcome-section">
-  <h1 id="welcome-text">Good evening 👋</h1>
-  <p>Your AI career coach is ready. Let's continue improving your interview confidence.</p>
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;border-bottom:0.5px solid rgba(255,255,255,0.07);}
+.logo{display:flex;align-items:center;gap:8px;}
+.lm{width:28px;height:28px;background:#6366f1;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.ln{font-size:15px;font-weight:600;color:#fff;}
+.pills{display:flex;gap:2px;background:rgba(255,255,255,0.05);border-radius:10px;padding:3px;}
+.pill{padding:7px 16px;border-radius:8px;font-size:13px;color:rgba(255,255,255,0.4);cursor:pointer;border:none;background:none;transition:all .2s;}
+.pill:hover{color:rgba(255,255,255,0.7);}
+.pill.active{background:#1e1e2e;color:#fff;}
+.ib{width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.av{width:32px;height:32px;border-radius:50%;background:#4f46e5;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;}
+
+.body{flex:1;padding:22px 28px;overflow:hidden;}
+.page{display:none;}.page.active{display:block;}
+
+.ft{opacity:0;transform:translateY(-40px);transition:opacity 0.45s ease,transform 0.45s ease;}
+.fl{opacity:0;transform:translateX(-60px);transition:opacity 0.45s ease,transform 0.45s ease;}
+.fr{opacity:0;transform:translateX(60px);transition:opacity 0.45s ease,transform 0.45s ease;}
+.fb{opacity:0;transform:translateY(40px);transition:opacity 0.45s ease,transform 0.45s ease;}
+.in{opacity:1!important;transform:translate(0,0)!important;}
+
+.welcome{margin-bottom:20px;}
+.wname{font-size:28px;font-weight:800;color:#fff;}
+.wname span{color:#818cf8;}
+.wsub{font-size:13px;color:rgba(255,255,255,0.35);margin-top:3px;}
+
+.pbars{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
+.pb{background:#1a1a26;border-radius:11px;padding:14px 16px;}
+.pb-lbl{font-size:11px;color:rgba(255,255,255,0.35);margin-bottom:10px;}
+.pb-track{height:7px;background:rgba(255,255,255,0.07);border-radius:4px;overflow:hidden;margin-bottom:8px;}
+.pb-fill{height:7px;border-radius:4px;width:0%;transition:width 1s ease;}
+.f1{background:#6366f1;}.f2{background:#f59e0b;}.f3{background:#34d399;}.f4{background:#ec4899;}
+.pb-val{font-size:24px;font-weight:800;color:#fff;}
+
+.mid{display:grid;grid-template-columns:200px 1fr 190px;gap:12px;margin-bottom:12px;}
+.card{background:#1a1a26;border-radius:12px;padding:15px 16px;}
+.ctitle{font-size:12px;font-weight:600;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;}
+
+.jlist{display:flex;flex-direction:column;gap:7px;}
+.ji{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:8px;background:rgba(255,255,255,0.03);}
+.ji.cur{background:rgba(245,158,11,0.08);border:0.5px solid rgba(245,158,11,0.2);}
+.jdot{width:7px;height:7px;border-radius:50%;min-width:7px;}
+.jn{font-size:12px;color:#fff;flex:1;}
+.jn.lk{color:rgba(255,255,255,0.2);}.jn.gl{color:#34d399;}
+.jbg{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:500;white-space:nowrap;}
+.bg1{background:rgba(99,102,241,0.15);color:#818cf8;}
+.bg2{background:rgba(245,158,11,0.15);color:#f59e0b;}
+.bg3{background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.2);}
+.bg4{background:rgba(52,211,153,0.1);color:#34d399;}
+
+.chart-wrap{height:130px;margin-bottom:8px;}
+svg.ch{width:100%;height:100%;}
+.clbls{display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,0.2);}
+
+.focus{background:#1d4ed8;border-radius:12px;padding:15px 16px;display:flex;flex-direction:column;}
+.ficon{width:30px;height:30px;background:rgba(255,255,255,0.15);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;font-size:16px;}
+.ftitle{font-size:13px;font-weight:500;color:#fff;margin-bottom:5px;}
+.fdesc{font-size:11px;color:rgba(255,255,255,0.6);line-height:1.6;flex:1;margin-bottom:12px;}
+.fbtn{padding:8px;background:rgba(255,255,255,0.15);border:none;border-radius:7px;color:#fff;font-size:12px;font-weight:500;cursor:pointer;text-align:center;width:100%;}
+.fbtn:hover{background:rgba(255,255,255,0.25);}
+
+.bot{display:grid;grid-template-columns:1fr 180px 180px;gap:12px;}
+.srow{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid rgba(255,255,255,0.04);}
+.srow:last-child{border-bottom:none;}
+.sdot{width:7px;height:7px;border-radius:50%;margin-right:8px;min-width:7px;}
+.sn{font-size:12px;color:#fff;font-weight:500;}
+.sd{font-size:10px;color:rgba(255,255,255,0.25);}
+.ss{font-size:12px;font-weight:600;}
+.sh{color:#34d399;}.sm{color:#f59e0b;}.sl{color:#f87171;}
+.stk-num{font-size:36px;font-weight:600;color:#f59e0b;margin-bottom:4px;}
+.stk-sub{font-size:11px;color:rgba(255,255,255,0.3);margin-bottom:12px;}
+.days{display:flex;gap:4px;flex-wrap:wrap;}
+.day{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;}
+.don{background:rgba(99,102,241,0.3);color:#818cf8;}.doff{background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.2);}
+.go-card{display:flex;flex-direction:column;}
+.go-txt{font-size:12px;color:rgba(255,255,255,0.4);line-height:1.7;flex:1;margin-bottom:14px;}
+.go-btn{padding:11px;background:#f59e0b;border:none;border-radius:9px;color:#1a0f00;font-size:13px;font-weight:600;cursor:pointer;width:100%;}
+.go-btn:hover{background:#d97706;}
+
+.pg-card{background:#1a1a26;border-radius:12px;padding:16px;margin-bottom:12px;}
+.pr-lbl{font-size:12px;color:rgba(255,255,255,0.35);margin-bottom:7px;}
+.pr-inp{width:100%;padding:12px 14px;background:rgba(255,255,255,0.04);border:0.5px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;font-size:13px;outline:none;margin-bottom:12px;}
+.pr-inp:focus{border-color:rgba(99,102,241,0.5);}
+.pr-inp::placeholder{color:rgba(255,255,255,0.2);}
+.pr-res{display:flex;align-items:center;gap:8px;padding:10px 12px;background:rgba(52,211,153,0.07);border:0.5px solid rgba(52,211,153,0.15);border-radius:8px;margin-bottom:14px;}
+.pr-res-txt{font-size:12px;color:rgba(255,255,255,0.4);flex:1;}
+.pr-res-a{font-size:11px;color:#818cf8;cursor:pointer;}
+.pr-btn{width:100%;padding:13px;background:#f59e0b;border:none;border-radius:9px;color:#1a0f00;font-size:14px;font-weight:600;cursor:pointer;}
+.pr-btn:hover{background:#d97706;}
+.pg-stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
+.pg-stat{background:#1a1a26;border-radius:11px;padding:16px;}
+.pg-stat-val{font-size:28px;font-weight:600;color:#fff;margin-bottom:3px;}
+.pg-stat-lbl{font-size:11px;color:rgba(255,255,255,0.3);}
+.pg-stat-trend{font-size:11px;color:#34d399;margin-top:3px;}
+.prof-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.pfl{font-size:11px;color:rgba(255,255,255,0.3);margin-bottom:4px;}
+.pfv{font-size:14px;color:#fff;}
+
+input{font-family:Arial,sans-serif;}
+
+.wname span{color:#a78bfa;}
+.pb-val{color:#fff;}
+.stk-num{color:#fbbf24;}
+.sh{color:#34d399;font-size:14px;}
+.sm{color:#fbbf24;font-size:14px;}
+.sl{color:#f87171;font-size:14px;}
+.pg-stat-val{font-size:32px;font-weight:700;}
+.go-btn{font-size:15px;letter-spacing:0.02em;}
+.fbtn{font-size:13px;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">
+    <div class="lm">🧠</div>
+    <span class="ln">CareerQuest</span>
+  </div>
+<div class="pills">
+  <button class="pill active">Overview</button>
+  <button class="pill" onclick="window.location.href='/practice'">Practice</button>
+  <button class="pill" onclick="window.location.href='/progress'">Progress</button>
+  <button class="pill" onclick="window.location.href='/profile'">Profile</button>
+</div>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <div class="ib">🔔</div>
+    <div class="av" id="user-avatar">?</div>
+  </div>
 </div>
 
-<div class="main-content">
+<div class="body">
 
-  <div class="dashboard-card">
+  <!-- HOME PAGE -->
+  <div class="page active" id="pg-home">
+    <div class="ft welcome" id="h-welcome">
+      <div class="wname">Welcome in, <span id="user-name">there</span></div>
+      <div class="wsub">Here's your preparation overview — let's keep moving.</div>
+    </div>
 
-    <h2>Start Your Practice</h2>
+    <div class="pbars">
+      <div class="pb ft" id="h-pb1"><div class="pb-lbl">Sessions done</div><div class="pb-track"><div class="pb-fill f1" id="b1"></div></div><div class="pb-val" id="v1">0</div></div>
+      <div class="pb ft" id="h-pb2"><div class="pb-lbl">Avg score / 15</div><div class="pb-track"><div class="pb-fill f2" id="b2"></div></div><div class="pb-val" id="v2">0</div></div>
+      <div class="pb ft" id="h-pb3"><div class="pb-lbl">Best score / 15</div><div class="pb-track"><div class="pb-fill f3" id="b3"></div></div><div class="pb-val" id="v3">0</div></div>
+      <div class="pb ft" id="h-pb4"><div class="pb-lbl">Journey to goal</div><div class="pb-track"><div class="pb-fill f4" id="b4"></div></div><div class="pb-val" id="v4">0%</div></div>
+    </div>
 
-    <input type="hidden" id="name">
+    <div class="mid">
+      <div class="card fl" id="h-journey">
+        <div class="ctitle">Your journey</div>
+        <div class="jlist">
+          <div class="ji"><div class="jdot" style="background:#6366f1;"></div><div class="jn">Beginner zone</div><span class="jbg bg1">Done</span></div>
+          <div class="ji"><div class="jdot" style="background:#6366f1;"></div><div class="jn">Skill builder</div><span class="jbg bg1">Done</span></div>
+          <div class="ji cur"><div class="jdot" style="background:#f59e0b;"></div><div class="jn">Expert territory</div><span class="jbg bg2">Now</span></div>
+          <div class="ji"><div class="jdot" style="background:rgba(255,255,255,0.1);"></div><div class="jn lk">Mock interview</div><span class="jbg bg3">Locked</span></div>
+          <div class="ji"><div class="jdot" style="background:#34d399;"></div><div class="jn gl">Dream job</div><span class="jbg bg4">Goal</span></div>
+        </div>
+      </div>
 
-    <input
-        type="text"
-        id="domain"
-        placeholder="What topic would you like to practice today?"
-    >
-    <button class="dashboard-btn" onclick="uploadResume()">
-      Upload Resume
-    </button>
+      <div class="card fb" id="h-chart">
+        <div class="ctitle">Score trend — last 5 sessions</div>
+        <div class="chart-wrap">
+          <svg class="ch" viewBox="0 0 400 120" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#6366f1" stop-opacity="0.25"/>
+                <stop offset="100%" stop-color="#6366f1" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <path id="cp-area" d="" fill="url(#g1)"/>
+            <path id="cp-line" d="" fill="none" stroke="#6366f1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle id="dot0" cx="0" cy="0" r="4" fill="#6366f1" opacity="0"/>
+            <circle id="dot1" cx="0" cy="0" r="4" fill="#6366f1" opacity="0"/>
+            <circle id="dot2" cx="0" cy="0" r="4" fill="#6366f1" opacity="0"/>
+            <circle id="dot3" cx="0" cy="0" r="4" fill="#6366f1" opacity="0"/>
+            <circle id="dot4" cx="0" cy="0" r="4" fill="#f59e0b" opacity="0"/>
+          </svg>
+        </div>
+        <div class="clbls"><span>Session 1</span><span>Session 2</span><span>Session 3</span><span>Session 4</span><span>Today</span></div>
+      </div>
 
-    <button class="dashboard-btn" onclick="startInterview()">
-      Start Practicing
-    </button>
+      <div class="focus fr" id="h-focus">
+        <div class="ficon">⚡</div>
+        <div class="ftitle">Today's focus</div>
+        <div class="fdesc" id="focus-text">Start your first session to get personalized focus recommendations.</div>
+        <button class="fbtn" onclick="go('practice',document.querySelectorAll('.pill')[1])">Start practicing</button>
+      </div>
+    </div>
 
-    <button class="dashboard-btn logout-btn" onclick="logout()">
-      Logout
-    </button>
+    <div class="bot">
+      <div class="card fl" id="h-sessions">
+        <div class="ctitle">Recent sessions</div>
+        <div id="sessions-list">
+          <div style="font-size:12px;color:rgba(255,255,255,0.3);padding:12px 0;">No sessions yet — start your first one!</div>
+        </div>
+      </div>
+      <div class="card fb" id="h-streak">
+        <div class="ctitle">Streak</div>
+        <div class="stk-num" id="snum">0</div>
+        <div class="stk-sub">days in a row</div>
+        <div class="days">
+          <div class="day doff" id="d-mon">M</div>
+          <div class="day doff" id="d-tue">T</div>
+          <div class="day doff" id="d-wed">W</div>
+          <div class="day doff" id="d-thu">T</div>
+          <div class="day doff" id="d-fri">F</div>
+          <div class="day doff" id="d-sat">S</div>
+          <div class="day doff" id="d-sun">S</div>
+        </div>
+      </div>
+      <div class="card fr go-card" id="h-cta">
+        <div class="ctitle">Ready?</div>
+        <div class="go-txt">Every session moves you forward on the journey. Your dream role is waiting.</div>
+        <button class="go-btn" onclick="go('practice',document.querySelectorAll('.pill')[1])">Start session now</button>
+      </div>
+    </div>
+  </div>
 
+
+  
+  <!-- PROGRESS PAGE -->
+  <div class="page" id="pg-progress">
+    <div class="ft" id="pg-title" style="margin-bottom:20px;">
+      <div style="font-size:22px;font-weight:600;color:#fff;margin-bottom:4px;">Progress</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.35);">Your growth over time</div>
+    </div>
+    <div class="pg-stat-grid">
+      <div class="pg-stat ft" id="pg-s1"><div class="pg-stat-val" id="pg-sessions">0</div><div class="pg-stat-lbl">Sessions done</div><div class="pg-stat-trend">Keep going</div></div>
+      <div class="pg-stat ft" id="pg-s2"><div class="pg-stat-val" id="pg-avg">0</div><div class="pg-stat-lbl">Avg score / 15</div><div class="pg-stat-trend">Improving</div></div>
+      <div class="pg-stat ft" id="pg-s3"><div class="pg-stat-val" id="pg-best">0</div><div class="pg-stat-lbl">Best score</div><div style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:3px;">Personal best</div></div>
+      <div class="pg-stat ft" id="pg-s4"><div class="pg-stat-val" style="color:#f59e0b;">5</div><div class="pg-stat-lbl">Day streak</div><div style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:3px;">days</div></div>
+    </div>
+    <div class="pg-card fb" id="pg-history">
+      <div class="ctitle">Session history</div>
+      <div id="history-list">
+        <div style="font-size:12px;color:rgba(255,255,255,0.3);padding:12px 0;">No sessions yet.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROFILE PAGE -->
+  <div class="page" id="pg-profile">
+    <div class="ft" id="pf-title" style="margin-bottom:20px;">
+      <div style="font-size:22px;font-weight:600;color:#fff;margin-bottom:4px;">Profile</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.35);">Your career information</div>
+    </div>
+    <div class="pg-card fl" id="pf-personal" style="max-width:480px;">
+      <div class="ctitle">Personal</div>
+      <div class="prof-row">
+        <div><div class="pfl">Name</div><div class="pfv" id="profile-name">—</div></div>
+        <div><div class="pfl">Email</div><div class="pfv" id="profile-email">—</div></div>
+      </div>
+    </div>
+    <div class="pg-card fr" id="pf-resume" style="max-width:480px;">
+      <div class="ctitle">Resume</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div style="font-size:13px;color:rgba(255,255,255,0.5);" id="resume-profile-status">Not uploaded yet</div>
+        <button onclick="uploadResume()" style="padding:7px 14px;background:#4f46e5;border:none;border-radius:7px;color:#fff;font-size:12px;cursor:pointer;">Upload Resume</button>
+      </div>
+    </div>
+    <div class="pg-card fb" id="pf-logout" style="max-width:480px;">
+      <div class="ctitle">Account</div>
+      <button onclick="logout()" style="padding:9px 18px;background:rgba(248,113,113,0.1);border:0.5px solid rgba(248,113,113,0.2);border-radius:8px;color:#f87171;font-size:13px;cursor:pointer;">Log out</button>
+    </div>
   </div>
 
 </div>
 
-<script>
-  let currentUser = null;
-
-  fetch("/me")
-    .then(res => {
-      if (!res.ok) window.location.href = "/";
-      return res.json();
-    })
-    .then(user => {
-      currentUser = user;
-      document.getElementById("welcome-text").textContent = `Hey ${user.name}, Welcome! 👋`;
-      document.getElementById("name").value = user.name;
-    });
-</script>
-
 <script src="/frontend/script.js"></script>
+<script>
+var pages={
+  home:{
+    anims:[
+      {id:'h-welcome',delay:0},
+      {id:'h-pb1',delay:100},
+      {id:'h-pb2',delay:160},
+      {id:'h-pb3',delay:220},
+      {id:'h-pb4',delay:280},
+      {id:'h-journey',delay:380},
+      {id:'h-chart',delay:420},
+      {id:'h-focus',delay:380},
+      {id:'h-sessions',delay:540},
+      {id:'h-streak',delay:580},
+      {id:'h-cta',delay:540}
+    ],
+    onIn:function(){
+      ['b1','b2','b3','b4'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.width='0%';});
+      ['v1','v2','v3','v4','snum'].forEach(function(id){var el=document.getElementById(id);if(el)el.innerText='0';});
+      setTimeout(function(){
+        ab('b1',80,900); ab('b2',63,900); ab('b3',87,900); ab('b4',35,900);
+        cu('v1',12,900,false); cu('v2',9.4,900,true); cu('v3',13,900,false); cu('v4',35,900,false,'%');
+        cu('snum',5,700,false);
+        drawChart();
+      },300);
+    }
+  },
+  practice:{
+    anims:[
+      {id:'pr-title',delay:0},
+      {id:'pr-card',delay:120},
+      {id:'pr-tip',delay:200}
+    ]
+  },
+  progress:{
+    anims:[
+      {id:'pg-title',delay:0},
+      {id:'pg-s1',delay:100},
+      {id:'pg-s2',delay:160},
+      {id:'pg-s3',delay:220},
+      {id:'pg-s4',delay:280},
+      {id:'pg-history',delay:380}
+    ]
+  },
+  profile:{
+    anims:[
+      {id:'pf-title',delay:0},
+      {id:'pf-personal',delay:120},
+      {id:'pf-resume',delay:200},
+      {id:'pf-logout',delay:300}
+    ]
+  }
+};
+
+function resetAll(){
+  Object.keys(pages).forEach(function(pg){
+    pages[pg].anims.forEach(function(a){
+      var el=document.getElementById(a.id);
+      if(el) el.classList.remove('in');
+    });
+  });
+}
+
+function runPage(name){
+  var pg=pages[name];
+  if(!pg) return;
+  pg.anims.forEach(function(a){
+    setTimeout(function(){
+      var el=document.getElementById(a.id);
+      if(el) el.classList.add('in');
+    },a.delay);
+  });
+  if(pg.onIn) pg.onIn();
+}
+
+function go(name,el){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.pill').forEach(function(p){p.classList.remove('active');});
+  resetAll();
+  var pg=document.getElementById('pg-'+name);
+  if(pg) pg.classList.add('active');
+  if(el) el.classList.add('active');
+  setTimeout(function(){ runPage(name); },30);
+}
+
+function cu(id,target,dur,dec,sfx){
+  var el=document.getElementById(id);
+  if(!el) return;
+  var s=0,step=target/(dur/16);
+  var t=setInterval(function(){
+    s+=step; if(s>=target){s=target;clearInterval(t);}
+    el.innerText=(dec?s.toFixed(1):Math.floor(s))+(sfx||'');
+  },16);
+}
+
+function ab(id,pct,dur){
+  var el=document.getElementById(id);
+  if(!el) return;
+  var s=0,step=pct/(dur/16);
+  var t=setInterval(function(){
+    s+=step; if(s>=pct){s=pct;clearInterval(t);}
+    el.style.width=Math.floor(s)+'%';
+  },16);
+}
+
+function drawChart(){
+  var data=[[0,95],[100,78],[200,82],[300,58],[400,42]];
+  var line=data.map(function(p,i){return(i===0?'M':'L')+p[0]+','+p[1];}).join(' ');
+  var area=line+' L400,120 L0,120 Z';
+  var lp=document.getElementById('cp-line');
+  var ap=document.getElementById('cp-area');
+  if(lp) lp.setAttribute('d',line);
+  if(ap) ap.setAttribute('d',area);
+  data.forEach(function(p,i){
+    var d=document.getElementById('dot'+i);
+    if(d){d.setAttribute('cx',p[0]);d.setAttribute('cy',p[1]);d.setAttribute('opacity','1');}
+  });
+}
+
+window.startInterview = async function(){
+  var name=document.getElementById('name').value;
+  var domain=document.getElementById('domain').value;
+  if(!domain.trim()){ alert('Please enter a topic'); return; }
+  var response=await fetch('/start-session',{
+    method:'POST',
+    credentials:'include',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({candidate_name:name,domain:domain})
+  });
+  var data=await response.json();
+  sessionStorage.setItem('session_id',data.session_id);
+  sessionStorage.setItem('current_question',data.current_question);
+  sessionStorage.setItem('current_audio',data.audio);
+  window.location.href='/frontend/interview.html';
+};
+
+fetch('/me', {
+    credentials: 'include'
+})
+
+.then(function(response){
+
+    if(!response.ok){
+
+        window.location.href = '/';
+        return;
+
+    }
+
+    return response.json();
+
+})
+
+
+.then(function(user){
+
+    // ===== TOPBAR =====
+
+    const userName =
+    document.getElementById('user-name');
+
+    if(userName){
+
+        userName.textContent =
+        user.name;
+
+    }
+
+
+    const avatar =
+    document.getElementById('user-avatar');
+
+    if(avatar){
+
+        avatar.textContent =
+        user.name.charAt(0)
+        .toUpperCase();
+
+    }
+
+
+
+    // ===== PRACTICE =====
+
+    const hiddenName =
+    document.getElementById('name');
+
+    if(hiddenName){
+
+        hiddenName.value =
+        user.name;
+
+    }
+
+
+
+    // ===== PROFILE =====
+
+    const profileName =
+    document.getElementById('profile-name');
+
+    if(profileName){
+
+        profileName.textContent =
+        user.name;
+
+    }
+
+
+    const profileEmail =
+    document.getElementById('profile-email');
+
+    if(profileEmail){
+
+        profileEmail.textContent =
+        user.email;
+
+    }
+
+
+
+    // ===== RESUME STATUS =====
+
+    const resumeTxt =
+    document.getElementById(
+        'resume-status-txt'
+    );
+
+
+    const resumeProfile =
+    document.getElementById(
+        'resume-profile-status'
+    );
+
+
+
+    if(user.resume_text){
+
+        if(resumeTxt){
+
+            resumeTxt.textContent =
+            'Resume uploaded — questions tailored to you';
+
+        }
+
+
+        if(resumeProfile){
+
+            resumeProfile.textContent =
+            'Resume uploaded';
+
+            resumeProfile.style.color =
+            '#34d399';
+
+        }
+
+    }
+
+
+    else{
+
+        if(resumeTxt){
+
+            resumeTxt.textContent =
+            'No resume — upload for personalized questions';
+
+        }
+
+
+        if(resumeProfile){
+
+            resumeProfile.textContent =
+            'Not uploaded yet';
+
+        }
+
+    }
+
+})
+
+
+.catch(function(error){
+
+    console.log(
+        "User loading failed:",
+        error
+    );
+
+});
+setTimeout(function(){ runPage('home'); },150);
+</script>
 </body>
 </html>

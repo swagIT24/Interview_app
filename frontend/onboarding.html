@@ -2,486 +2,202 @@
 <html>
 <head>
 <title>Welcome — CareerQuest</title>
-
 <style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif;}
+body{background:radial-gradient(circle at 20% 20%,#12102a 0%,#08080f 60%);min-height:100vh;display:flex;justify-content:center;align-items:center;color:white;}
+.wrap{width:100%;max-width:1100px;padding:32px;}
+.prog{display:flex;gap:6px;margin-bottom:44px;}
+.ps{height:3px;flex:1;background:rgba(255,255,255,.07);border-radius:10px;transition:.4s;}
+.ps.active{background:#818cf8;box-shadow:0 0 10px rgba(129,140,248,.4);}
+.ps.done{background:#6366f1;}
+.scene{display:none;animation:fu .45s ease;}
+.scene.active{display:block;}
+@keyframes fu{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+.tag{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#9aa0ff;margin-bottom:16px;}
+.title{font-size:30px;line-height:1.35;margin-bottom:12px;font-weight:600;color:#fff;}
+.sub{font-size:16px;line-height:1.85;color:rgba(255,255,255,.45);margin-bottom:28px;}
 
-*{
-box-sizing:border-box;
-margin:0;
-padding:0;
-font-family:Arial,Helvetica,sans-serif;
-}
+.feat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px;}
+.feat{background:rgba(255,255,255,.03);border:0.5px solid rgba(255,255,255,.07);border-radius:12px;padding:18px 20px;}
+.feat-icon{font-size:26px;margin-bottom:10px;}
+.feat-t{font-size:15px;font-weight:900;color:#fff;margin-bottom:5px;}
+.feat-d{font-size:13px;color:rgba(255,255,255,.45);line-height:1.6;}
 
-body{
-background:
-radial-gradient(circle at top,#15182b 0%,#08080f 45%);
-min-height:100vh;
-display:flex;
-justify-content:center;
-align-items:center;
-color:white;
-overflow:hidden;
-}
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.sc{border-radius:12px;padding:16px;border:0.5px solid;}
+.sc.r{background:rgba(239,68,68,.06);border-color:rgba(239,68,68,.15);}
+.sc.a{background:rgba(245,158,11,.06);border-color:rgba(245,158,11,.15);}
+.sc.i{background:rgba(99,102,241,.06);border-color:rgba(99,102,241,.15);}
+.sc.g{background:rgba(34,197,94,.06);border-color:rgba(34,197,94,.15);}
+.sn{font-size:26px;font-weight:600;margin-bottom:5px;}
+.sc.r .sn{color:#f87171;}.sc.a .sn{color:#fbbf24;}.sc.i .sn{color:#818cf8;}.sc.g .sn{color:#4ade80;}
+.sl{font-size:12px;color:rgba(255,255,255,.6);line-height:1.5;margin-bottom:4px;}
+.sx{font-size:13px;color:rgba(255,255,255,.25);line-height:1.6;}
+.stag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:5px;margin-top:7px;font-weight:500;}
+.sc.r .stag{background:rgba(239,68,68,.12);color:#f87171;}
+.sc.a .stag{background:rgba(245,158,11,.12);color:#fbbf24;}
+.sc.i .stag{background:rgba(99,102,241,.12);color:#818cf8;}
+.sc.g .stag{background:rgba(34,197,94,.12);color:#4ade80;}
+.bnr{background:rgba(99,102,241,.08);border:0.5px solid rgba(99,102,241,.2);border-radius:11px;padding:16px 18px;display:flex;gap:12px;align-items:flex-start;}
+.bnr-t{font-size:13px;color:rgba(255,255,255,.6);line-height:1.65;}
+.bnr-t strong{color:#a5b4fc;font-weight:500;}
 
-.container{
-width:100%;
-max-width:560px;
-padding:32px;
-}
+.mindset-card{background:rgba(99,102,241,.06);border:0.5px solid rgba(99,102,241,.18);border-radius:14px;padding:24px;margin-bottom:20px;}
+.qmark{font-size:32px;color:rgba(99,102,241,.35);line-height:1;margin-bottom:10px;}
+.qtext{font-size:15px;color:rgba(255,255,255,.75);line-height:1.8;margin-bottom:14px;}
+.qauthor{font-size:12px;color:#818cf8;}
 
-.progress-bar{
-display:flex;
-gap:6px;
-margin-bottom:40px;
-}
+.pillars{display:flex;flex-direction:column;gap:10px;margin-bottom:8px;}
+.pillar{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.03);border:0.5px solid rgba(255,255,255,.06);border-radius:10px;padding:12px 14px;}
+.pillar-num{width:24px;height:24px;border-radius:50%;background:rgba(99,102,241,.2);border:0.5px solid rgba(99,102,241,.3);display:flex;align-items:center;justify-content:center;font-size:11px;color:#818cf8;font-weight:600;min-width:24px;}
+.pillar-t{font-size:13px;font-weight:500;color:#fff;margin-bottom:2px;}
+.pillar-d{font-size:11px;color:rgba(255,255,255,.35);}
 
-.p-seg{
-height:3px;
-flex:1;
-background:rgba(255,255,255,.08);
-border-radius:10px;
-transition:.4s;
-}
+.mc-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:8px;}
+.mc{border:0.5px solid rgba(255,255,255,.1);border-radius:13px;padding:20px;cursor:pointer;transition:all .25s;background:rgba(255,255,255,.02);position:relative;}
+.mc:hover{border-color:rgba(99,102,241,.4);background:rgba(99,102,241,.05);transform:translateY(-1px);}
+.mc.sel{border-color:#6366f1;background:rgba(99,102,241,.09);}
+.mchk{position:absolute;top:13px;right:13px;width:18px;height:18px;border-radius:50%;background:#6366f1;display:none;align-items:center;justify-content:center;font-size:10px;}
+.mc.sel .mchk{display:flex;}
+.mc-ico{font-size:24px;margin-bottom:10px;}
+.mc-name{font-size:14px;font-weight:600;color:#fff;margin-bottom:5px;}
+.mc-desc{font-size:12px;color:rgba(255,255,255,.35);line-height:1.6;}
+.mc-tag{display:inline-block;font-size:10px;padding:3px 9px;border-radius:6px;background:rgba(99,102,241,.12);color:#818cf8;margin-top:10px;}
+.mc-tag.soon{background:rgba(255,255,255,.05);color:rgba(255,255,255,.25);}
 
-.p-seg.active{
-background:#818cf8;
-box-shadow:0 0 12px rgba(129,140,248,.5);
-}
-
-.p-seg.done{
-background:#6366f1;
-}
-
-.scene{
-display:none;
-animation:fade .5s;
-}
-
-.scene.active{
-display:block;
-}
-
-@keyframes fade{
-from{
-opacity:0;
-transform:translateY(8px);
-}
-to{
-opacity:1;
-transform:none;
-}
-}
-
-.scene-tag{
-font-size:11px;
-letter-spacing:.14em;
-text-transform:uppercase;
-color:#9aa0ff;
-margin-bottom:18px;
-}
-
-.scene-title{
-font-size:34px;
-line-height:1.3;
-margin-bottom:14px;
-font-weight:600;
-}
-
-.scene-body{
-font-size:15px;
-line-height:1.9;
-color:rgba(255,255,255,.55);
-margin-bottom:28px;
-}
-
-.field-label{
-font-size:13px;
-margin-bottom:8px;
-color:rgba(255,255,255,.8);
-}
-
-.field-input{
-width:100%;
-padding:15px;
-background:rgba(255,255,255,.04);
-border:1px solid rgba(255,255,255,.08);
-border-radius:12px;
-color:white;
-margin-bottom:12px;
-outline:none;
-}
-
-.field-input:focus{
-border-color:#818cf8;
-}
-
-.helper{
-font-size:12px;
-opacity:.45;
-margin-bottom:22px;
-line-height:1.7;
-}
-
-.highlight{
-padding:22px;
-background:rgba(99,102,241,.08);
-border:1px solid rgba(99,102,241,.2);
-border-radius:14px;
-margin-bottom:24px;
-}
-
-.quote{
-margin-top:12px;
-color:#a5b4fc;
-font-style:italic;
-}
-
-.mode-card{
-padding:20px;
-border-radius:14px;
-border:1px solid rgba(255,255,255,.08);
-margin-bottom:12px;
-cursor:pointer;
-transition:.3s;
-}
-
-.mode-card:hover{
-transform:translateY(-2px);
-border-color:#818cf8;
-}
-
-.selected{
-background:rgba(99,102,241,.08);
-}
-
-.badge{
-font-size:10px;
-padding:4px 10px;
-border-radius:20px;
-background:rgba(99,102,241,.12);
-display:inline-block;
-margin-top:10px;
-color:#a5b4fc;
-}
-
-.footer{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-top:32px;
-}
-
-.next-btn{
-padding:14px 28px;
-background:#4f46e5;
-border:none;
-border-radius:12px;
-color:white;
-cursor:pointer;
-font-size:14px;
-}
-
-.next-btn:hover{
-background:#5b54f5;
-}
-
-.skip{
-background:none;
-border:none;
-color:rgba(255,255,255,.3);
-cursor:pointer;
-}
-
+.foot{display:flex;justify-content:space-between;align-items:center;margin-top:32px;}
+.next-btn{padding:13px 28px;background:#4f46e5;border:none;border-radius:11px;color:#fff;font-size:14px;font-weight:500;cursor:pointer;transition:all .2s;}
+.next-btn:hover{background:#4338ca;transform:translateY(-1px);}
+.skip-btn{background:none;border:none;color:rgba(255,255,255,.25);cursor:pointer;font-size:13px;}
+.skip-btn:hover{color:rgba(255,255,255,.45);}
 </style>
 </head>
-
 <body>
+<div class="wrap">
+  <div class="prog">
+    <div class="ps active" id="ps0"></div>
+    <div class="ps" id="ps1"></div>
+    <div class="ps" id="ps2"></div>
+    <div class="ps" id="ps3"></div>
+  </div>
 
-<div class="container">
+  <!-- Scene 0 — Welcome -->
+  <div class="scene active" id="sc0">
+    <div class="tag">Welcome to CareerQuest</div>
+    <div class="title">Your personal space to prepare, practice, and show up confident.</div>
+    <div class="sub">Not just another quiz app. A focused environment built to close the gap between where you are and where you want to be.</div>
+    <div class="feat-grid">
+      <div class="feat"><div class="feat-icon">🧠</div><div class="feat-t">Questions built for your profile</div><div class="feat-d">AI generated from your domain, resume, and target role</div></div>
+      <div class="feat"><div class="feat-icon">🎙️</div><div class="feat-t">Voice practice</div><div class="feat-d">Speak your answers, build confidence</div></div>
+      <div class="feat"><div class="feat-icon">📊</div><div class="feat-t">Honest feedback</div><div class="feat-d">Structured, specific, actionable</div></div>
+      <div class="feat"><div class="feat-icon">📈</div><div class="feat-t">Progress tracking</div><div class="feat-d">Watch yourself improve session by session</div></div>
+    </div>
+  </div>
 
-<div class="progress-bar">
-<div class="p-seg active" id="ps0"></div>
-<div class="p-seg" id="ps1"></div>
-<div class="p-seg" id="ps2"></div>
-<div class="p-seg" id="ps3"></div>
+  <!-- Scene 1 — Reality stats -->
+  <div class="scene" id="sc1">
+    <div class="tag">The reality of job hunting</div>
+    <div class="title">The odds are tough. Preparation is your only real edge.</div>
+    <div class="sub">Here's what the data actually says.</div>
+    <div class="sg">
+      <div class="sc r"><div class="sn">250+</div><div class="sl">Resumes per job posting</div><div class="sx">You are not competing with a few people. You are competing with hundreds.</div><span class="stag">Reality check</span></div>
+      <div class="sc a"><div class="sn">33%</div><div class="sl">Decisions made in first 90 seconds</div><div class="sx">First impressions form before you finish your first answer.</div><span class="stag">Wake up call</span></div>
+      <div class="sc i"><div class="sn">47%</div><div class="sl">Fail due to poor prep — not lack of skill</div><div class="sx">Most rejections are about readiness, not ability.</div><span class="stag">The real problem</span></div>
+      <div class="sc g"><div class="sn">3x</div><div class="sl">More likely to get an offer with practice</div><div class="sx">Candidates who prepare consistently outperform every time.</div><span class="stag">Your opportunity</span></div>
+    </div>
+    <div class="bnr"><span style="font-size:20px;min-width:24px">💡</span><div class="bnr-t">You cannot control who else applies. But you can control <strong>how prepared you are</strong> — and that is the difference that matters.</div></div>
+  </div>
+
+  <!-- Scene 2 — Mindset -->
+  <div class="scene" id="sc2">
+    <div class="tag">Before you begin</div>
+    <div class="title">Confidence is built, not born.</div>
+    <div class="mindset-card">
+      <div class="qmark">"</div>
+      <div class="qtext">Most candidates walk in hoping they'll do well. The ones who get the offer walked in knowing they were ready. The difference isn't talent — it's what they did before they walked in the door.</div>
+      <div class="qauthor">— The CareerQuest philosophy</div>
+    </div>
+    <div class="pillars">
+      <div class="pillar"><div class="pillar-num">1</div><div><div class="pillar-t">Practice out loud</div><div class="pillar-d">Thinking an answer and saying it are very different things</div></div></div>
+      <div class="pillar"><div class="pillar-num">2</div><div><div class="pillar-t">Embrace honest feedback</div><div class="pillar-d">Knowing your gaps is the first step to closing them</div></div></div>
+      <div class="pillar"><div class="pillar-num">3</div><div><div class="pillar-t">Show up every day</div><div class="pillar-d">10 minutes of focused practice beats 3 hours the night before</div></div></div>
+    </div>
+  </div>
+
+  <!-- Scene 3 — Mode -->
+  <div class="scene" id="sc3">
+    <div class="tag">Your experience</div>
+    <div class="title">How would you like to work through this?</div>
+    <div class="sub">You can switch between modes anytime from your dashboard.</div>
+    <div class="mc-grid">
+      <div class="mc sel" id="m-pro" onclick="pickMode('pro')">
+        <div class="mchk">✓</div>
+        <div class="mc-ico">💼</div>
+        <div class="mc-name">Professional</div>
+        <div class="mc-desc">Clean dashboard, structured sessions, and honest progress tracking. Focused and distraction-free.</div>
+        <span class="mc-tag">Default</span>
+      </div>
+      <div class="mc" id="m-game" onclick="pickMode('game')">
+        <div class="mchk">✓</div>
+        <div class="mc-ico">⚔️</div>
+        <div class="mc-name">Game Mode</div>
+        <div class="mc-desc">XP, levels, quests and streaks. Makes daily practice feel like a mission worth completing.</div>
+        <span class="mc-tag soon">Coming soon</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <button class="skip-btn" onclick="skipAll()">I'll do this later</button>
+    <button class="next-btn" id="next-btn" onclick="next()">Continue →</button>
+  </div>
 </div>
-
-
-<!-- SCENE 0 -->
-
-<div class="scene active" id="scene-0">
-
-<div class="scene-tag">
-Your Growth Space
-</div>
-
-<div class="scene-title">
-Your AI partner for interviews, growth, and career confidence.
-</div>
-
-<div class="scene-body">
-
-Prepare for interviews, improve communication,
-discover weak areas, and grow with feedback that adapts to you.
-
-</div>
-
-<div class="helper">
-✓ Personalized interviews  
-✓ Voice practice  
-✓ Progress tracking  
-✓ AI remembers your growth
-</div>
-
-</div>
-
-
-
-<!-- SCENE 1 -->
-
-<div class="scene" id="scene-1">
-
-<div class="scene-tag">
-Personalization
-</div>
-
-<div class="scene-title">
-Let's set up your space.
-</div>
-
-<div class="scene-body">
-
-The more we know about where you're headed,
-the better we can prepare you for getting there.
-
-</div>
-
-<div class="field-label">
-What should we call you?
-</div>
-
-<input
-id="input-name"
-class="field-input"
-placeholder="The name you'll see throughout your journey"
-/>
-
-<div class="helper">
-Your progress and improvements will feel personal.
-</div>
-
-
-<div class="field-label">
-What future are you preparing for?
-</div>
-
-<input
-id="input-role"
-class="field-input"
-placeholder="Data Scientist • Backend Engineer • Product Manager..."
-/>
-
-<div class="helper">
-This helps AI tailor interviews, feedback and learning paths.
-</div>
-
-</div>
-
-
-
-<!-- SCENE 2 -->
-
-<div class="scene" id="scene-2">
-
-<div class="scene-tag">
-Mindset
-</div>
-
-<div class="scene-title">
-
-The goal isn’t perfection.
-It’s becoming a little more prepared each time.
-
-</div>
-
-<div class="highlight">
-
-Most people wait until opportunity arrives.
-
-The prepared ones build before it comes.
-
-<div class="quote">
-
-"Confidence grows quietly,
-long before results appear."
-
-</div>
-
-</div>
-
-<div class="scene-body">
-
-Confidence rarely comes from talent alone.
-
-It grows from repetition,
-reflection,
-and showing up before opportunity arrives.
-
-</div>
-
-</div>
-
-
-
-<!-- SCENE 3 -->
-
-<div class="scene" id="scene-3">
-
-<div class="scene-tag">
-Your Experience
-</div>
-
-<div class="scene-title">
-Choose how you'd like to practice
-</div>
-
-<div class="scene-body">
-
-Pick the experience that helps you stay consistent.
-
-</div>
-
-
-<div class="mode-card selected">
-
-💼 Professional
-
-<br><br>
-
-Focused practice,
-structured feedback,
-steady improvement.
-
-<div class="badge">
-Recommended
-</div>
-
-</div>
-
-
-<div class="mode-card">
-
-⚔️ Game Mode
-
-<br><br>
-
-Turn preparation into momentum
-with streaks and milestones.
-
-<div class="badge">
-Early access
-</div>
-
-</div>
-
-</div>
-
-
-
-<div class="footer">
-
-<button
-class="skip"
-onclick="skipOnboarding()">
-
-I'll do this later
-
-</button>
-
-
-<button
-class="next-btn"
-id="next-btn"
-onclick="nextScene()">
-
-Continue →
-
-</button>
-
-</div>
-
-</div>
-
-
 
 <script>
+let cur=0,mode='pro';
+const btns=['Continue →','Continue →','Continue →','Begin my journey →'];
 
-let current=0;
-
-function nextScene(){
-
-if(current===1){
-
-const name=document.getElementById("input-name").value.trim();
-
-if(!name){
-alert("Tell us your name first");
-return;
+function next(){
+  console.log("current step:", cur);
+  try {                                                              // ← add try here
+    document.getElementById('sc'+cur).classList.remove('active');
+    document.getElementById('ps'+cur).classList.remove('active');
+    document.getElementById('ps'+cur).classList.add('done');
+    cur++;
+    if(cur>3){completeOnboarding();return;}
+    document.getElementById('sc'+cur).classList.add('active');
+    document.getElementById('ps'+cur).classList.add('active');
+    document.getElementById('next-btn').innerText=btns[cur];
+  } catch(e) {
+    console.log("ERROR:", e);
+  }
 }
 
+function pickMode(m){
+  mode=m;
+  document.getElementById('m-pro').classList.toggle('sel',m==='pro');
+  document.getElementById('m-game').classList.toggle('sel',m==='game');
 }
 
-document
-.getElementById("scene-"+current)
-.classList.remove("active");
-
-document
-.getElementById("ps"+current)
-.classList.remove("active");
-
-document
-.getElementById("ps"+current)
-.classList.add("done");
-
-current++;
-
-if(current<=3){
-
-document
-.getElementById("scene-"+current)
-.classList.add("active");
-
-document
-.getElementById("ps"+current)
-.classList.add("active");
-
+async function completeOnboarding(){
+  console.log("completeOnboarding called");  // ← add
+  localStorage.setItem('mode', mode);
+  
+  const res = await fetch('/complete-onboarding', {
+    method: 'POST',
+    credentials: 'include'
+  });
+  
+  console.log("status:", res.status);  // ← add
+  
+  window.location.href = '/dashboard';
 }
 
-if(current===3){
-
-document
-.getElementById("next-btn")
-.innerText=
-"Start your preparation journey →";
-
+function skipAll(){
+  localStorage.setItem('mode','pro');
+  fetch('/complete-onboarding',{method:'POST',credentials:'include'});
+  window.location.href='/dashboard';
 }
-
-if(current>3){
-
-window.location.href="/frontend/dashboard.html";
-
-}
-
-}
-
-
-function skipOnboarding(){
-
-window.location.href="/frontend/dashboard.html";
-
-}
-
 </script>
-
 </body>
 </html>
