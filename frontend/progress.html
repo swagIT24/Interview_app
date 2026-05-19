@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Progress — CareerQuest</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif;}
+html{font-size:16px;}
+body{background:#111118;color:#fff;min-height:100vh;display:flex;flex-direction:column;}
+
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;border-bottom:0.5px solid rgba(255,255,255,0.07);}
+.logo{display:flex;align-items:center;gap:8px;}
+.lm{width:28px;height:28px;background:#6366f1;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.ln{font-size:15px;font-weight:600;color:#fff;}
+.pills{display:flex;gap:2px;background:rgba(255,255,255,0.05);border-radius:10px;padding:3px;}
+.pill{padding:7px 16px;border-radius:8px;font-size:13px;color:rgba(255,255,255,0.4);cursor:pointer;border:none;background:none;transition:all .2s;}
+.pill:hover{color:rgba(255,255,255,0.7);}
+.pill.active{background:#1e1e2e;color:#fff;}
+.av{width:32px;height:32px;border-radius:50%;background:#4f46e5;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;}
+
+.body{flex:1;padding:22px 28px;}
+
+.ft{opacity:0;transform:translateY(-30px);transition:opacity 0.4s ease,transform 0.4s ease;}
+.fl{opacity:0;transform:translateX(-40px);transition:opacity 0.4s ease,transform 0.4s ease;}
+.fr{opacity:0;transform:translateX(40px);transition:opacity 0.4s ease,transform 0.4s ease;}
+.fb{opacity:0;transform:translateY(30px);transition:opacity 0.4s ease,transform 0.4s ease;}
+.in{opacity:1!important;transform:translate(0,0)!important;}
+
+.page-header{margin-bottom:22px;}
+.page-title{font-size:28px;font-weight:800;color:#fff;}
+.page-title span{color:#a78bfa;}
+.page-sub{font-size:13px;color:rgba(255,255,255,0.35);margin-top:3px;}
+
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+.stat-card{background:#1a1a26;border-radius:12px;padding:18px 20px;}
+.stat-lbl{font-size:11px;color:rgba(255,255,255,0.35);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.06em;}
+.stat-val{font-size:36px;font-weight:700;color:#fff;margin-bottom:4px;}
+.stat-sub{font-size:11px;color:rgba(255,255,255,0.3);}
+.stat-trend{font-size:11px;margin-top:4px;}
+
+.section-card{background:#1a1a26;border-radius:12px;padding:18px 20px;margin-bottom:14px;}
+.ctitle{font-size:11px;font-weight:600;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:16px;}
+
+.session-row{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-radius:9px;background:rgba(255,255,255,0.03);margin-bottom:7px;}
+.session-row:last-child{margin-bottom:0;}
+.session-left{display:flex;flex-direction:column;gap:3px;}
+.session-domain{font-size:13px;font-weight:500;color:#fff;}
+.session-date{font-size:11px;color:rgba(255,255,255,0.3);}
+.session-right{display:flex;align-items:center;gap:12px;}
+.session-qs{font-size:11px;color:rgba(255,255,255,0.3);}
+.score-pill{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;}
+.score-high{background:rgba(52,211,153,0.12);color:#34d399;}
+.score-mid{background:rgba(245,158,11,0.12);color:#f59e0b;}
+.score-low{background:rgba(248,113,113,0.1);color:#f87171;}
+
+.empty-state{text-align:center;padding:50px 20px;}
+.empty-icon{font-size:40px;margin-bottom:14px;opacity:0.3;}
+.empty-txt{font-size:14px;color:rgba(255,255,255,0.25);line-height:1.7;}
+.empty-cta{margin-top:18px;display:inline-block;padding:10px 22px;background:#f59e0b;border:none;border-radius:9px;color:#1a0f00;font-size:13px;font-weight:600;cursor:pointer;}
+.empty-cta:hover{background:#d97706;}
+
+.streak-row{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px;}
+.day-chip{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;}
+.day-on{background:rgba(99,102,241,0.3);color:#818cf8;}
+.day-off{background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.2);}
+
+.two-col{display:grid;grid-template-columns:1fr 220px;gap:14px;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">
+    <div class="lm">🧠</div>
+    <span class="ln">CareerQuest</span>
+  </div>
+  <div class="pills">
+    <button class="pill" onclick="window.location.href='/dashboard'">Overview</button>
+    <button class="pill" onclick="window.location.href='/practice'">Practice</button>
+    <button class="pill active">Progress</button>
+    <button class="pill" onclick="window.location.href='/jobs-tracker'">Jobs</button>
+    <button class="pill" onclick="window.location.href='/profile'">Profile</button>
+  </div>
+  <div class="av" id="user-avatar">?</div>
+</div>
+
+<div class="body">
+
+  <div class="page-header ft" id="pg-header">
+    <div class="page-title">Your <span>Progress</span></div>
+    <div class="page-sub">Track your growth across every session.</div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card ft" id="pg-s1">
+      <div class="stat-lbl">Sessions done</div>
+      <div class="stat-val" id="stat-sessions">0</div>
+      <div class="stat-sub">total interviews</div>
+      <div class="stat-trend" style="color:#818cf8;">keep going</div>
+    </div>
+    <div class="stat-card ft" id="pg-s2">
+      <div class="stat-lbl">Avg score</div>
+      <div class="stat-val" id="stat-avg" style="color:#f59e0b;">0</div>
+      <div class="stat-sub">out of 15</div>
+      <div class="stat-trend" style="color:#34d399;">improving</div>
+    </div>
+    <div class="stat-card ft" id="pg-s3">
+      <div class="stat-lbl">Best score</div>
+      <div class="stat-val" id="stat-best" style="color:#34d399;">0</div>
+      <div class="stat-sub">personal best</div>
+      <div class="stat-trend" style="color:rgba(255,255,255,0.3);">out of 15</div>
+    </div>
+    <div class="stat-card ft" id="pg-s4">
+      <div class="stat-lbl">Day streak</div>
+      <div class="stat-val" id="stat-streak" style="color:#fbbf24;">0</div>
+      <div class="stat-sub">days in a row</div>
+      <div class="stat-trend" style="color:rgba(255,255,255,0.3);">stay consistent</div>
+    </div>
+  </div>
+
+  <div class="two-col">
+
+    <div class="section-card fb" id="pg-history">
+      <div class="ctitle">Session history</div>
+      <div id="history-list">
+        <div class="empty-state">
+          <div class="empty-icon">📈</div>
+          <div class="empty-txt">No sessions yet.<br>Start your first practice session to see your history here.</div>
+          <button class="empty-cta" onclick="window.location.href='/practice'">Start practicing</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-card fr" id="pg-streak-card">
+      <div class="ctitle">This week</div>
+      <div style="font-size:42px;font-weight:700;color:#fbbf24;margin-bottom:4px;" id="streak-num">0</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.3);margin-bottom:16px;">days in a row</div>
+      <div class="streak-row">
+        <div class="day-chip day-off" id="d-mon">M</div>
+        <div class="day-chip day-off" id="d-tue">T</div>
+        <div class="day-chip day-off" id="d-wed">W</div>
+        <div class="day-chip day-off" id="d-thu">T</div>
+        <div class="day-chip day-off" id="d-fri">F</div>
+        <div class="day-chip day-off" id="d-sat">S</div>
+        <div class="day-chip day-off" id="d-sun">S</div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+var anims = [
+  {id:'pg-header', delay:0},
+  {id:'pg-s1',     delay:100},
+  {id:'pg-s2',     delay:160},
+  {id:'pg-s3',     delay:220},
+  {id:'pg-s4',     delay:280},
+  {id:'pg-history',delay:380},
+  {id:'pg-streak-card', delay:420}
+];
+
+setTimeout(function(){
+  anims.forEach(function(a){
+    setTimeout(function(){
+      var el = document.getElementById(a.id);
+      if(el) el.classList.add('in');
+    }, a.delay);
+  });
+}, 80);
+
+function scoreClass(avg){
+  if(avg >= 10) return 'score-high';
+  if(avg >= 6)  return 'score-mid';
+  return 'score-low';
+}
+
+function formatDate(iso){
+  if(!iso) return '';
+  var d = new Date(iso);
+  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return months[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();
+}
+
+function renderSessions(sessions){
+  if(!sessions || !sessions.length) return;
+
+  var totalSessions = sessions.length;
+  var allScores = sessions.map(function(s){ return s.avg_score || 0; });
+  var avgScore  = totalSessions ? (allScores.reduce(function(a,b){return a+b;},0) / totalSessions).toFixed(1) : 0;
+  var bestScore = totalSessions ? Math.max.apply(null, allScores).toFixed(1) : 0;
+
+  document.getElementById('stat-sessions').textContent = totalSessions;
+  document.getElementById('stat-avg').textContent      = avgScore;
+  document.getElementById('stat-best').textContent     = bestScore;
+
+  var list = document.getElementById('history-list');
+  list.innerHTML = '';
+
+  sessions.forEach(function(s){
+    var avg = parseFloat(s.avg_score || 0).toFixed(1);
+    var cls = scoreClass(parseFloat(avg));
+    var row = document.createElement('div');
+    row.className = 'session-row';
+    row.innerHTML =
+      '<div class="session-left">'+
+        '<div class="session-domain">'+escHtml(s.domain || 'Interview')+'</div>'+
+        '<div class="session-date">'+formatDate(s.created_at)+'</div>'+
+      '</div>'+
+      '<div class="session-right">'+
+        '<span class="session-qs">'+( s.question_count || '—')+' Qs</span>'+
+        '<span class="score-pill '+cls+'">'+avg+' / 15</span>'+
+      '</div>';
+    list.appendChild(row);
+  });
+}
+
+function escHtml(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+fetch('/me', {credentials:'include'})
+  .then(function(r){ if(!r.ok){ window.location.href='/'; return null; } return r.json(); })
+  .then(function(user){
+    if(!user) return;
+    var av = document.getElementById('user-avatar');
+    if(av) av.textContent = user.name.charAt(0).toUpperCase();
+
+    return fetch('/sessions', {credentials:'include'});
+  })
+  .then(function(r){
+    if(!r || !r.ok) return null;
+    return r.json();
+  })
+  .then(function(sessions){
+    if(sessions && sessions.length) renderSessions(sessions);
+  })
+  .catch(function(e){ console.log('Progress load:', e); });
+</script>
+</body>
+</html>

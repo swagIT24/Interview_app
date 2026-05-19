@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>CareerQuest — Job Tracker</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif;}
+html{font-size:19px;}
+body{background:#111118;color:#fff;min-height:100vh;display:flex;flex-direction:column;}
+
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;border-bottom:0.5px solid rgba(255,255,255,0.07);}
+.logo{display:flex;align-items:center;gap:8px;}
+.lm{width:28px;height:28px;background:#6366f1;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.ln{font-size:15px;font-weight:600;color:#fff;}
+.pills{display:flex;gap:2px;background:rgba(255,255,255,0.05);border-radius:10px;padding:3px;}
+.pill{padding:7px 16px;border-radius:8px;font-size:13px;color:rgba(255,255,255,0.4);cursor:pointer;border:none;background:none;transition:all .2s;}
+.pill:hover{color:rgba(255,255,255,0.7);}
+.pill.active{background:#1e1e2e;color:#fff;}
+.ib{width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.av{width:32px;height:32px;border-radius:50%;background:#4f46e5;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;}
+
+.body{flex:1;padding:22px 28px;}
+
+.ft{opacity:0;transform:translateY(-40px);transition:opacity 0.45s ease,transform 0.45s ease;}
+.fl{opacity:0;transform:translateX(-60px);transition:opacity 0.45s ease,transform 0.45s ease;}
+.fr{opacity:0;transform:translateX(60px);transition:opacity 0.45s ease,transform 0.45s ease;}
+.fb{opacity:0;transform:translateY(40px);transition:opacity 0.45s ease,transform 0.45s ease;}
+.in{opacity:1!important;transform:translate(0,0)!important;}
+
+/* Page header */
+.page-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:20px;}
+.page-title{font-size:28px;font-weight:800;color:#fff;}
+.page-title span{color:#a78bfa;}
+.page-sub{font-size:13px;color:rgba(255,255,255,0.35);margin-top:3px;}
+.add-btn{display:flex;align-items:center;gap:8px;padding:10px 20px;background:#6366f1;border:none;border-radius:9px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;transition:background .2s;}
+.add-btn:hover{background:#4f46e5;}
+
+/* Stats row */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;}
+.stat-card{background:#1a1a26;border-radius:11px;padding:14px 16px;}
+.stat-lbl{font-size:11px;color:rgba(255,255,255,0.35);margin-bottom:8px;}
+.stat-val{font-size:32px;font-weight:700;color:#fff;}
+.stat-sub{font-size:11px;margin-top:3px;}
+
+/* Jobs grid */
+.jobs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.job-card{background:#1a1a26;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px;transition:border .2s;}
+.job-card:hover{border:0.5px solid rgba(99,102,241,0.3);}
+.job-card{border:0.5px solid transparent;}
+
+.job-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+.job-company{font-size:15px;font-weight:700;color:#fff;line-height:1.3;}
+.job-role{font-size:12px;color:rgba(255,255,255,0.45);margin-top:2px;}
+
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap;}
+.badge-applied{background:rgba(99,102,241,0.15);color:#818cf8;}
+.badge-shortlisted{background:rgba(245,158,11,0.15);color:#f59e0b;}
+.badge-interview{background:rgba(59,130,246,0.15);color:#60a5fa;}
+.badge-offer{background:rgba(52,211,153,0.1);color:#34d399;}
+.badge-rejected{background:rgba(248,113,113,0.1);color:#f87171;}
+
+.job-meta{font-size:11px;color:rgba(255,255,255,0.25);}
+.job-notes{font-size:12px;color:rgba(255,255,255,0.4);line-height:1.55;border-left:2px solid rgba(255,255,255,0.07);padding-left:10px;min-height:18px;}
+
+.job-status-select{width:100%;padding:6px 10px;background:rgba(255,255,255,0.04);border:0.5px solid rgba(255,255,255,0.08);border-radius:7px;color:rgba(255,255,255,0.6);font-size:12px;outline:none;cursor:pointer;}
+.job-status-select:focus{border-color:rgba(99,102,241,0.4);}
+.job-status-select option{background:#1a1a26;}
+
+.job-actions{display:flex;gap:8px;margin-top:4px;}
+.practice-btn{flex:1;padding:8px;background:rgba(99,102,241,0.12);border:0.5px solid rgba(99,102,241,0.2);border-radius:7px;color:#818cf8;font-size:12px;font-weight:500;cursor:pointer;transition:all .2s;}
+.practice-btn:hover{background:rgba(99,102,241,0.25);}
+.delete-btn{width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:rgba(248,113,113,0.07);border:0.5px solid rgba(248,113,113,0.15);border-radius:7px;cursor:pointer;font-size:14px;transition:all .2s;flex-shrink:0;}
+.delete-btn:hover{background:rgba(248,113,113,0.2);}
+
+.empty-state{grid-column:1/-1;text-align:center;padding:60px 20px;}
+.empty-icon{font-size:40px;margin-bottom:14px;opacity:0.4;}
+.empty-txt{font-size:14px;color:rgba(255,255,255,0.25);}
+.empty-cta{margin-top:16px;padding:10px 22px;background:#6366f1;border:none;border-radius:9px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;}
+
+/* Modal */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;align-items:center;justify-content:center;}
+.overlay.show{display:flex;}
+.modal{background:#1a1a26;border-radius:14px;padding:24px;width:100%;max-width:440px;border:0.5px solid rgba(255,255,255,0.07);}
+.modal-title{font-size:17px;font-weight:700;color:#fff;margin-bottom:18px;}
+.field-lbl{font-size:11px;color:rgba(255,255,255,0.35);margin-bottom:5px;}
+.field-wrap{margin-bottom:14px;}
+.inp{width:100%;padding:11px 13px;background:rgba(255,255,255,0.04);border:0.5px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;font-size:13px;outline:none;}
+.inp:focus{border-color:rgba(99,102,241,0.5);}
+.inp::placeholder{color:rgba(255,255,255,0.2);}
+.inp option{background:#1a1a26;}
+.modal-actions{display:flex;gap:10px;margin-top:6px;}
+.modal-cancel{flex:1;padding:11px;background:rgba(255,255,255,0.05);border:0.5px solid rgba(255,255,255,0.08);border-radius:8px;color:rgba(255,255,255,0.5);font-size:13px;cursor:pointer;}
+.modal-save{flex:2;padding:11px;background:#6366f1;border:none;border-radius:8px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;}
+.modal-save:hover{background:#4f46e5;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">
+    <div class="lm">🧠</div>
+    <span class="ln">CareerQuest</span>
+  </div>
+  <div class="pills">
+    <button class="pill" onclick="window.location.href='/dashboard'">Overview</button>
+    <button class="pill" onclick="window.location.href='/practice'">Practice</button>
+    <button class="pill" onclick="window.location.href='/progress'">Progress</button>
+    <button class="pill active">Jobs</button>
+    <button class="pill" onclick="window.location.href='/profile'">Profile</button>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <div class="ib">🔔</div>
+    <div class="av" id="user-avatar">?</div>
+  </div>
+</div>
+
+<div class="body">
+
+  <div class="page-header ft" id="jb-header">
+    <div>
+      <div class="page-title">Job <span>Tracker</span></div>
+      <div class="page-sub">Track every application — stay organised, stay sharp.</div>
+    </div>
+    <button class="add-btn" onclick="openModal()">+ Add Application</button>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card ft" id="jb-s1">
+      <div class="stat-lbl">Total applied</div>
+      <div class="stat-val" id="stat-total">0</div>
+      <div class="stat-sub" style="color:rgba(255,255,255,0.3);">applications</div>
+    </div>
+    <div class="stat-card ft" id="jb-s2">
+      <div class="stat-lbl">In progress</div>
+      <div class="stat-val" id="stat-active" style="color:#f59e0b;">0</div>
+      <div class="stat-sub" style="color:#f59e0b;">shortlisted + interview</div>
+    </div>
+    <div class="stat-card ft" id="jb-s3">
+      <div class="stat-lbl">Offers</div>
+      <div class="stat-val" id="stat-offers" style="color:#34d399;">0</div>
+      <div class="stat-sub" style="color:#34d399;">congratulations</div>
+    </div>
+    <div class="stat-card ft" id="jb-s4">
+      <div class="stat-lbl">Success rate</div>
+      <div class="stat-val" id="stat-rate" style="color:#818cf8;">0%</div>
+      <div class="stat-sub" style="color:rgba(255,255,255,0.3);">offers / applied</div>
+    </div>
+  </div>
+
+  <div class="jobs-grid" id="jobs-grid">
+    <div class="empty-state">
+      <div class="empty-icon">📋</div>
+      <div class="empty-txt">No applications yet — add your first one.</div>
+      <button class="empty-cta" onclick="openModal()">Add Application</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Add Job Modal -->
+<div class="overlay" id="modal" onclick="overlayClick(event)">
+  <div class="modal">
+    <div class="modal-title">New Application</div>
+
+    <div class="field-wrap">
+      <div class="field-lbl">Company name</div>
+      <input class="inp" id="f-company" placeholder="e.g. Google" />
+    </div>
+    <div class="field-wrap">
+      <div class="field-lbl">Role</div>
+      <input class="inp" id="f-role" placeholder="e.g. Software Engineer" />
+    </div>
+    <div class="field-wrap">
+      <div class="field-lbl">Status</div>
+      <select class="inp" id="f-status">
+        <option value="Applied">Applied</option>
+        <option value="Shortlisted">Shortlisted</option>
+        <option value="Interview">Interview</option>
+        <option value="Offer">Offer</option>
+        <option value="Rejected">Rejected</option>
+      </select>
+    </div>
+    <div class="field-wrap">
+      <div class="field-lbl">Date applied</div>
+      <input class="inp" id="f-date" type="date" />
+    </div>
+    <div class="field-wrap">
+      <div class="field-lbl">Notes</div>
+      <textarea class="inp" id="f-notes" rows="3" placeholder="Referral, job link, key contacts…" style="resize:vertical;"></textarea>
+    </div>
+
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeModal()">Cancel</button>
+      <button class="modal-save" onclick="addJob()">Save Application</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var allJobs = [];
+
+var BADGE = {
+  'Applied':     'badge-applied',
+  'Shortlisted': 'badge-shortlisted',
+  'Interview':   'badge-interview',
+  'Offer':       'badge-offer',
+  'Rejected':    'badge-rejected'
+};
+
+function badgeClass(status){ return BADGE[status] || 'badge-applied'; }
+
+function formatDate(d){
+  if(!d) return '';
+  var parts = d.split('-');
+  if(parts.length < 3) return d;
+  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return months[parseInt(parts[1],10)-1]+' '+parseInt(parts[2],10)+', '+parts[0];
+}
+
+function updateStats(jobs){
+  var total = jobs.length;
+  var active = jobs.filter(function(j){ return j.status==='Shortlisted'||j.status==='Interview'; }).length;
+  var offers = jobs.filter(function(j){ return j.status==='Offer'; }).length;
+  var rate   = total > 0 ? Math.round((offers/total)*100) : 0;
+  document.getElementById('stat-total').textContent  = total;
+  document.getElementById('stat-active').textContent = active;
+  document.getElementById('stat-offers').textContent = offers;
+  document.getElementById('stat-rate').textContent   = rate+'%';
+}
+
+function renderJobs(jobs){
+  var grid = document.getElementById('jobs-grid');
+  updateStats(jobs);
+
+  if(!jobs.length){
+    grid.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-txt">No applications yet — add your first one.</div><button class="empty-cta" onclick="openModal()">Add Application</button></div>';
+    return;
+  }
+
+  grid.innerHTML = '';
+  jobs.forEach(function(job, i){
+    var card = document.createElement('div');
+    var anim = i%3===0 ? 'fl' : i%3===1 ? 'fb' : 'fr';
+    card.className = 'job-card '+anim;
+    card.id = 'jcard-'+job.id;
+
+    var dateStr = job.date_applied ? '<span>📅 '+formatDate(job.date_applied)+'</span>' : '';
+    var notes   = job.notes ? job.notes : '<span style="opacity:0.35;font-style:italic;">No notes</span>';
+
+    card.innerHTML =
+      '<div class="job-top">'+
+        '<div>'+
+          '<div class="job-company">'+escHtml(job.company)+'</div>'+
+          '<div class="job-role">'+escHtml(job.role)+'</div>'+
+        '</div>'+
+        '<span class="badge '+badgeClass(job.status)+'">'+escHtml(job.status)+'</span>'+
+      '</div>'+
+      '<div class="job-meta">'+dateStr+'</div>'+
+      '<div class="job-notes">'+escHtml(job.notes||'')+'</div>'+
+      '<select class="job-status-select" onchange="updateStatus('+job.id+',this.value)">'+
+        ['Applied','Shortlisted','Interview','Offer','Rejected'].map(function(s){
+          return '<option value="'+s+'"'+(s===job.status?' selected':'')+'>'+s+'</option>';
+        }).join('')+
+      '</select>'+
+      '<div class="job-actions">'+
+        '<button class="practice-btn" onclick="practiceRole(\''+escAttr(job.role)+'\')">🎯 Practice for this role</button>'+
+        '<button class="delete-btn" onclick="deleteJob('+job.id+')" title="Delete">🗑</button>'+
+      '</div>';
+
+    grid.appendChild(card);
+    setTimeout(function(c){ c.classList.add('in'); }, 80 + i*70, card);
+  });
+}
+
+function escHtml(s){
+  if(!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function escAttr(s){
+  if(!s) return '';
+  return String(s).replace(/'/g,"\\'");
+}
+
+async function loadJobs(){
+  try{
+    var r = await fetch('/jobs', {credentials:'include'});
+    if(r.status===401){ window.location.href='/'; return; }
+    allJobs = await r.json();
+    renderJobs(allJobs);
+  } catch(e){
+    console.error('Load failed',e);
+  }
+}
+
+function openModal(){
+  document.getElementById('f-company').value = '';
+  document.getElementById('f-role').value    = '';
+  document.getElementById('f-status').value  = 'Applied';
+  document.getElementById('f-date').value    = new Date().toISOString().split('T')[0];
+  document.getElementById('f-notes').value   = '';
+  document.getElementById('modal').classList.add('show');
+  setTimeout(function(){ document.getElementById('f-company').focus(); }, 80);
+}
+
+function closeModal(){
+  document.getElementById('modal').classList.remove('show');
+}
+
+function overlayClick(e){
+  if(e.target === document.getElementById('modal')) closeModal();
+}
+
+async function addJob(){
+  var company = document.getElementById('f-company').value.trim();
+  var role    = document.getElementById('f-role').value.trim();
+  var status  = document.getElementById('f-status').value;
+  var date    = document.getElementById('f-date').value;
+  var notes   = document.getElementById('f-notes').value.trim();
+
+  if(!company || !role){ alert('Company and role are required.'); return; }
+
+  var btn = document.querySelector('.modal-save');
+  btn.textContent = 'Saving…'; btn.disabled = true;
+
+  try{
+    var r = await fetch('/jobs', {
+      method:'POST',
+      credentials:'include',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({company:company, role:role, status:status, date_applied:date||null, notes:notes||null})
+    });
+    if(!r.ok) throw new Error('Failed');
+    closeModal();
+    await loadJobs();
+  } catch(e){
+    alert('Could not save. Please try again.');
+  } finally{
+    btn.textContent = 'Save Application'; btn.disabled = false;
+  }
+}
+
+async function updateStatus(id, status){
+  try{
+    await fetch('/jobs/'+id, {
+      method:'PUT',
+      credentials:'include',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({status:status})
+    });
+    var job = allJobs.find(function(j){ return j.id===id; });
+    if(job) job.status = status;
+
+    var card = document.getElementById('jcard-'+id);
+    if(card){
+      var badge = card.querySelector('.badge');
+      if(badge){
+        badge.className = 'badge '+badgeClass(status);
+        badge.textContent = status;
+      }
+    }
+    updateStats(allJobs);
+  } catch(e){
+    console.error('Update failed',e);
+  }
+}
+
+async function deleteJob(id){
+  if(!confirm('Delete this application?')) return;
+  try{
+    await fetch('/jobs/'+id, {method:'DELETE', credentials:'include'});
+    allJobs = allJobs.filter(function(j){ return j.id!==id; });
+    renderJobs(allJobs);
+  } catch(e){
+    alert('Could not delete. Please try again.');
+  }
+}
+
+function practiceRole(role){
+  sessionStorage.setItem('practice_role', role);
+  window.location.href = '/practice';
+}
+
+// Page load animations
+var anims = [
+  {id:'jb-header', delay:0},
+  {id:'jb-s1',     delay:100},
+  {id:'jb-s2',     delay:160},
+  {id:'jb-s3',     delay:220},
+  {id:'jb-s4',     delay:280}
+];
+
+setTimeout(function(){
+  anims.forEach(function(a){
+    setTimeout(function(){
+      var el = document.getElementById(a.id);
+      if(el) el.classList.add('in');
+    }, a.delay);
+  });
+}, 80);
+
+// Auth check + load
+fetch('/me', {credentials:'include'})
+  .then(function(r){
+    if(!r.ok){ window.location.href='/'; return null; }
+    return r.json();
+  })
+  .then(function(user){
+    if(!user) return;
+    var av = document.getElementById('user-avatar');
+    if(av) av.textContent = user.name.charAt(0).toUpperCase();
+    loadJobs();
+  })
+  .catch(function(){ window.location.href='/'; });
+
+document.addEventListener('keydown', function(e){
+  if(e.key==='Escape') closeModal();
+});
+</script>
+</body>
+</html>
