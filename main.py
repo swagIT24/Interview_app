@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from database.connections import init_db, migrate_schema
-from routes import interviwe, auth, voice, resume
+from routes import interviwe, auth, voice, resume, jobs
 
 app = FastAPI()
 
@@ -21,6 +21,7 @@ app.include_router(interviwe.router)
 app.include_router(auth.router)
 app.include_router(voice.router)
 app.include_router(resume.router)
+app.include_router(jobs.router)
 
 migrate_schema()
 
@@ -49,6 +50,10 @@ def serve_progress():
 @app.get("/profile")
 def serve_profile():
     return FileResponse("frontend/profile.html")
+
+@app.get("/jobs-tracker")
+def serve_jobs():
+    return FileResponse("frontend/jobs.html")
 # to activate venv : source venv/bin/activate
 # to run app : python -m uvicorn main:app --reload
 

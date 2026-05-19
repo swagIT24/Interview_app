@@ -183,6 +183,33 @@ def start_session(data: SessionCreate, user_id: int = Depends(get_current_user))
     }
 
 
+@router.get("/sessions")
+def get_sessions(user_id: int = Depends(get_current_user)):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT
+            s.id,
+            s.domain,
+            s.created_at,
+            s.is_completed,
+            s.current_question_number,
+            ROUND(AVG(NULLIF(a.score, 0)), 1) AS avg_score,
+            COUNT(CASE WHEN a.answer != '' THEN 1 END) AS question_count
+        FROM interview_sessions s
+        LEFT JOIN interview_answers a ON a.session_id = s.id
+        WHERE s.user_id = ?
+        GROUP BY s.id
+        ORDER BY s.created_at DESC
+    """, (user_id,))
+
+    rows = cursor.fetchall()
+    conn.close()
+
+    return [dict(row) for row in rows]
+
+
 @router.get("/session/{session_id}")
 def get_session(session_id: int, user_id: int = Depends(get_current_user)):
     return fetch_session(session_id, user_id)

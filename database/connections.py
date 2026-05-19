@@ -107,6 +107,29 @@ def init_db():
     )
     """)
 
+    # ================= JOB APPLICATIONS =================
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS job_applications (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+        user_id INTEGER NOT NULL,
+
+        company TEXT NOT NULL,
+        role TEXT NOT NULL,
+
+        status TEXT NOT NULL DEFAULT 'Applied',
+
+        notes TEXT,
+
+        date_applied DATE,
+
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+        FOREIGN KEY (user_id) REFERENCES users(id)
+    )
+    """)
+
     conn.commit()
     conn.close()
 

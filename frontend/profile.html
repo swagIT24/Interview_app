@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Profile — CareerQuest</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif;}
+html{font-size:16px;}
+body{background:#111118;color:#fff;min-height:100vh;display:flex;flex-direction:column;}
+
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;border-bottom:0.5px solid rgba(255,255,255,0.07);}
+.logo{display:flex;align-items:center;gap:8px;}
+.lm{width:28px;height:28px;background:#6366f1;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.ln{font-size:15px;font-weight:600;color:#fff;}
+.pills{display:flex;gap:2px;background:rgba(255,255,255,0.05);border-radius:10px;padding:3px;}
+.pill{padding:7px 16px;border-radius:8px;font-size:13px;color:rgba(255,255,255,0.4);cursor:pointer;border:none;background:none;transition:all .2s;}
+.pill:hover{color:rgba(255,255,255,0.7);}
+.pill.active{background:#1e1e2e;color:#fff;}
+.av{width:32px;height:32px;border-radius:50%;background:#4f46e5;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;}
+
+.body{flex:1;padding:22px 28px;max-width:600px;}
+
+.ft{opacity:0;transform:translateY(-30px);transition:opacity 0.4s ease,transform 0.4s ease;}
+.fl{opacity:0;transform:translateX(-40px);transition:opacity 0.4s ease,transform 0.4s ease;}
+.fr{opacity:0;transform:translateX(40px);transition:opacity 0.4s ease,transform 0.4s ease;}
+.fb{opacity:0;transform:translateY(30px);transition:opacity 0.4s ease,transform 0.4s ease;}
+.in{opacity:1!important;transform:translate(0,0)!important;}
+
+.page-header{margin-bottom:24px;}
+.page-title{font-size:28px;font-weight:800;color:#fff;}
+.page-title span{color:#a78bfa;}
+.page-sub{font-size:13px;color:rgba(255,255,255,0.35);margin-top:3px;}
+
+.card{background:#1a1a26;border-radius:12px;padding:20px 22px;margin-bottom:14px;}
+.ctitle{font-size:11px;font-weight:600;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:16px;}
+
+.avatar-row{display:flex;align-items:center;gap:16px;margin-bottom:20px;}
+.big-av{width:56px;height:56px;border-radius:14px;background:#4f46e5;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff;flex-shrink:0;}
+.av-info{display:flex;flex-direction:column;gap:3px;}
+.av-name{font-size:18px;font-weight:700;color:#fff;}
+.av-email{font-size:13px;color:rgba(255,255,255,0.35);}
+
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.info-field{}
+.info-lbl{font-size:11px;color:rgba(255,255,255,0.3);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em;}
+.info-val{font-size:14px;color:#fff;font-weight:500;}
+
+.resume-row{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.resume-status{display:flex;align-items:center;gap:10px;}
+.resume-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.resume-dot.ok{background:#34d399;}
+.resume-dot.warn{background:#f59e0b;}
+.resume-txt{font-size:13px;color:rgba(255,255,255,0.5);}
+.upload-btn{padding:8px 16px;background:#4f46e5;border:none;border-radius:8px;color:#fff;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;transition:background .2s;}
+.upload-btn:hover{background:#4338ca;}
+
+.divider{height:0.5px;background:rgba(255,255,255,0.05);margin:14px 0;}
+
+.danger-zone{}
+.logout-btn{padding:10px 20px;background:rgba(248,113,113,0.08);border:0.5px solid rgba(248,113,113,0.2);border-radius:8px;color:#f87171;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;}
+.logout-btn:hover{background:rgba(248,113,113,0.16);}
+.logout-desc{font-size:12px;color:rgba(255,255,255,0.25);margin-top:8px;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">
+    <div class="lm">🧠</div>
+    <span class="ln">CareerQuest</span>
+  </div>
+  <div class="pills">
+    <button class="pill" onclick="window.location.href='/dashboard'">Overview</button>
+    <button class="pill" onclick="window.location.href='/practice'">Practice</button>
+    <button class="pill" onclick="window.location.href='/progress'">Progress</button>
+    <button class="pill" onclick="window.location.href='/jobs-tracker'">Jobs</button>
+    <button class="pill active">Profile</button>
+  </div>
+  <div class="av" id="user-avatar">?</div>
+</div>
+
+<div class="body">
+
+  <div class="page-header ft" id="pf-header">
+    <div class="page-title">Your <span>Profile</span></div>
+    <div class="page-sub">Manage your account and resume.</div>
+  </div>
+
+  <!-- Personal info -->
+  <div class="card fl" id="pf-personal">
+    <div class="ctitle">Personal</div>
+    <div class="avatar-row">
+      <div class="big-av" id="big-avatar">?</div>
+      <div class="av-info">
+        <div class="av-name" id="profile-name">—</div>
+        <div class="av-email" id="profile-email">—</div>
+      </div>
+    </div>
+    <div class="info-grid">
+      <div class="info-field">
+        <div class="info-lbl">Full name</div>
+        <div class="info-val" id="info-name">—</div>
+      </div>
+      <div class="info-field">
+        <div class="info-lbl">Email</div>
+        <div class="info-val" id="info-email">—</div>
+      </div>
+      <div class="info-field">
+        <div class="info-lbl">Member since</div>
+        <div class="info-val" id="info-joined">—</div>
+      </div>
+      <div class="info-field">
+        <div class="info-lbl">Onboarding</div>
+        <div class="info-val" id="info-onboarding">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Resume -->
+  <div class="card fr" id="pf-resume">
+    <div class="ctitle">Resume</div>
+    <div class="resume-row">
+      <div class="resume-status">
+        <div class="resume-dot warn" id="resume-dot"></div>
+        <div class="resume-txt" id="resume-txt">Not uploaded yet — upload to get personalised questions</div>
+      </div>
+      <button class="upload-btn" id="upload-btn" onclick="uploadResume()">Upload PDF</button>
+    </div>
+  </div>
+
+  <!-- Account -->
+  <div class="card fb" id="pf-account">
+    <div class="ctitle">Account</div>
+    <div class="danger-zone">
+      <button class="logout-btn" onclick="logout()">Log out</button>
+      <div class="logout-desc">You will be redirected to the login page.</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+var anims = [
+  {id:'pf-header',  delay:0},
+  {id:'pf-personal',delay:100},
+  {id:'pf-resume',  delay:200},
+  {id:'pf-account', delay:300}
+];
+
+setTimeout(function(){
+  anims.forEach(function(a){
+    setTimeout(function(){
+      var el = document.getElementById(a.id);
+      if(el) el.classList.add('in');
+    }, a.delay);
+  });
+}, 80);
+
+fetch('/me', {credentials:'include'})
+  .then(function(r){ if(!r.ok){ window.location.href='/'; return null; } return r.json(); })
+  .then(function(user){
+    if(!user) return;
+
+    var initial = user.name.charAt(0).toUpperCase();
+    document.getElementById('user-avatar').textContent  = initial;
+    document.getElementById('big-avatar').textContent   = initial;
+    document.getElementById('profile-name').textContent = user.name;
+    document.getElementById('profile-email').textContent= user.email;
+    document.getElementById('info-name').textContent    = user.name;
+    document.getElementById('info-email').textContent   = user.email;
+    document.getElementById('info-onboarding').textContent = user.onboarding_completed ? 'Complete' : 'Pending';
+
+    checkResume();
+  })
+  .catch(function(){ window.location.href='/'; });
+
+function checkResume(){
+  fetch('/resume-status', {credentials:'include'})
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(data){
+      if(data && data.has_resume){
+        document.getElementById('resume-dot').className = 'resume-dot ok';
+        document.getElementById('resume-txt').textContent = 'Resume uploaded — questions are personalised to you';
+        document.getElementById('upload-btn').textContent = 'Replace PDF';
+      }
+    })
+    .catch(function(){});
+}
+
+function uploadResume(){
+  var input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.pdf';
+  input.onchange = async function(){
+    var file = input.files[0];
+    if(!file) return;
+    var btn = document.getElementById('upload-btn');
+    btn.textContent = 'Uploading…'; btn.disabled = true;
+    var formData = new FormData();
+    formData.append('file', file);
+    try{
+      var r = await fetch('/upload-resume', {method:'POST', credentials:'include', body:formData});
+      if(r.ok){
+        document.getElementById('resume-dot').className = 'resume-dot ok';
+        document.getElementById('resume-txt').textContent = 'Resume uploaded — questions are personalised to you';
+        btn.textContent = 'Replace PDF';
+      } else {
+        alert('Upload failed. Please try again.');
+        btn.textContent = 'Upload PDF';
+      }
+    } catch(e){
+      alert('Upload failed. Please try again.');
+      btn.textContent = 'Upload PDF';
+    } finally {
+      btn.disabled = false;
+    }
+  };
+  input.click();
+}
+
+async function logout(){
+  try{
+    await fetch('/logout', {method:'POST', credentials:'include'});
+  } catch(e){}
+  window.location.href = '/';
+}
+</script>
+</body>
+</html>
