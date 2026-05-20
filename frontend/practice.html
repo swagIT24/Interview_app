@@ -82,6 +82,36 @@ textarea#answer::placeholder{color:rgba(255,255,255,0.2);}
 .fr{opacity:0;transform:translateX(40px);transition:opacity 0.4s ease,transform 0.4s ease;}
 .fb{opacity:0;transform:translateY(30px);transition:opacity 0.4s ease,transform 0.4s ease;}
 .in{opacity:1!important;transform:translate(0,0)!important;}
+
+/* ROLEPLAY */
+.roleplay-card{background:linear-gradient(135deg,rgba(99,102,241,0.08) 0%,rgba(79,70,229,0.04) 100%);border:0.5px solid rgba(99,102,241,0.25);border-radius:12px;padding:16px 18px;}
+.rp-desc{font-size:12px;color:rgba(255,255,255,0.45);line-height:1.7;margin-bottom:14px;}
+.rp-btn{width:100%;padding:13px;background:#6366f1;border:none;border-radius:9px;color:#fff;font-size:14px;font-weight:600;cursor:pointer;transition:background .2s;}
+.rp-btn:hover{background:#4f46e5;}
+.rp-btn:disabled{opacity:0.5;cursor:not-allowed;}
+
+.roleplay-area{display:none;flex-direction:column;gap:14px;}
+.roleplay-area.active{display:flex;}
+
+.rp-status-bar{background:#1a1a26;border-radius:12px;padding:13px 18px;display:flex;align-items:center;justify-content:space-between;}
+.rp-state-left{display:flex;align-items:center;gap:10px;}
+.rp-dot{width:8px;height:8px;border-radius:50%;background:#f59e0b;flex-shrink:0;transition:background .3s;}
+.rp-state-lbl{font-size:13px;color:rgba(255,255,255,0.55);}
+.rp-end-btn{padding:7px 14px;background:rgba(248,113,113,0.08);border:0.5px solid rgba(248,113,113,0.2);border-radius:7px;color:#f87171;font-size:12px;cursor:pointer;transition:background .2s;}
+.rp-end-btn:hover{background:rgba(248,113,113,0.18);}
+
+.rp-question-card{background:#1a1a26;border-radius:12px;padding:20px 22px;}
+.rp-q-lbl{font-size:11px;font-weight:600;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;}
+.rp-q-text{font-size:16px;color:#fff;line-height:1.7;font-weight:500;}
+
+.rp-mic-wrap{display:flex;justify-content:center;padding:8px 0;}
+.rp-mic{width:72px;height:72px;border-radius:50%;background:rgba(52,211,153,0.1);border:2px solid rgba(52,211,153,0.35);display:flex;align-items:center;justify-content:center;font-size:28px;animation:rpPulse 1.4s ease-in-out infinite;}
+@keyframes rpPulse{0%,100%{box-shadow:0 0 0 0 rgba(52,211,153,0.3);transform:scale(1);}50%{box-shadow:0 0 0 18px rgba(52,211,153,0);transform:scale(1.05);}}
+
+.rp-feedback-card{background:#1a1a26;border-radius:12px;padding:20px 22px;}
+.rp-score{font-size:20px;font-weight:700;color:#fff;margin-bottom:12px;}
+.rp-feedback-body{font-size:13px;color:rgba(255,255,255,0.65);line-height:1.85;}
+.rp-feedback-body b{color:#fff;}
 </style>
 </head>
 <body>
@@ -117,6 +147,14 @@ textarea#answer::placeholder{color:rgba(255,255,255,0.2);}
         <div class="resume-badge-action" onclick="uploadResume()">Upload</div>
       </div>
       <button class="start-btn" id="start-btn" onclick="startSession()">Start session →</button>
+    </div>
+
+    <div class="roleplay-card fl" id="l-roleplay">
+      <div class="ctitle">AI Roleplay Mode</div>
+      <div class="rp-desc">Have a real conversation with AI. No buttons — just speak naturally.</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.35);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;">Scenario</div>
+      <input class="field-inp" id="scenario" placeholder="e.g. Salary negotiation, Difficult job interview, Cold sales call" style="margin-bottom:12px;" />
+      <button class="rp-btn" id="rp-start-btn" onclick="startRoleplay()">🎭 Start Roleplay</button>
     </div>
 
     <div class="tip-card fl" id="l-tip">
@@ -166,6 +204,35 @@ textarea#answer::placeholder{color:rgba(255,255,255,0.2);}
 
     </div>
 
+    <!-- ROLEPLAY AREA -->
+    <div class="roleplay-area" id="roleplay-area">
+
+      <div class="rp-status-bar">
+        <div class="rp-state-left">
+          <div class="rp-dot" id="rp-dot"></div>
+          <span class="rp-state-lbl" id="rp-state-lbl">Connecting...</span>
+        </div>
+        <button class="rp-end-btn" onclick="endRoleplay()">End Session</button>
+      </div>
+
+      <div class="rp-question-card">
+        <div class="rp-q-lbl" id="rp-char-lbl">AI Interviewer</div>
+        <div class="rp-q-text" id="rp-question">Waiting...</div>
+      </div>
+
+      <div class="rp-mic-wrap" id="rp-mic-wrap" style="display:none;">
+        <div class="rp-mic">🎤</div>
+      </div>
+
+      <div id="rp-feedback-wrap" style="display:none;">
+        <div class="rp-feedback-card">
+          <div class="rp-score" id="rp-score"></div>
+          <div class="rp-feedback-body" id="rp-feedback-body"></div>
+        </div>
+      </div>
+
+    </div>
+
   </div>
 
 </div>
@@ -179,23 +246,39 @@ var questionCount = 1;
 var currentAudio = null;
 var domainName = '';
 
+// Pre-fill domain from jobs tracker "Practice for this role"
+(function(){
+  var role = sessionStorage.getItem('practice_role');
+  if(role){
+    document.getElementById('domain').value = role;
+    sessionStorage.removeItem('practice_role');
+  }
+})();
+
 // Load user info
 fetch('/me', {credentials:'include'})
   .then(function(r){ if(!r.ok) window.location.href='/'; return r.json(); })
   .then(function(user){
     document.getElementById('user-avatar').textContent = user.name.charAt(0).toUpperCase();
     document.getElementById('name').value = user.name;
-    if(user.resume_text){
+  });
+
+// Check resume status separately (GET /me doesn't include resume_text)
+fetch('/resume-status', {credentials:'include'})
+  .then(function(r){ return r.ok ? r.json() : null; })
+  .then(function(data){
+    if(data && data.has_resume){
       document.getElementById('resume-badge').className = 'resume-badge ok';
       document.getElementById('resume-txt').textContent = 'Resume uploaded — questions personalized';
       document.getElementById('resume-badge').querySelector('.resume-badge-action').textContent = 'Change';
     }
-  });
+  }).catch(function(){});
 
 // Page load animations
 setTimeout(function(){
   document.getElementById('l-setup').classList.add('in');
-  setTimeout(function(){ document.getElementById('l-tip').classList.add('in'); }, 150);
+  setTimeout(function(){ document.getElementById('l-roleplay').classList.add('in'); }, 80);
+  setTimeout(function(){ document.getElementById('l-tip').classList.add('in'); }, 160);
   setTimeout(function(){ document.getElementById('empty-state').classList.add('in'); }, 100);
 }, 100);
 
@@ -356,7 +439,177 @@ function uploadResume(){
   input.click();
 }
 
-// Voice recording
+// ===== ROLEPLAY =====
+var rp = {
+  ws: null,
+  mediaRecorder: null,
+  stream: null,
+  audioCtx: null,
+  analyser: null,
+  isListening: false,
+  silenceStart: null,
+  speechStart: null,
+  currentAudio: null
+};
+var RP_SILENCE_THRESHOLD = 0.015;
+var RP_SILENCE_MS        = 1500;
+var RP_MIN_SPEECH_MS     = 600;
+
+function rpSetState(state, label){
+  var dot = document.getElementById('rp-dot');
+  var lbl = document.getElementById('rp-state-lbl');
+  var mic = document.getElementById('rp-mic-wrap');
+  var colors = {connecting:'#f59e0b', speaking:'#818cf8', listening:'#34d399', processing:'#f59e0b', done:'#34d399', error:'#f87171'};
+  if(dot) dot.style.background = colors[state] || '#fff';
+  if(lbl) lbl.textContent = label;
+  if(mic) mic.style.display = (state === 'listening') ? 'flex' : 'none';
+}
+
+function startRoleplay(){
+  var domain = document.getElementById('domain').value.trim();
+  if(!domain){ alert('Please enter a topic first'); return; }
+
+  document.getElementById('empty-state').style.display = 'none';
+  document.getElementById('session-area').classList.remove('active');
+  document.getElementById('roleplay-area').classList.add('active');
+  document.getElementById('rp-feedback-wrap').style.display = 'none';
+  document.getElementById('rp-start-btn').disabled = true;
+
+  var charLabel = document.getElementById('rp-char-lbl');
+  if(charLabel) charLabel.textContent = scenario ? scenario : 'AI Interviewer';
+
+  rpSetState('connecting', 'Connecting...');
+
+  var scenario = document.getElementById('scenario').value.trim();
+  var wsUrl = 'ws://127.0.0.1:8000/ws/roleplay?domain=' + encodeURIComponent(domain || 'General') + '&scenario=' + encodeURIComponent(scenario);
+  rp.ws = new WebSocket(wsUrl);
+
+  rp.ws.onopen = function(){
+    rpSetState('connecting', 'Connected — first question loading...');
+  };
+
+  rp.ws.onmessage = function(event){
+    var data;
+    try{ data = JSON.parse(event.data); } catch(e){ return; }
+    if(data.type === 'question')  rpShowQuestion(data.text, data.audio);
+    if(data.type === 'feedback')  rpShowFeedback(data.score, data.feedback);
+    if(data.type === 'error')     rpSetState('error', 'Error: ' + data.message);
+  };
+
+  rp.ws.onclose = function(){
+    rpSetState('done', 'Session ended');
+    document.getElementById('rp-start-btn').disabled = false;
+  };
+
+  rp.ws.onerror = function(){
+    rpSetState('error', 'Connection failed');
+    document.getElementById('rp-start-btn').disabled = false;
+  };
+}
+
+function rpShowQuestion(text, audioB64){
+  document.getElementById('rp-question').textContent = text;
+  document.getElementById('rp-feedback-wrap').style.display = 'none';
+  rpSetState('speaking', 'AI Speaking');
+
+  if(rp.currentAudio){ rp.currentAudio.pause(); }
+  rp.currentAudio = new Audio('data:audio/mp3;base64,' + audioB64);
+  rp.currentAudio.onended = function(){ rpStartListening(); };
+  rp.currentAudio.play().catch(function(){ rpStartListening(); });
+}
+
+async function rpStartListening(){
+  rpSetState('listening', 'Listening...');
+  rp.isListening = true;
+  rp.silenceStart = null;
+  rp.speechStart = Date.now();
+
+  try{
+    rp.stream = await navigator.mediaDevices.getUserMedia({audio:true});
+  } catch(e){
+    rpSetState('error', 'Microphone access denied');
+    return;
+  }
+
+  rp.audioCtx  = new AudioContext();
+  rp.analyser  = rp.audioCtx.createAnalyser();
+  rp.analyser.fftSize = 1024;
+  rp.audioCtx.createMediaStreamSource(rp.stream).connect(rp.analyser);
+
+  rp.mediaRecorder = new MediaRecorder(rp.stream);
+  rp.mediaRecorder.ondataavailable = function(e){
+    if(rp.ws && rp.ws.readyState === WebSocket.OPEN && e.data.size > 0)
+      rp.ws.send(e.data);
+  };
+  rp.mediaRecorder.start(100);
+
+  rpCheckSilence();
+}
+
+function rpCheckSilence(){
+  if(!rp.isListening) return;
+  var buf = new Float32Array(rp.analyser.fftSize);
+  rp.analyser.getFloatTimeDomainData(buf);
+  var rms = Math.sqrt(buf.reduce(function(s,v){return s+v*v;},0) / buf.length);
+
+  if(Date.now() - rp.speechStart > RP_MIN_SPEECH_MS){
+    if(rms < RP_SILENCE_THRESHOLD){
+      if(!rp.silenceStart) rp.silenceStart = Date.now();
+      else if(Date.now() - rp.silenceStart > RP_SILENCE_MS){
+        rpStopListening();
+        return;
+      }
+    } else {
+      rp.silenceStart = null;
+    }
+  }
+  requestAnimationFrame(rpCheckSilence);
+}
+
+function rpStopListening(){
+  rp.isListening = false;
+  rpSetState('processing', 'Processing...');
+
+  if(rp.mediaRecorder && rp.mediaRecorder.state !== 'inactive'){
+    rp.mediaRecorder.onstop = function(){
+      if(rp.ws && rp.ws.readyState === WebSocket.OPEN)
+        rp.ws.send(JSON.stringify({type:'end_of_speech'}));
+    };
+    rp.mediaRecorder.stop();
+  }
+  if(rp.stream)   rp.stream.getTracks().forEach(function(t){t.stop();});
+  if(rp.audioCtx) rp.audioCtx.close().catch(function(){});
+}
+
+function rpShowFeedback(score, feedback){
+  var wrap = document.getElementById('rp-feedback-wrap');
+  document.getElementById('rp-score').textContent = 'Score: ' + score + ' / 15';
+  document.getElementById('rp-feedback-body').innerHTML = feedback
+    .replace(/Strengths:/g,  '<b>Strengths:</b>')
+    .replace(/Weaknesses:/g, '<br><br><b>Weaknesses:</b>')
+    .replace(/Tip:/g,        '<br><br><b>Tip:</b>')
+    .replace(/Example:/g,    '<br><br><b>Example:</b>');
+  wrap.style.display = 'block';
+  rpSetState('done', 'Answer evaluated — next question incoming...');
+}
+
+function endRoleplay(){
+  rp.isListening = false;
+  if(rp.ws && rp.ws.readyState === WebSocket.OPEN){
+    rp.ws.send(JSON.stringify({type:'end_session'}));
+    rp.ws.close();
+  }
+  rp.ws = null;
+  if(rp.stream)      rp.stream.getTracks().forEach(function(t){t.stop();});
+  if(rp.audioCtx)    rp.audioCtx.close().catch(function(){});
+  if(rp.currentAudio){ rp.currentAudio.pause(); rp.currentAudio = null; }
+
+  document.getElementById('roleplay-area').classList.remove('active');
+  document.getElementById('empty-state').style.display = '';
+  document.getElementById('rp-start-btn').disabled = false;
+}
+
+// ===== VOICE RECORDING (existing) =====
 window.addEventListener('load', function(){
   var recordBtn = document.getElementById('recordBtn');
   var recordStatus = document.getElementById('recordStatus');
