@@ -38,7 +38,7 @@ def login(data: LoginRequest, response: Response):
     access_token = create_access_token({"sub": str(user_id)})
     refresh_token = create_refresh_token()
 
-    # ✅ save refresh token in DB
+    # ✅ save refresh token in DB and fetch profile_completed
     conn = get_connection()
     cursor = conn.cursor()
 
@@ -47,6 +47,10 @@ def login(data: LoginRequest, response: Response):
         SET refresh_token = ?
         WHERE id = ?
     """, (refresh_token, user_id))
+
+    cursor.execute("SELECT profile_completed FROM users WHERE id = ?", (user_id,))
+    row = cursor.fetchone()
+    profile_completed = bool(row[0]) if row and row[0] else False
 
     conn.commit()
     conn.close()
@@ -59,12 +63,12 @@ def login(data: LoginRequest, response: Response):
         secure=False
     )
 
-    # ✅ RETURN refresh token (THIS WAS MISSING)
     return {
         "message": "Login successful",
         "user_id": user_id,
         "email": email,
-        "refresh_token": refresh_token
+        "refresh_token": refresh_token,
+        "profile_completed": profile_completed
     }
 
 @router.post("/logout")
@@ -149,3 +153,23 @@ def complete_onboarding(user_id: int = Depends(get_current_user)):
     conn.commit()
     conn.close()
     return {"message": "Onboarding complete"}
+
+
+@router.get("/profile-status")
+def profile_status(user_id: int = Depends(get_current_user)):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT profile_completed FROM users WHERE id = ?", (user_id,))
+    row = cursor.fetchone()
+    conn.close()
+    return {"profile_completed": bool(row[0]) if row and row[0] else False}
+
+
+@router.post("/complete-profile")
+def complete_profile(user_id: int = Depends(get_current_user)):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE users SET profile_completed = 1 WHERE id = ?", (user_id,))
+    conn.commit()
+    conn.close()
+    return {"message": "Profile complete"}

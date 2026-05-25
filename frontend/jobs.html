@@ -3,94 +3,142 @@
 <head>
 <title>CareerQuest — Job Tracker</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif;}
-html{font-size:19px;}
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Inter',Arial,sans-serif;}
+html{font-size:16px;}
 body{background:#111118;color:#fff;min-height:100vh;display:flex;flex-direction:column;}
 
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;border-bottom:0.5px solid rgba(255,255,255,0.07);}
-.logo{display:flex;align-items:center;gap:8px;}
-.lm{width:28px;height:28px;background:#6366f1;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;}
-.ln{font-size:15px;font-weight:600;color:#fff;}
-.pills{display:flex;gap:2px;background:rgba(255,255,255,0.05);border-radius:10px;padding:3px;}
-.pill{padding:7px 16px;border-radius:8px;font-size:13px;color:rgba(255,255,255,0.4);cursor:pointer;border:none;background:none;transition:all .2s;}
-.pill:hover{color:rgba(255,255,255,0.7);}
-.pill.active{background:#1e1e2e;color:#fff;}
-.ib{width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;cursor:pointer;}
-.av{width:32px;height:32px;border-radius:50%;background:#4f46e5;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:13px 28px;border-bottom:1px solid rgba(255,255,255,0.05);}
+.logo{display:flex;align-items:center;gap:9px;}
+.lm{width:30px;height:30px;background:#6366f1;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;}
+.ln{font-size:15px;font-weight:700;color:#fff;letter-spacing:-0.01em;}
+.pills{display:flex;gap:2px;background:rgba(255,255,255,0.04);border-radius:10px;padding:3px;}
+.pill{padding:7px 15px;border-radius:8px;font-size:13px;color:rgba(255,255,255,0.35);cursor:pointer;border:none;background:none;transition:all .18s;font-weight:500;}
+.pill:hover{color:rgba(255,255,255,0.65);}
+.pill.active{background:#1e1e2e;color:#fff;box-shadow:0 1px 4px rgba(0,0,0,0.3);}
+.ib{width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;}
+.av{width:32px;height:32px;border-radius:50%;background:#4f46e5;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;}
 
 .body{flex:1;padding:22px 28px;}
 
-.ft{opacity:0;transform:translateY(-40px);transition:opacity 0.45s ease,transform 0.45s ease;}
-.fl{opacity:0;transform:translateX(-60px);transition:opacity 0.45s ease,transform 0.45s ease;}
-.fr{opacity:0;transform:translateX(60px);transition:opacity 0.45s ease,transform 0.45s ease;}
-.fb{opacity:0;transform:translateY(40px);transition:opacity 0.45s ease,transform 0.45s ease;}
+/* ── Animations ── */
+.ft{opacity:0;transform:translateY(-36px);transition:opacity 0.42s ease,transform 0.42s ease;}
+.fl{opacity:0;transform:translateX(-52px);transition:opacity 0.42s ease,transform 0.42s ease;}
+.fr{opacity:0;transform:translateX(52px);transition:opacity 0.42s ease,transform 0.42s ease;}
+.fb{opacity:0;transform:translateY(36px);transition:opacity 0.42s ease,transform 0.42s ease;}
 .in{opacity:1!important;transform:translate(0,0)!important;}
 
-/* Page header */
+/* ── Page header ── */
 .page-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:20px;}
-.page-title{font-size:28px;font-weight:800;color:#fff;}
+.page-title{font-size:32px;font-weight:700;color:#fff;letter-spacing:-0.02em;}
 .page-title span{color:#a78bfa;}
-.page-sub{font-size:13px;color:rgba(255,255,255,0.35);margin-top:3px;}
-.add-btn{display:flex;align-items:center;gap:8px;padding:10px 20px;background:#6366f1;border:none;border-radius:9px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;transition:background .2s;}
-.add-btn:hover{background:#4f46e5;}
+.page-sub{font-size:13px;color:rgba(255,255,255,0.3);margin-top:4px;}
+.add-btn{display:flex;align-items:center;gap:8px;padding:10px 20px;background:#7c3aed;border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;transition:background .18s;letter-spacing:0.01em;}
+.add-btn:hover{background:#6d28d9;}
 
-/* Stats row */
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;}
-.stat-card{background:#1a1a26;border-radius:11px;padding:14px 16px;}
-.stat-lbl{font-size:11px;color:rgba(255,255,255,0.35);margin-bottom:8px;}
-.stat-val{font-size:32px;font-weight:700;color:#fff;}
-.stat-sub{font-size:11px;margin-top:3px;}
+/* ── Stat cards with progress bars ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+.stat-card{background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px 22px;}
+.stat-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.stat-lbl{font-size:11px;font-weight:600;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.06em;}
+.stat-pct{font-size:11px;font-weight:700;color:rgba(255,255,255,0.4);}
+.stat-track{height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;margin-bottom:12px;}
+.stat-fill{height:5px;border-radius:3px;width:0%;transition:width 1s ease;}
+.sf1{background:linear-gradient(90deg,#7c3aed,#a78bfa);}
+.sf2{background:linear-gradient(90deg,#f59e0b,#fbbf24);}
+.sf3{background:linear-gradient(90deg,#10b981,#34d399);}
+.sf4{background:linear-gradient(90deg,#818cf8,#a78bfa);}
+.stat-val{font-size:36px;font-weight:800;color:#fff;letter-spacing:-0.03em;line-height:1;margin-bottom:4px;}
+.stat-sub{font-size:11px;color:rgba(255,255,255,0.28);}
 
-/* Jobs grid */
+/* ── Jobs grid ── */
 .jobs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
-.job-card{background:#1a1a26;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px;transition:border .2s;}
-.job-card:hover{border:0.5px solid rgba(99,102,241,0.3);}
-.job-card{border:0.5px solid transparent;}
+.job-card{background:#1a1a2e;border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:18px 20px;display:flex;flex-direction:column;gap:10px;transition:border-color .2s;}
+.job-card:hover{border-color:rgba(124,58,237,0.3);}
 
 .job-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
 .job-company{font-size:15px;font-weight:700;color:#fff;line-height:1.3;}
-.job-role{font-size:12px;color:rgba(255,255,255,0.45);margin-top:2px;}
+.job-role{font-size:12px;color:rgba(255,255,255,0.4);margin-top:3px;}
 
 .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap;}
-.badge-applied{background:rgba(99,102,241,0.15);color:#818cf8;}
+.badge-applied{background:rgba(124,58,237,0.15);color:#a78bfa;}
 .badge-shortlisted{background:rgba(245,158,11,0.15);color:#f59e0b;}
 .badge-interview{background:rgba(59,130,246,0.15);color:#60a5fa;}
-.badge-offer{background:rgba(52,211,153,0.1);color:#34d399;}
+.badge-offer{background:rgba(16,185,129,0.12);color:#10b981;}
 .badge-rejected{background:rgba(248,113,113,0.1);color:#f87171;}
 
-.job-meta{font-size:11px;color:rgba(255,255,255,0.25);}
-.job-notes{font-size:12px;color:rgba(255,255,255,0.4);line-height:1.55;border-left:2px solid rgba(255,255,255,0.07);padding-left:10px;min-height:18px;}
+.job-meta{font-size:11px;color:rgba(255,255,255,0.22);}
+.job-notes{font-size:12px;color:rgba(255,255,255,0.38);line-height:1.6;border-left:2px solid rgba(255,255,255,0.07);padding-left:10px;min-height:18px;}
 
-.job-status-select{width:100%;padding:6px 10px;background:rgba(255,255,255,0.04);border:0.5px solid rgba(255,255,255,0.08);border-radius:7px;color:rgba(255,255,255,0.6);font-size:12px;outline:none;cursor:pointer;}
+.job-status-select{width:100%;padding:7px 11px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:rgba(255,255,255,0.55);font-size:12px;outline:none;cursor:pointer;font-family:inherit;}
 .job-status-select:focus{border-color:rgba(99,102,241,0.4);}
-.job-status-select option{background:#1a1a26;}
+.job-status-select option{background:#1a1a2e;}
 
-.job-actions{display:flex;gap:8px;margin-top:4px;}
-.practice-btn{flex:1;padding:8px;background:rgba(99,102,241,0.12);border:0.5px solid rgba(99,102,241,0.2);border-radius:7px;color:#818cf8;font-size:12px;font-weight:500;cursor:pointer;transition:all .2s;}
-.practice-btn:hover{background:rgba(99,102,241,0.25);}
-.delete-btn{width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:rgba(248,113,113,0.07);border:0.5px solid rgba(248,113,113,0.15);border-radius:7px;cursor:pointer;font-size:14px;transition:all .2s;flex-shrink:0;}
-.delete-btn:hover{background:rgba(248,113,113,0.2);}
+.job-actions{display:flex;gap:8px;margin-top:2px;}
+.practice-btn{flex:1;padding:8px;background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.2);border-radius:8px;color:#a78bfa;font-size:12px;font-weight:500;cursor:pointer;transition:all .18s;font-family:inherit;}
+.practice-btn:hover{background:rgba(124,58,237,0.22);}
+.delete-btn{width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:rgba(248,113,113,0.07);border:1px solid rgba(248,113,113,0.15);border-radius:8px;cursor:pointer;font-size:14px;transition:all .18s;flex-shrink:0;}
+.delete-btn:hover{background:rgba(248,113,113,0.18);}
 
-.empty-state{grid-column:1/-1;text-align:center;padding:60px 20px;}
-.empty-icon{font-size:40px;margin-bottom:14px;opacity:0.4;}
-.empty-txt{font-size:14px;color:rgba(255,255,255,0.25);}
-.empty-cta{margin-top:16px;padding:10px 22px;background:#6366f1;border:none;border-radius:9px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;}
+.tailor-btn{flex:1;padding:8px;background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.22);border-radius:8px;color:#818cf8;font-size:12px;font-weight:500;cursor:pointer;transition:all .18s;font-family:inherit;}
+.tailor-btn:hover{background:rgba(99,102,241,0.22);}
 
-/* Modal */
-.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;align-items:center;justify-content:center;}
+/* Empty state */
+.empty-state{grid-column:1/-1;text-align:center;padding:70px 20px;}
+.empty-icon{font-size:40px;margin-bottom:14px;opacity:0.22;}
+.empty-txt{font-size:14px;color:rgba(255,255,255,0.22);}
+.empty-cta{margin-top:18px;padding:10px 24px;background:#7c3aed;border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;transition:background .18s;}
+.empty-cta:hover{background:#6d28d9;}
+
+/* ── Modal ── */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:100;align-items:center;justify-content:center;}
 .overlay.show{display:flex;}
-.modal{background:#1a1a26;border-radius:14px;padding:24px;width:100%;max-width:440px;border:0.5px solid rgba(255,255,255,0.07);}
-.modal-title{font-size:17px;font-weight:700;color:#fff;margin-bottom:18px;}
-.field-lbl{font-size:11px;color:rgba(255,255,255,0.35);margin-bottom:5px;}
+.modal{background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:18px;padding:26px;width:100%;max-width:440px;}
+.modal-title{font-size:17px;font-weight:700;color:#fff;letter-spacing:-0.01em;margin-bottom:20px;}
+.field-lbl{font-size:11px;color:rgba(255,255,255,0.35);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;}
 .field-wrap{margin-bottom:14px;}
-.inp{width:100%;padding:11px 13px;background:rgba(255,255,255,0.04);border:0.5px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;font-size:13px;outline:none;}
-.inp:focus{border-color:rgba(99,102,241,0.5);}
-.inp::placeholder{color:rgba(255,255,255,0.2);}
-.inp option{background:#1a1a26;}
-.modal-actions{display:flex;gap:10px;margin-top:6px;}
-.modal-cancel{flex:1;padding:11px;background:rgba(255,255,255,0.05);border:0.5px solid rgba(255,255,255,0.08);border-radius:8px;color:rgba(255,255,255,0.5);font-size:13px;cursor:pointer;}
-.modal-save{flex:2;padding:11px;background:#6366f1;border:none;border-radius:8px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;}
-.modal-save:hover{background:#4f46e5;}
+.inp{width:100%;padding:11px 13px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:9px;color:#fff;font-size:13px;outline:none;font-family:inherit;}
+.inp:focus{border-color:rgba(99,102,241,0.45);}
+.inp::placeholder{color:rgba(255,255,255,0.18);}
+.inp option{background:#1a1a2e;}
+.modal-actions{display:flex;gap:10px;margin-top:8px;}
+.modal-cancel{flex:1;padding:11px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:9px;color:rgba(255,255,255,0.45);font-size:13px;cursor:pointer;font-family:inherit;transition:all .15s;}
+.modal-cancel:hover{background:rgba(255,255,255,0.09);}
+.modal-save{flex:2;padding:11px;background:#7c3aed;border:none;border-radius:9px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .15s;}
+.modal-save:hover{background:#6d28d9;}
+
+/* ── Tailor modal extras ── */
+.modal-close{position:absolute;top:18px;right:20px;background:none;border:none;color:rgba(255,255,255,0.3);font-size:20px;cursor:pointer;line-height:1;padding:2px 6px;border-radius:6px;transition:color .15s;}
+.modal-close:hover{color:#fff;}
+.modal-relative{position:relative;}
+.tailor-job-label{font-size:13px;font-weight:600;color:#a78bfa;margin-bottom:18px;display:flex;align-items:center;gap:7px;}
+.tailor-job-label span{color:rgba(255,255,255,0.4);font-weight:400;}
+
+.analyze-btn{width:100%;padding:12px;background:#4f46e5;border:none;border-radius:9px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;transition:background .18s;font-family:inherit;letter-spacing:0.01em;}
+.analyze-btn:hover{background:#4338ca;}
+.analyze-btn:disabled{opacity:0.5;cursor:default;}
+
+/* Results */
+.results{display:none;margin-top:20px;border-top:1px solid rgba(255,255,255,0.06);padding-top:18px;}
+.results.show{display:block;}
+.score-row{display:flex;align-items:center;gap:16px;margin-bottom:18px;}
+.score-num{font-size:52px;font-weight:800;letter-spacing:-0.04em;line-height:1;}
+.score-green{color:#10b981;}
+.score-amber{color:#f59e0b;}
+.score-red{color:#f87171;}
+.score-meta{display:flex;flex-direction:column;gap:3px;}
+.score-lbl{font-size:11px;font-weight:600;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.07em;}
+.score-sub{font-size:12px;color:rgba(255,255,255,0.35);}
+
+.kw-section{margin-bottom:14px;}
+.kw-title{font-size:11px;font-weight:600;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:8px;}
+.kw-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.kw-chip{padding:4px 11px;border-radius:20px;font-size:12px;font-weight:500;}
+.kw-match{background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.25);color:#10b981;}
+.kw-miss{background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.2);color:#f87171;}
+
+.low-match-warn{display:flex;align-items:flex-start;gap:10px;background:rgba(248,113,113,0.07);border:1px solid rgba(248,113,113,0.18);border-radius:10px;padding:12px 14px;margin-top:4px;}
+.warn-icon{font-size:16px;flex-shrink:0;margin-top:1px;}
+.warn-txt{font-size:12px;color:rgba(248,113,113,0.85);line-height:1.5;}
 </style>
 </head>
 <body>
@@ -125,24 +173,28 @@ body{background:#111118;color:#fff;min-height:100vh;display:flex;flex-direction:
 
   <div class="stats-row">
     <div class="stat-card ft" id="jb-s1">
-      <div class="stat-lbl">Total applied</div>
+      <div class="stat-header"><div class="stat-lbl">Total applied</div><span class="stat-pct" id="pct-total">—</span></div>
+      <div class="stat-track"><div class="stat-fill sf1" id="bar-total"></div></div>
       <div class="stat-val" id="stat-total">0</div>
-      <div class="stat-sub" style="color:rgba(255,255,255,0.3);">applications</div>
+      <div class="stat-sub">applications</div>
     </div>
     <div class="stat-card ft" id="jb-s2">
-      <div class="stat-lbl">In progress</div>
+      <div class="stat-header"><div class="stat-lbl">In progress</div><span class="stat-pct" id="pct-active">—</span></div>
+      <div class="stat-track"><div class="stat-fill sf2" id="bar-active"></div></div>
       <div class="stat-val" id="stat-active" style="color:#f59e0b;">0</div>
-      <div class="stat-sub" style="color:#f59e0b;">shortlisted + interview</div>
+      <div class="stat-sub">shortlisted + interview</div>
     </div>
     <div class="stat-card ft" id="jb-s3">
-      <div class="stat-lbl">Offers</div>
-      <div class="stat-val" id="stat-offers" style="color:#34d399;">0</div>
-      <div class="stat-sub" style="color:#34d399;">congratulations</div>
+      <div class="stat-header"><div class="stat-lbl">Offers</div><span class="stat-pct" id="pct-offers">—</span></div>
+      <div class="stat-track"><div class="stat-fill sf3" id="bar-offers"></div></div>
+      <div class="stat-val" id="stat-offers" style="color:#10b981;">0</div>
+      <div class="stat-sub">congratulations</div>
     </div>
     <div class="stat-card ft" id="jb-s4">
-      <div class="stat-lbl">Success rate</div>
+      <div class="stat-header"><div class="stat-lbl">Success rate</div><span class="stat-pct" id="pct-rate">—</span></div>
+      <div class="stat-track"><div class="stat-fill sf4" id="bar-rate"></div></div>
       <div class="stat-val" id="stat-rate" style="color:#818cf8;">0%</div>
-      <div class="stat-sub" style="color:rgba(255,255,255,0.3);">offers / applied</div>
+      <div class="stat-sub">offers / applied</div>
     </div>
   </div>
 
@@ -195,6 +247,48 @@ body{background:#111118;color:#fff;min-height:100vh;display:flex;flex-direction:
   </div>
 </div>
 
+<!-- Tailor Resume Modal -->
+<div class="overlay" id="tailor-modal" onclick="tailorOverlayClick(event)">
+  <div class="modal modal-relative" style="max-width:500px;">
+    <button class="modal-close" onclick="closeTailorModal()">×</button>
+    <div class="modal-title">Tailor Resume</div>
+    <div class="tailor-job-label" id="tailor-job-label">
+      — <span>at</span> —
+    </div>
+
+    <div class="field-wrap">
+      <div class="field-lbl">Paste the job description</div>
+      <textarea class="inp" id="tailor-jd" rows="6" placeholder="Paste the full job description here…" style="resize:vertical;"></textarea>
+    </div>
+
+    <button class="analyze-btn" id="analyze-btn" onclick="analyzeMatch()">Analyze Match</button>
+
+    <div class="results" id="tailor-results">
+      <div class="score-row">
+        <div class="score-num" id="tailor-score">—</div>
+        <div class="score-meta">
+          <div class="score-lbl">Resume Match</div>
+          <div class="score-sub" id="tailor-score-sub">—</div>
+        </div>
+      </div>
+
+      <div class="kw-section">
+        <div class="kw-title">Strong matches</div>
+        <div class="kw-chips" id="kw-matches"></div>
+      </div>
+      <div class="kw-section">
+        <div class="kw-title">Missing keywords</div>
+        <div class="kw-chips" id="kw-missing"></div>
+      </div>
+
+      <div class="low-match-warn" id="low-match-warn" style="display:none;">
+        <div class="warn-icon">⚠️</div>
+        <div class="warn-txt">Low match — this role may not align with your current resume. Consider tailoring your skills section or uploading an updated resume.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 var allJobs = [];
 
@@ -216,15 +310,42 @@ function formatDate(d){
   return months[parseInt(parts[1],10)-1]+' '+parseInt(parts[2],10)+', '+parts[0];
 }
 
+function animBar(id, pct, dur){
+  var el = document.getElementById(id);
+  if(!el) return;
+  var s=0, step=pct/(dur/16);
+  var t=setInterval(function(){
+    s+=step; if(s>=pct){s=pct;clearInterval(t);}
+    el.style.width=Math.round(s)+'%';
+  },16);
+}
+
 function updateStats(jobs){
-  var total = jobs.length;
+  var total  = jobs.length;
   var active = jobs.filter(function(j){ return j.status==='Shortlisted'||j.status==='Interview'; }).length;
   var offers = jobs.filter(function(j){ return j.status==='Offer'; }).length;
   var rate   = total > 0 ? Math.round((offers/total)*100) : 0;
+
   document.getElementById('stat-total').textContent  = total;
   document.getElementById('stat-active').textContent = active;
   document.getElementById('stat-offers').textContent = offers;
   document.getElementById('stat-rate').textContent   = rate+'%';
+
+  // Progress bar percentages (cap goal at 20 applications for total)
+  var goalTotal = Math.max(total, 20);
+  var totalPct  = Math.round((total/goalTotal)*100);
+  var activePct = total ? Math.round((active/total)*100) : 0;
+  var offerPct  = total ? Math.round((offers/total)*100) : 0;
+
+  document.getElementById('pct-total').textContent  = totalPct+'%';
+  document.getElementById('pct-active').textContent = activePct+'%';
+  document.getElementById('pct-offers').textContent = offerPct+'%';
+  document.getElementById('pct-rate').textContent   = rate+'%';
+
+  animBar('bar-total',  totalPct, 800);
+  animBar('bar-active', activePct, 800);
+  animBar('bar-offers', offerPct, 800);
+  animBar('bar-rate',   rate, 800);
 }
 
 function renderJobs(jobs){
@@ -244,7 +365,7 @@ function renderJobs(jobs){
     card.id = 'jcard-'+job.id;
 
     var dateStr = job.date_applied ? '<span>📅 '+formatDate(job.date_applied)+'</span>' : '';
-    var notes   = job.notes ? job.notes : '<span style="opacity:0.35;font-style:italic;">No notes</span>';
+    var notes   = job.notes ? job.notes : '<span style="opacity:0.3;font-style:italic;">No notes</span>';
 
     card.innerHTML =
       '<div class="job-top">'+
@@ -262,7 +383,8 @@ function renderJobs(jobs){
         }).join('')+
       '</select>'+
       '<div class="job-actions">'+
-        '<button class="practice-btn" onclick="practiceRole(\''+escAttr(job.role)+'\')">🎯 Practice for this role</button>'+
+        '<button class="practice-btn" onclick="practiceRole(\''+escAttr(job.role)+'\')">🎯 Practice</button>'+
+        '<button class="tailor-btn" onclick="openTailorModal(\''+escAttr(job.role)+'\',\''+escAttr(job.company)+'\')">📄 Tailor Resume</button>'+
         '<button class="delete-btn" onclick="deleteJob('+job.id+')" title="Delete">🗑</button>'+
       '</div>';
 
@@ -379,13 +501,92 @@ function practiceRole(role){
   window.location.href = '/practice';
 }
 
+function openTailorModal(role, company){
+  document.getElementById('tailor-job-label').innerHTML =
+    escHtml(role) + ' <span>at</span> ' + escHtml(company);
+  document.getElementById('tailor-jd').value = '';
+  document.getElementById('tailor-results').classList.remove('show');
+  document.getElementById('analyze-btn').textContent = 'Analyze Match';
+  document.getElementById('analyze-btn').disabled = false;
+  document.getElementById('tailor-modal').classList.add('show');
+  setTimeout(function(){ document.getElementById('tailor-jd').focus(); }, 80);
+}
+
+function closeTailorModal(){
+  document.getElementById('tailor-modal').classList.remove('show');
+}
+
+function tailorOverlayClick(e){
+  if(e.target === document.getElementById('tailor-modal')) closeTailorModal();
+}
+
+async function analyzeMatch(){
+  var jd = document.getElementById('tailor-jd').value.trim();
+  if(!jd){ document.getElementById('tailor-jd').focus(); return; }
+
+  var btn = document.getElementById('analyze-btn');
+  btn.textContent = 'Analyzing…';
+  btn.disabled = true;
+
+  try{
+    var r = await fetch('/jobs/tailor-resume', {
+      method:'POST',
+      credentials:'include',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({job_description: jd})
+    });
+
+    if(r.status === 404){
+      alert('No resume found. Please upload your resume from the Profile page first.');
+      return;
+    }
+    if(!r.ok) throw new Error('Failed');
+
+    var data = await r.json();
+    showTailorResults(data.score, data.matches, data.missing);
+  } catch(e){
+    alert('Analysis failed. Please try again.');
+  } finally{
+    btn.textContent = 'Re-analyze';
+    btn.disabled = false;
+  }
+}
+
+function showTailorResults(score, matches, missing){
+  var scoreEl  = document.getElementById('tailor-score');
+  var subEl    = document.getElementById('tailor-score-sub');
+  var matchEl  = document.getElementById('kw-matches');
+  var missEl   = document.getElementById('kw-missing');
+  var warnEl   = document.getElementById('low-match-warn');
+
+  // Score number + color
+  scoreEl.textContent = score + '%';
+  scoreEl.className   = 'score-num ' + (score >= 70 ? 'score-green' : score >= 50 ? 'score-amber' : 'score-red');
+  subEl.textContent   = score >= 70 ? 'Strong alignment' : score >= 50 ? 'Partial alignment' : 'Weak alignment';
+
+  // Keyword chips
+  matchEl.innerHTML = (matches && matches.length)
+    ? matches.map(function(k){ return '<span class="kw-chip kw-match">'+escHtml(k)+'</span>'; }).join('')
+    : '<span style="font-size:12px;color:rgba(255,255,255,0.2);">None found</span>';
+
+  missEl.innerHTML = (missing && missing.length)
+    ? missing.map(function(k){ return '<span class="kw-chip kw-miss">'+escHtml(k)+'</span>'; }).join('')
+    : '<span style="font-size:12px;color:rgba(255,255,255,0.2);">None — great coverage!</span>';
+
+  // Low match warning
+  warnEl.style.display = score < 50 ? 'flex' : 'none';
+
+  document.getElementById('tailor-results').classList.add('show');
+  document.getElementById('tailor-results').scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
 // Page load animations
 var anims = [
   {id:'jb-header', delay:0},
-  {id:'jb-s1',     delay:100},
-  {id:'jb-s2',     delay:160},
-  {id:'jb-s3',     delay:220},
-  {id:'jb-s4',     delay:280}
+  {id:'jb-s1',     delay:80},
+  {id:'jb-s2',     delay:130},
+  {id:'jb-s3',     delay:180},
+  {id:'jb-s4',     delay:230}
 ];
 
 setTimeout(function(){
@@ -412,7 +613,7 @@ fetch('/me', {credentials:'include'})
   .catch(function(){ window.location.href='/'; });
 
 document.addEventListener('keydown', function(e){
-  if(e.key==='Escape') closeModal();
+  if(e.key==='Escape'){ closeModal(); closeTailorModal(); }
 });
 </script>
 </body>

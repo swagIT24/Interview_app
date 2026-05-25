@@ -3,67 +3,86 @@
 <head>
 <title>Progress — CareerQuest</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif;}
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Inter',Arial,sans-serif;}
 html{font-size:16px;}
 body{background:#111118;color:#fff;min-height:100vh;display:flex;flex-direction:column;}
 
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;border-bottom:0.5px solid rgba(255,255,255,0.07);}
-.logo{display:flex;align-items:center;gap:8px;}
-.lm{width:28px;height:28px;background:#6366f1;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;}
-.ln{font-size:15px;font-weight:600;color:#fff;}
-.pills{display:flex;gap:2px;background:rgba(255,255,255,0.05);border-radius:10px;padding:3px;}
-.pill{padding:7px 16px;border-radius:8px;font-size:13px;color:rgba(255,255,255,0.4);cursor:pointer;border:none;background:none;transition:all .2s;}
-.pill:hover{color:rgba(255,255,255,0.7);}
-.pill.active{background:#1e1e2e;color:#fff;}
-.av{width:32px;height:32px;border-radius:50%;background:#4f46e5;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:13px 28px;border-bottom:1px solid rgba(255,255,255,0.05);}
+.logo{display:flex;align-items:center;gap:9px;}
+.lm{width:30px;height:30px;background:#6366f1;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;}
+.ln{font-size:15px;font-weight:700;color:#fff;letter-spacing:-0.01em;}
+.pills{display:flex;gap:2px;background:rgba(255,255,255,0.04);border-radius:10px;padding:3px;}
+.pill{padding:7px 15px;border-radius:8px;font-size:13px;color:rgba(255,255,255,0.35);cursor:pointer;border:none;background:none;transition:all .18s;font-weight:500;}
+.pill:hover{color:rgba(255,255,255,0.65);}
+.pill.active{background:#1e1e2e;color:#fff;box-shadow:0 1px 4px rgba(0,0,0,0.3);}
+.av{width:32px;height:32px;border-radius:50%;background:#4f46e5;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;}
 
 .body{flex:1;padding:22px 28px;}
 
-.ft{opacity:0;transform:translateY(-30px);transition:opacity 0.4s ease,transform 0.4s ease;}
-.fl{opacity:0;transform:translateX(-40px);transition:opacity 0.4s ease,transform 0.4s ease;}
-.fr{opacity:0;transform:translateX(40px);transition:opacity 0.4s ease,transform 0.4s ease;}
-.fb{opacity:0;transform:translateY(30px);transition:opacity 0.4s ease,transform 0.4s ease;}
+/* ── Animations ── */
+.ft{opacity:0;transform:translateY(-36px);transition:opacity 0.42s ease,transform 0.42s ease;}
+.fl{opacity:0;transform:translateX(-52px);transition:opacity 0.42s ease,transform 0.42s ease;}
+.fr{opacity:0;transform:translateX(52px);transition:opacity 0.42s ease,transform 0.42s ease;}
+.fb{opacity:0;transform:translateY(36px);transition:opacity 0.42s ease,transform 0.42s ease;}
 .in{opacity:1!important;transform:translate(0,0)!important;}
 
+/* ── Page header ── */
 .page-header{margin-bottom:22px;}
-.page-title{font-size:28px;font-weight:800;color:#fff;}
+.page-title{font-size:32px;font-weight:700;color:#fff;letter-spacing:-0.02em;}
 .page-title span{color:#a78bfa;}
-.page-sub{font-size:13px;color:rgba(255,255,255,0.35);margin-top:3px;}
+.page-sub{font-size:13px;color:rgba(255,255,255,0.3);margin-top:4px;}
 
-.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
-.stat-card{background:#1a1a26;border-radius:12px;padding:18px 20px;}
-.stat-lbl{font-size:11px;color:rgba(255,255,255,0.35);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.06em;}
-.stat-val{font-size:36px;font-weight:700;color:#fff;margin-bottom:4px;}
-.stat-sub{font-size:11px;color:rgba(255,255,255,0.3);}
-.stat-trend{font-size:11px;margin-top:4px;}
+/* ── Big stats row ── */
+.big-stats{display:flex;align-items:center;justify-content:space-around;background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:24px 28px;margin-bottom:14px;}
+.bs{display:flex;flex-direction:column;align-items:center;text-align:center;flex:1;}
+.bs-divider{width:1px;height:60px;background:rgba(255,255,255,0.08);flex-shrink:0;}
+.bs-badge{display:inline-block;font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;margin-bottom:10px;letter-spacing:0.04em;}
+.badge-purple{background:rgba(124,58,237,0.15);color:#a78bfa;}
+.badge-amber{background:rgba(245,158,11,0.15);color:#f59e0b;}
+.badge-green{background:rgba(16,185,129,0.15);color:#10b981;}
+.badge-gold{background:rgba(251,191,36,0.15);color:#fbbf24;}
+.bs-val{font-size:52px;font-weight:800;color:#fff;line-height:1;letter-spacing:-0.04em;margin-bottom:8px;}
+.bs-lbl{font-size:11px;font-weight:500;color:rgba(255,255,255,0.3);}
 
-.section-card{background:#1a1a26;border-radius:12px;padding:18px 20px;margin-bottom:14px;}
-.ctitle{font-size:11px;font-weight:600;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:16px;}
+/* ── Chart ── */
+.chart-card{background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px 22px;margin-bottom:14px;}
+.ctitle{font-size:11px;font-weight:600;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:14px;}
+.chart-wrap{height:140px;margin-bottom:8px;}
+svg.ch{width:100%;height:100%;}
+.clbls{display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,0.18);}
+.clbl{flex:1;text-align:center;}
 
-.session-row{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-radius:9px;background:rgba(255,255,255,0.03);margin-bottom:7px;}
+/* ── Bottom grid ── */
+.bottom-grid{display:grid;grid-template-columns:1fr 220px;gap:14px;}
+.section-card{background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px 22px;}
+
+/* Session history rows */
+.session-row{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-radius:10px;background:rgba(255,255,255,0.02);margin-bottom:8px;border:1px solid rgba(255,255,255,0.04);}
 .session-row:last-child{margin-bottom:0;}
 .session-left{display:flex;flex-direction:column;gap:3px;}
-.session-domain{font-size:13px;font-weight:500;color:#fff;}
-.session-date{font-size:11px;color:rgba(255,255,255,0.3);}
+.session-domain{font-size:13px;font-weight:600;color:#fff;}
+.session-date{font-size:11px;color:rgba(255,255,255,0.28);}
 .session-right{display:flex;align-items:center;gap:12px;}
-.session-qs{font-size:11px;color:rgba(255,255,255,0.3);}
-.score-pill{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;}
-.score-high{background:rgba(52,211,153,0.12);color:#34d399;}
+.session-qs{font-size:11px;color:rgba(255,255,255,0.28);}
+.score-pill{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;}
+.score-high{background:rgba(16,185,129,0.12);color:#10b981;}
 .score-mid{background:rgba(245,158,11,0.12);color:#f59e0b;}
 .score-low{background:rgba(248,113,113,0.1);color:#f87171;}
 
-.empty-state{text-align:center;padding:50px 20px;}
-.empty-icon{font-size:40px;margin-bottom:14px;opacity:0.3;}
-.empty-txt{font-size:14px;color:rgba(255,255,255,0.25);line-height:1.7;}
-.empty-cta{margin-top:18px;display:inline-block;padding:10px 22px;background:#f59e0b;border:none;border-radius:9px;color:#1a0f00;font-size:13px;font-weight:600;cursor:pointer;}
+/* Empty state */
+.empty-state{text-align:center;padding:40px 20px;}
+.empty-icon{font-size:36px;margin-bottom:12px;opacity:0.25;}
+.empty-txt{font-size:13px;color:rgba(255,255,255,0.22);line-height:1.7;}
+.empty-cta{margin-top:16px;display:inline-block;padding:10px 22px;background:#f59e0b;border:none;border-radius:10px;color:#1a0f00;font-size:13px;font-weight:700;cursor:pointer;transition:background .15s;}
 .empty-cta:hover{background:#d97706;}
 
-.streak-row{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px;}
-.day-chip{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;}
-.day-on{background:rgba(99,102,241,0.3);color:#818cf8;}
-.day-off{background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.2);}
-
-.two-col{display:grid;grid-template-columns:1fr 220px;gap:14px;}
+/* Streak */
+.stk-num{font-size:44px;font-weight:800;color:#fbbf24;letter-spacing:-0.03em;line-height:1;margin-bottom:4px;}
+.stk-sub{font-size:11px;color:rgba(255,255,255,0.25);margin-bottom:14px;}
+.streak-row{display:flex;gap:5px;flex-wrap:wrap;}
+.day-chip{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;}
+.day-on{background:rgba(124,58,237,0.25);color:#a78bfa;border:1px solid rgba(124,58,237,0.3);}
+.day-off{background:rgba(255,255,255,0.03);color:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.04);}
 </style>
 </head>
 <body>
@@ -90,36 +109,62 @@ body{background:#111118;color:#fff;min-height:100vh;display:flex;flex-direction:
     <div class="page-sub">Track your growth across every session.</div>
   </div>
 
-  <div class="stats-grid">
-    <div class="stat-card ft" id="pg-s1">
-      <div class="stat-lbl">Sessions done</div>
-      <div class="stat-val" id="stat-sessions">0</div>
-      <div class="stat-sub">total interviews</div>
-      <div class="stat-trend" style="color:#818cf8;">keep going</div>
+  <!-- Big 4 stats -->
+  <div class="big-stats ft" id="pg-stats">
+    <div class="bs">
+      <span class="bs-badge badge-purple">All time</span>
+      <div class="bs-val" id="stat-sessions">0</div>
+      <div class="bs-lbl">Sessions done</div>
     </div>
-    <div class="stat-card ft" id="pg-s2">
-      <div class="stat-lbl">Avg score</div>
-      <div class="stat-val" id="stat-avg" style="color:#f59e0b;">0</div>
-      <div class="stat-sub">out of 15</div>
-      <div class="stat-trend" style="color:#34d399;">improving</div>
+    <div class="bs-divider"></div>
+    <div class="bs">
+      <span class="bs-badge badge-amber">Avg</span>
+      <div class="bs-val" id="stat-avg">0</div>
+      <div class="bs-lbl">Score / 15</div>
     </div>
-    <div class="stat-card ft" id="pg-s3">
-      <div class="stat-lbl">Best score</div>
-      <div class="stat-val" id="stat-best" style="color:#34d399;">0</div>
-      <div class="stat-sub">personal best</div>
-      <div class="stat-trend" style="color:rgba(255,255,255,0.3);">out of 15</div>
+    <div class="bs-divider"></div>
+    <div class="bs">
+      <span class="bs-badge badge-green">Personal best</span>
+      <div class="bs-val" id="stat-best">0</div>
+      <div class="bs-lbl">Best score</div>
     </div>
-    <div class="stat-card ft" id="pg-s4">
-      <div class="stat-lbl">Day streak</div>
-      <div class="stat-val" id="stat-streak" style="color:#fbbf24;">0</div>
-      <div class="stat-sub">days in a row</div>
-      <div class="stat-trend" style="color:rgba(255,255,255,0.3);">stay consistent</div>
+    <div class="bs-divider"></div>
+    <div class="bs">
+      <span class="bs-badge badge-gold">🔥 Streak</span>
+      <div class="bs-val" id="stat-streak">0</div>
+      <div class="bs-lbl">Days in a row</div>
     </div>
   </div>
 
-  <div class="two-col">
+  <!-- Score trend chart -->
+  <div class="chart-card fb" id="pg-chart">
+    <div class="ctitle">Score trend — last 5 sessions</div>
+    <div class="chart-wrap">
+      <svg class="ch" viewBox="0 0 400 130" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="pg1" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#818cf8" stop-opacity="0.45"/>
+            <stop offset="100%" stop-color="#818cf8" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <path id="pc-area" d="" fill="url(#pg1)"/>
+        <path id="pc-line" d="" fill="none" stroke="#818cf8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle id="pc-dot0" cx="0" cy="0" r="4" fill="#818cf8" opacity="0"/>
+        <circle id="pc-dot1" cx="0" cy="0" r="4" fill="#818cf8" opacity="0"/>
+        <circle id="pc-dot2" cx="0" cy="0" r="4" fill="#818cf8" opacity="0"/>
+        <circle id="pc-dot3" cx="0" cy="0" r="4" fill="#818cf8" opacity="0"/>
+        <circle id="pc-dot4" cx="0" cy="0" r="5" fill="#f59e0b" opacity="0"/>
+      </svg>
+    </div>
+    <div class="clbls" id="chart-labels">
+      <span class="clbl">—</span><span class="clbl">—</span><span class="clbl">—</span><span class="clbl">—</span><span class="clbl">Today</span>
+    </div>
+  </div>
 
-    <div class="section-card fb" id="pg-history">
+  <!-- Bottom: history + streak -->
+  <div class="bottom-grid">
+
+    <div class="section-card fl" id="pg-history">
       <div class="ctitle">Session history</div>
       <div id="history-list">
         <div class="empty-state">
@@ -132,8 +177,8 @@ body{background:#111118;color:#fff;min-height:100vh;display:flex;flex-direction:
 
     <div class="section-card fr" id="pg-streak-card">
       <div class="ctitle">This week</div>
-      <div style="font-size:42px;font-weight:700;color:#fbbf24;margin-bottom:4px;" id="streak-num">0</div>
-      <div style="font-size:12px;color:rgba(255,255,255,0.3);margin-bottom:16px;">days in a row</div>
+      <div class="stk-num" id="streak-num">0</div>
+      <div class="stk-sub">days in a row</div>
       <div class="streak-row">
         <div class="day-chip day-off" id="d-mon">M</div>
         <div class="day-chip day-off" id="d-tue">T</div>
@@ -151,13 +196,11 @@ body{background:#111118;color:#fff;min-height:100vh;display:flex;flex-direction:
 
 <script>
 var anims = [
-  {id:'pg-header', delay:0},
-  {id:'pg-s1',     delay:100},
-  {id:'pg-s2',     delay:160},
-  {id:'pg-s3',     delay:220},
-  {id:'pg-s4',     delay:280},
-  {id:'pg-history',delay:380},
-  {id:'pg-streak-card', delay:420}
+  {id:'pg-header',       delay:0},
+  {id:'pg-stats',        delay:80},
+  {id:'pg-chart',        delay:180},
+  {id:'pg-history',      delay:280},
+  {id:'pg-streak-card',  delay:320}
 ];
 
 setTimeout(function(){
@@ -182,11 +225,61 @@ function formatDate(iso){
   return months[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();
 }
 
+function drawProgressChart(scores, labels){
+  if(!scores || !scores.length) return;
+  var W=400, H=130;
+  var pts = scores.map(function(s,i){
+    var x = scores.length===1 ? W/2 : Math.round((i/(scores.length-1))*W);
+    var y = Math.round(H - (s/15)*H*0.88 - 8);
+    return [x, y];
+  });
+
+  function smoothLine(p){
+    if(p.length<2) return 'M'+p[0][0]+','+p[0][1];
+    var d='M'+p[0][0]+','+p[0][1];
+    for(var i=0;i<p.length-1;i++){
+      var cpx=(p[i][0]+p[i+1][0])/2;
+      d+=' C'+cpx+','+p[i][1]+' '+cpx+','+p[i+1][1]+' '+p[i+1][0]+','+p[i+1][1];
+    }
+    return d;
+  }
+
+  var line=smoothLine(pts);
+  var area=line+' L'+W+','+H+' L0,'+H+' Z';
+  var lp=document.getElementById('pc-line');
+  var ap=document.getElementById('pc-area');
+  if(lp) lp.setAttribute('d',line);
+  if(ap) ap.setAttribute('d',area);
+
+  for(var i=0;i<5;i++){
+    var dot=document.getElementById('pc-dot'+i);
+    if(dot){
+      if(i<pts.length){
+        dot.setAttribute('cx',pts[i][0]);
+        dot.setAttribute('cy',pts[i][1]);
+        dot.setAttribute('opacity','1');
+      } else {
+        dot.setAttribute('opacity','0');
+      }
+    }
+  }
+
+  // Update x-axis labels
+  var lblEl = document.getElementById('chart-labels');
+  if(lblEl && labels && labels.length){
+    // Pad to 5
+    var padded = [];
+    while(padded.length < 5 - labels.length) padded.push('—');
+    padded = padded.concat(labels);
+    lblEl.innerHTML = padded.map(function(l){ return '<span class="clbl">'+l+'</span>'; }).join('');
+  }
+}
+
 function renderSessions(sessions){
   if(!sessions || !sessions.length) return;
 
   var totalSessions = sessions.length;
-  var allScores = sessions.map(function(s){ return s.avg_score || 0; });
+  var allScores = sessions.map(function(s){ return parseFloat(s.avg_score || 0); });
   var avgScore  = totalSessions ? (allScores.reduce(function(a,b){return a+b;},0) / totalSessions).toFixed(1) : 0;
   var bestScore = totalSessions ? Math.max.apply(null, allScores).toFixed(1) : 0;
 
@@ -194,6 +287,15 @@ function renderSessions(sessions){
   document.getElementById('stat-avg').textContent      = avgScore;
   document.getElementById('stat-best').textContent     = bestScore;
 
+  // Draw chart from last 5 sessions
+  var last5 = sessions.slice(-5);
+  var chartScores = last5.map(function(s){ return parseFloat(s.avg_score||0); });
+  var chartLabels = last5.map(function(s,i){
+    return i===last5.length-1 ? 'Today' : 'S'+(totalSessions-last5.length+i+1);
+  });
+  drawProgressChart(chartScores, chartLabels);
+
+  // Render history list
   var list = document.getElementById('history-list');
   list.innerHTML = '';
 
@@ -208,7 +310,7 @@ function renderSessions(sessions){
         '<div class="session-date">'+formatDate(s.created_at)+'</div>'+
       '</div>'+
       '<div class="session-right">'+
-        '<span class="session-qs">'+( s.question_count || '—')+' Qs</span>'+
+        '<span class="session-qs">'+(s.question_count || '—')+' Qs</span>'+
         '<span class="score-pill '+cls+'">'+avg+' / 15</span>'+
       '</div>';
     list.appendChild(row);

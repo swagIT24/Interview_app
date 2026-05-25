@@ -3,62 +3,69 @@
 <head>
 <title>Profile — CareerQuest</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif;}
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Inter',Arial,sans-serif;}
 html{font-size:16px;}
 body{background:#111118;color:#fff;min-height:100vh;display:flex;flex-direction:column;}
 
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;border-bottom:0.5px solid rgba(255,255,255,0.07);}
-.logo{display:flex;align-items:center;gap:8px;}
-.lm{width:28px;height:28px;background:#6366f1;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;}
-.ln{font-size:15px;font-weight:600;color:#fff;}
-.pills{display:flex;gap:2px;background:rgba(255,255,255,0.05);border-radius:10px;padding:3px;}
-.pill{padding:7px 16px;border-radius:8px;font-size:13px;color:rgba(255,255,255,0.4);cursor:pointer;border:none;background:none;transition:all .2s;}
-.pill:hover{color:rgba(255,255,255,0.7);}
-.pill.active{background:#1e1e2e;color:#fff;}
-.av{width:32px;height:32px;border-radius:50%;background:#4f46e5;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:13px 28px;border-bottom:1px solid rgba(255,255,255,0.05);}
+.logo{display:flex;align-items:center;gap:9px;}
+.lm{width:30px;height:30px;background:#6366f1;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;}
+.ln{font-size:15px;font-weight:700;color:#fff;letter-spacing:-0.01em;}
+.pills{display:flex;gap:2px;background:rgba(255,255,255,0.04);border-radius:10px;padding:3px;}
+.pill{padding:7px 15px;border-radius:8px;font-size:13px;color:rgba(255,255,255,0.35);cursor:pointer;border:none;background:none;transition:all .18s;font-weight:500;}
+.pill:hover{color:rgba(255,255,255,0.65);}
+.pill.active{background:#1e1e2e;color:#fff;box-shadow:0 1px 4px rgba(0,0,0,0.3);}
+.av{width:32px;height:32px;border-radius:50%;background:#4f46e5;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;}
 
-.body{flex:1;padding:22px 28px;max-width:600px;}
+.body{flex:1;padding:22px 28px;max-width:580px;}
 
-.ft{opacity:0;transform:translateY(-30px);transition:opacity 0.4s ease,transform 0.4s ease;}
-.fl{opacity:0;transform:translateX(-40px);transition:opacity 0.4s ease,transform 0.4s ease;}
-.fr{opacity:0;transform:translateX(40px);transition:opacity 0.4s ease,transform 0.4s ease;}
-.fb{opacity:0;transform:translateY(30px);transition:opacity 0.4s ease,transform 0.4s ease;}
+/* ── Animations ── */
+.ft{opacity:0;transform:translateY(-36px);transition:opacity 0.42s ease,transform 0.42s ease;}
+.fl{opacity:0;transform:translateX(-52px);transition:opacity 0.42s ease,transform 0.42s ease;}
+.fr{opacity:0;transform:translateX(52px);transition:opacity 0.42s ease,transform 0.42s ease;}
+.fb{opacity:0;transform:translateY(36px);transition:opacity 0.42s ease,transform 0.42s ease;}
 .in{opacity:1!important;transform:translate(0,0)!important;}
 
+/* ── Page header ── */
 .page-header{margin-bottom:24px;}
-.page-title{font-size:28px;font-weight:800;color:#fff;}
+.page-title{font-size:32px;font-weight:700;color:#fff;letter-spacing:-0.02em;}
 .page-title span{color:#a78bfa;}
-.page-sub{font-size:13px;color:rgba(255,255,255,0.35);margin-top:3px;}
+.page-sub{font-size:13px;color:rgba(255,255,255,0.3);margin-top:4px;}
 
-.card{background:#1a1a26;border-radius:12px;padding:20px 22px;margin-bottom:14px;}
-.ctitle{font-size:11px;font-weight:600;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:16px;}
+/* ── Cards ── */
+.card{background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:22px 24px;margin-bottom:14px;}
+.ctitle{font-size:11px;font-weight:600;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:18px;}
 
-.avatar-row{display:flex;align-items:center;gap:16px;margin-bottom:20px;}
-.big-av{width:56px;height:56px;border-radius:14px;background:#4f46e5;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff;flex-shrink:0;}
-.av-info{display:flex;flex-direction:column;gap:3px;}
-.av-name{font-size:18px;font-weight:700;color:#fff;}
+/* Avatar row */
+.avatar-row{display:flex;align-items:center;gap:16px;margin-bottom:22px;}
+.big-av{width:60px;height:60px;border-radius:16px;background:linear-gradient(135deg,#4f46e5,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:#fff;flex-shrink:0;letter-spacing:-0.01em;}
+.av-info{display:flex;flex-direction:column;gap:4px;}
+.av-name{font-size:19px;font-weight:700;color:#fff;letter-spacing:-0.01em;}
 .av-email{font-size:13px;color:rgba(255,255,255,0.35);}
 
-.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+/* Info grid */
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
 .info-field{}
-.info-lbl{font-size:11px;color:rgba(255,255,255,0.3);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em;}
+.info-lbl{font-size:11px;color:rgba(255,255,255,0.28);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;}
 .info-val{font-size:14px;color:#fff;font-weight:500;}
 
-.resume-row{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+/* Resume row */
+.resume-row{display:flex;align-items:center;justify-content:space-between;gap:14px;}
 .resume-status{display:flex;align-items:center;gap:10px;}
-.resume-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
-.resume-dot.ok{background:#34d399;}
+.resume-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.resume-dot.ok{background:#10b981;}
 .resume-dot.warn{background:#f59e0b;}
-.resume-txt{font-size:13px;color:rgba(255,255,255,0.5);}
-.upload-btn{padding:8px 16px;background:#4f46e5;border:none;border-radius:8px;color:#fff;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;transition:background .2s;}
+.resume-txt{font-size:13px;color:rgba(255,255,255,0.45);}
+.upload-btn{padding:9px 18px;background:#4f46e5;border:none;border-radius:9px;color:#fff;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:background .18s;letter-spacing:0.01em;}
 .upload-btn:hover{background:#4338ca;}
 
-.divider{height:0.5px;background:rgba(255,255,255,0.05);margin:14px 0;}
+/* Divider */
+.divider{height:1px;background:rgba(255,255,255,0.05);margin:16px 0;}
 
-.danger-zone{}
-.logout-btn{padding:10px 20px;background:rgba(248,113,113,0.08);border:0.5px solid rgba(248,113,113,0.2);border-radius:8px;color:#f87171;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;}
+/* Danger */
+.logout-btn{padding:10px 22px;background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.18);border-radius:9px;color:#f87171;font-size:13px;font-weight:500;cursor:pointer;transition:all .18s;}
 .logout-btn:hover{background:rgba(248,113,113,0.16);}
-.logout-desc{font-size:12px;color:rgba(255,255,255,0.25);margin-top:8px;}
+.logout-desc{font-size:12px;color:rgba(255,255,255,0.22);margin-top:9px;}
 </style>
 </head>
 <body>
@@ -130,10 +137,8 @@ body{background:#111118;color:#fff;min-height:100vh;display:flex;flex-direction:
   <!-- Account -->
   <div class="card fb" id="pf-account">
     <div class="ctitle">Account</div>
-    <div class="danger-zone">
-      <button class="logout-btn" onclick="logout()">Log out</button>
-      <div class="logout-desc">You will be redirected to the login page.</div>
-    </div>
+    <button class="logout-btn" onclick="logout()">Log out</button>
+    <div class="logout-desc">You will be redirected to the login page.</div>
   </div>
 
 </div>

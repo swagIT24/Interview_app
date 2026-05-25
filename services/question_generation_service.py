@@ -9,30 +9,26 @@ def generate_question(domain, asked_questions=None, resume_text=None):
     resume_context = ""
     if resume_text:
         resume_context = f"""
-Candidate Resume:
+Candidate background (for personalization only):
 {resume_text[:1000]}
 
-Generate a question relevant to their background and experience.
+Use this only to personalize HOW the question is phrased (e.g. reference a relevant project or tool they've used). Do NOT ask about topics from the resume that are unrelated to {domain}.
 """
 
-    # ← prompt is outside if block — always defined
     prompt = f"""
 You are an expert technical interviewer.
 
-Generate ONE interview question.
+Generate ONE interview question strictly about: {domain}
 
-Domain: {domain}
 {resume_context}
-
 Previously asked questions:
 {asked_questions}
 
 Rules:
-- Ask only ONE question
+- The question MUST be about {domain} — do not stray into unrelated topics
 - Do not repeat previous questions
-- No explanations
-- No numbering
-- No answers
+- Ask only ONE question
+- No explanations, no numbering, no answers
 - Keep it realistic and concise
 """
 

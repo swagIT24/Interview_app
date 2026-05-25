@@ -3,115 +3,119 @@
 <head>
 <title>Practice — CareerQuest</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif;}
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Inter',Arial,sans-serif;}
 html{font-size:16px;}
 body{background:#111118;color:#fff;min-height:100vh;display:flex;flex-direction:column;}
 
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;border-bottom:0.5px solid rgba(255,255,255,0.07);}
-.logo{display:flex;align-items:center;gap:8pxƒ;}
-.lm{width:28px;height:28px;background:#6366f1;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;}
-.ln{font-size:15px;font-weight:600;color:#fff;}
-.pills{display:flex;gap:2px;background:rgba(255,255,255,0.05);border-radius:10px;padding:3px;}
-.pill{padding:7px 16px;border-radius:8px;font-size:13px;color:rgba(255,255,255,0.4);cursor:pointer;border:none;background:none;transition:all .2s;}
-.pill:hover{color:rgba(255,255,255,0.7);}
-.pill.active{background:#1e1e2e;color:#fff;}
-.av{width:32px;height:32px;border-radius:50%;background:#4f46e5;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:13px 28px;border-bottom:1px solid rgba(255,255,255,0.05);}
+.logo{display:flex;align-items:center;gap:9px;}
+.lm{width:30px;height:30px;background:#6366f1;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;}
+.ln{font-size:15px;font-weight:700;color:#fff;letter-spacing:-0.01em;}
+.pills{display:flex;gap:2px;background:rgba(255,255,255,0.04);border-radius:10px;padding:3px;}
+.pill{padding:7px 15px;border-radius:8px;font-size:13px;color:rgba(255,255,255,0.35);cursor:pointer;border:none;background:none;transition:all .18s;font-weight:500;}
+.pill:hover{color:rgba(255,255,255,0.65);}
+.pill.active{background:#1e1e2e;color:#fff;box-shadow:0 1px 4px rgba(0,0,0,0.3);}
+.av{width:32px;height:32px;border-radius:50%;background:#4f46e5;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;}
 
-.body{flex:1;padding:22px 28px;display:grid;grid-template-columns:320px 1fr;gap:20px;}
+.body{flex:1;padding:22px 28px;display:grid;grid-template-columns:300px 1fr;gap:20px;}
 
-/* LEFT PANEL */
+/* ── Animations ── */
+.ft{opacity:0;transform:translateY(-36px);transition:opacity 0.42s ease,transform 0.42s ease;}
+.fl{opacity:0;transform:translateX(-52px);transition:opacity 0.42s ease,transform 0.42s ease;}
+.fr{opacity:0;transform:translateX(52px);transition:opacity 0.42s ease,transform 0.42s ease;}
+.fb{opacity:0;transform:translateY(36px);transition:opacity 0.42s ease,transform 0.42s ease;}
+.in{opacity:1!important;transform:translate(0,0)!important;}
+
+/* ── Left panel ── */
 .left{display:flex;flex-direction:column;gap:12px;}
-.card{background:#1a1a26;border-radius:12px;padding:16px 18px;}
+.card{background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px 22px;}
 .ctitle{font-size:11px;font-weight:600;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:14px;}
-.field-lbl{font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:8px;}
-.field-inp{width:100%;padding:12px 14px;background:rgba(255,255,255,0.05);border:0.5px solid rgba(255,255,255,0.1);border-radius:9px;color:#fff;font-size:14px;outline:none;margin-bottom:14px;font-family:Arial,sans-serif;}
-.field-inp:focus{border-color:rgba(99,102,241,0.5);}
-.field-inp::placeholder{color:rgba(255,255,255,0.2);}
-.resume-badge{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:8px;margin-bottom:14px;}
-.resume-badge.ok{background:rgba(52,211,153,0.08);border:0.5px solid rgba(52,211,153,0.2);}
-.resume-badge.warn{background:rgba(245,158,11,0.08);border:0.5px solid rgba(245,158,11,0.2);}
-.resume-badge-txt{font-size:12px;color:rgba(255,255,255,0.5);flex:1;}
-.resume-badge-action{font-size:11px;color:#818cf8;cursor:pointer;white-space:nowrap;}
-.start-btn{width:100%;padding:13px;background:#f59e0b;border:none;border-radius:9px;color:#1a0f00;font-size:14px;font-weight:600;cursor:pointer;}
+.field-lbl{font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:7px;font-weight:500;}
+.field-inp{width:100%;padding:11px 14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;color:#fff;font-size:14px;outline:none;margin-bottom:14px;font-family:inherit;}
+.field-inp:focus{border-color:rgba(99,102,241,0.45);}
+.field-inp::placeholder{color:rgba(255,255,255,0.18);}
+.resume-badge{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:10px;margin-bottom:14px;}
+.resume-badge.ok{background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);}
+.resume-badge.warn{background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.18);}
+.resume-badge-txt{font-size:12px;color:rgba(255,255,255,0.45);flex:1;}
+.resume-badge-action{font-size:11px;color:#818cf8;cursor:pointer;white-space:nowrap;font-weight:600;}
+.start-btn{width:100%;padding:13px;background:#f59e0b;border:none;border-radius:10px;color:#1a0f00;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:0.01em;transition:background .15s;}
 .start-btn:hover{background:#d97706;}
-.start-btn:disabled{opacity:0.5;cursor:not-allowed;}
+.start-btn:disabled{opacity:0.45;cursor:not-allowed;}
 
-.tip-card{background:#1d4ed8;border-radius:12px;padding:16px 18px;}
-.tip-icon{font-size:20px;margin-bottom:8px;}
-.tip-title{font-size:13px;font-weight:500;color:#fff;margin-bottom:6px;}
+/* Roleplay card */
+.roleplay-card{background:linear-gradient(135deg,rgba(124,58,237,0.12) 0%,rgba(99,102,241,0.06) 100%);border:1px solid rgba(124,58,237,0.22);border-radius:16px;padding:20px 22px;}
+.rp-desc{font-size:12px;color:rgba(255,255,255,0.4);line-height:1.7;margin-bottom:14px;}
+.rp-btn{width:100%;padding:12px;background:#7c3aed;border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:600;cursor:pointer;transition:background .2s;letter-spacing:0.01em;}
+.rp-btn:hover{background:#6d28d9;}
+.rp-btn:disabled{opacity:0.45;cursor:not-allowed;}
+
+/* Tip card */
+.tip-card{background:linear-gradient(135deg,#1e3a8a 0%,#2563eb 100%);border:1px solid rgba(99,140,255,0.22);border-radius:16px;padding:20px 22px;}
+.tip-icon{font-size:18px;margin-bottom:9px;}
+.tip-title{font-size:13px;font-weight:600;color:#fff;margin-bottom:5px;}
 .tip-text{font-size:12px;color:rgba(255,255,255,0.6);line-height:1.7;}
 
-/* RIGHT PANEL */
+/* ── Right panel ── */
 .right{display:flex;flex-direction:column;gap:14px;}
 .empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;text-align:center;padding:60px 20px;}
-.empty-icon{font-size:48px;margin-bottom:16px;opacity:0.3;}
-.empty-title{font-size:18px;font-weight:500;color:rgba(255,255,255,0.4);margin-bottom:8px;}
-.empty-sub{font-size:13px;color:rgba(255,255,255,0.25);line-height:1.7;}
+.empty-icon{font-size:48px;margin-bottom:16px;opacity:0.2;}
+.empty-title{font-size:18px;font-weight:600;color:rgba(255,255,255,0.3);margin-bottom:8px;}
+.empty-sub{font-size:13px;color:rgba(255,255,255,0.18);line-height:1.7;}
 
 .session-area{display:none;flex-direction:column;gap:14px;}
 .session-area.active{display:flex;}
 
-.question-card{background:#1a1a26;border-radius:12px;padding:20px 22px;}
+.question-card{background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:22px 24px;}
 .q-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
-.q-num{font-size:12px;color:rgba(255,255,255,0.35);font-weight:500;}
-.q-domain{font-size:11px;padding:3px 10px;background:rgba(99,102,241,0.15);color:#818cf8;border-radius:10px;}
-.q-text{font-size:16px;color:#fff;line-height:1.7;font-weight:500;}
+.q-num{font-size:12px;color:rgba(255,255,255,0.28);font-weight:500;}
+.q-domain{font-size:11px;padding:3px 10px;background:rgba(124,58,237,0.15);color:#a78bfa;border-radius:10px;font-weight:600;}
+.q-text{font-size:16px;color:#fff;line-height:1.72;font-weight:500;}
 
-.answer-card{background:#1a1a26;border-radius:12px;padding:20px 22px;}
-.answer-lbl{font-size:12px;color:rgba(255,255,255,0.35);margin-bottom:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;}
-textarea#answer{width:100%;height:140px;padding:12px 14px;background:rgba(255,255,255,0.04);border:0.5px solid rgba(255,255,255,0.1);border-radius:9px;color:#fff;font-size:14px;outline:none;resize:none;font-family:Arial,sans-serif;line-height:1.6;}
+.answer-card{background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:22px 24px;}
+.answer-lbl{font-size:11px;color:rgba(255,255,255,0.35);margin-bottom:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;}
+textarea#answer{width:100%;height:140px;padding:12px 14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;color:#fff;font-size:14px;outline:none;resize:none;font-family:inherit;line-height:1.6;}
 textarea#answer:focus{border-color:rgba(99,102,241,0.4);}
-textarea#answer::placeholder{color:rgba(255,255,255,0.2);}
+textarea#answer::placeholder{color:rgba(255,255,255,0.18);}
 .actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
-.btn-primary{padding:10px 20px;background:#4f46e5;border:none;border-radius:8px;color:#fff;font-size:13px;font-weight:500;cursor:pointer;}
-.btn-primary:hover{background:#4338ca;}
-.btn-secondary{padding:10px 16px;background:rgba(255,255,255,0.06);border:0.5px solid rgba(255,255,255,0.1);border-radius:8px;color:rgba(255,255,255,0.6);font-size:13px;cursor:pointer;}
-.btn-secondary:hover{background:rgba(255,255,255,0.1);}
-.btn-next{padding:10px 20px;background:#f59e0b;border:none;border-radius:8px;color:#1a0f00;font-size:13px;font-weight:600;cursor:pointer;display:none;}
+.btn-primary{padding:10px 20px;background:#7c3aed;border:none;border-radius:9px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;transition:background .15s;}
+.btn-primary:hover{background:#6d28d9;}
+.btn-secondary{padding:10px 14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:9px;color:rgba(255,255,255,0.5);font-size:13px;cursor:pointer;font-weight:500;transition:all .15s;}
+.btn-secondary:hover{background:rgba(255,255,255,0.09);color:rgba(255,255,255,0.75);}
+.btn-next{padding:10px 20px;background:#f59e0b;border:none;border-radius:9px;color:#1a0f00;font-size:13px;font-weight:700;cursor:pointer;display:none;transition:background .15s;}
 .btn-next:hover{background:#d97706;}
-.record-status{font-size:12px;color:rgba(255,255,255,0.4);align-self:center;}
+.record-status{font-size:12px;color:rgba(255,255,255,0.28);align-self:center;}
 
-.feedback-card{background:#1a1a26;border-radius:12px;padding:20px 22px;}
-.feedback-score{font-size:22px;font-weight:700;color:#fff;margin-bottom:14px;}
-.feedback-body{font-size:14px;color:rgba(255,255,255,0.7);line-height:1.8;}
+.feedback-card{background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:22px 24px;}
+.feedback-score{font-size:22px;font-weight:800;color:#fff;margin-bottom:14px;letter-spacing:-0.02em;}
+.feedback-body{font-size:14px;color:rgba(255,255,255,0.65);line-height:1.85;}
 .feedback-body b{color:#fff;}
 
-/* ANIMATIONS */
-.ft{opacity:0;transform:translateY(-30px);transition:opacity 0.4s ease,transform 0.4s ease;}
-.fl{opacity:0;transform:translateX(-40px);transition:opacity 0.4s ease,transform 0.4s ease;}
-.fr{opacity:0;transform:translateX(40px);transition:opacity 0.4s ease,transform 0.4s ease;}
-.fb{opacity:0;transform:translateY(30px);transition:opacity 0.4s ease,transform 0.4s ease;}
-.in{opacity:1!important;transform:translate(0,0)!important;}
-
-/* ROLEPLAY */
-.roleplay-card{background:linear-gradient(135deg,rgba(99,102,241,0.08) 0%,rgba(79,70,229,0.04) 100%);border:0.5px solid rgba(99,102,241,0.25);border-radius:12px;padding:16px 18px;}
-.rp-desc{font-size:12px;color:rgba(255,255,255,0.45);line-height:1.7;margin-bottom:14px;}
-.rp-btn{width:100%;padding:13px;background:#6366f1;border:none;border-radius:9px;color:#fff;font-size:14px;font-weight:600;cursor:pointer;transition:background .2s;}
-.rp-btn:hover{background:#4f46e5;}
-.rp-btn:disabled{opacity:0.5;cursor:not-allowed;}
-
+/* ── Roleplay area ── */
 .roleplay-area{display:none;flex-direction:column;gap:14px;}
 .roleplay-area.active{display:flex;}
 
-.rp-status-bar{background:#1a1a26;border-radius:12px;padding:13px 18px;display:flex;align-items:center;justify-content:space-between;}
+.rp-status-bar{background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;}
 .rp-state-left{display:flex;align-items:center;gap:10px;}
 .rp-dot{width:8px;height:8px;border-radius:50%;background:#f59e0b;flex-shrink:0;transition:background .3s;}
-.rp-state-lbl{font-size:13px;color:rgba(255,255,255,0.55);}
-.rp-end-btn{padding:7px 14px;background:rgba(248,113,113,0.08);border:0.5px solid rgba(248,113,113,0.2);border-radius:7px;color:#f87171;font-size:12px;cursor:pointer;transition:background .2s;}
+.rp-state-lbl{font-size:13px;color:rgba(255,255,255,0.5);font-weight:500;}
+.rp-end-btn{padding:7px 14px;background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.18);border-radius:8px;color:#f87171;font-size:12px;cursor:pointer;font-weight:500;transition:background .15s;}
 .rp-end-btn:hover{background:rgba(248,113,113,0.18);}
 
-.rp-question-card{background:#1a1a26;border-radius:12px;padding:20px 22px;}
+.rp-question-card{background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:22px 24px;}
 .rp-q-lbl{font-size:11px;font-weight:600;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;}
-.rp-q-text{font-size:16px;color:#fff;line-height:1.7;font-weight:500;}
+.rp-q-text{font-size:16px;color:#fff;line-height:1.72;font-weight:500;}
 
-.rp-mic-wrap{display:flex;justify-content:center;padding:8px 0;}
-.rp-mic{width:72px;height:72px;border-radius:50%;background:rgba(52,211,153,0.1);border:2px solid rgba(52,211,153,0.35);display:flex;align-items:center;justify-content:center;font-size:28px;animation:rpPulse 1.4s ease-in-out infinite;}
-@keyframes rpPulse{0%,100%{box-shadow:0 0 0 0 rgba(52,211,153,0.3);transform:scale(1);}50%{box-shadow:0 0 0 18px rgba(52,211,153,0);transform:scale(1.05);}}
+.rp-mic-wrap{display:flex;justify-content:center;padding:10px 0;}
+.rp-mic{width:76px;height:76px;border-radius:50%;background:rgba(16,185,129,0.1);border:2px solid rgba(16,185,129,0.3);display:flex;align-items:center;justify-content:center;font-size:28px;animation:rpPulse 1.4s ease-in-out infinite;}
+@keyframes rpPulse{0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,0.3);transform:scale(1);}50%{box-shadow:0 0 0 18px rgba(16,185,129,0);transform:scale(1.05);}}
 
-.rp-feedback-card{background:#1a1a26;border-radius:12px;padding:20px 22px;}
-.rp-score{font-size:20px;font-weight:700;color:#fff;margin-bottom:12px;}
-.rp-feedback-body{font-size:13px;color:rgba(255,255,255,0.65);line-height:1.85;}
+.rp-feedback-card{background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:22px 24px;}
+.rp-score{font-size:20px;font-weight:800;color:#fff;margin-bottom:12px;letter-spacing:-0.01em;}
+.rp-feedback-body{font-size:13px;color:rgba(255,255,255,0.6);line-height:1.85;}
 .rp-feedback-body b{color:#fff;}
+
+input,textarea,select{font-family:inherit;}
 </style>
 </head>
 <body>
@@ -152,7 +156,7 @@ textarea#answer::placeholder{color:rgba(255,255,255,0.2);}
     <div class="roleplay-card fl" id="l-roleplay">
       <div class="ctitle">AI Roleplay Mode</div>
       <div class="rp-desc">Have a real conversation with AI. No buttons — just speak naturally.</div>
-      <div style="font-size:12px;color:rgba(255,255,255,0.35);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;">Scenario</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.3);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;">Scenario</div>
       <input class="field-inp" id="scenario" placeholder="e.g. Salary negotiation, Difficult job interview, Cold sales call" style="margin-bottom:12px;" />
       <button class="rp-btn" id="rp-start-btn" onclick="startRoleplay()">🎭 Start Roleplay</button>
     </div>
@@ -160,7 +164,7 @@ textarea#answer::placeholder{color:rgba(255,255,255,0.2);}
     <div class="tip-card fl" id="l-tip">
       <div class="tip-icon">💡</div>
       <div class="tip-title">How to get the most out of this</div>
-      <div class="tip-text">Speak your answer out loud before typing. Structure it as: Definition → Example → Real world use. Aim for answers between 3-5 sentences.</div>
+      <div class="tip-text">Speak your answer out loud before typing. Structure it as: Definition → Example → Real world use. Aim for answers between 3–5 sentences.</div>
     </div>
 
   </div>
@@ -223,7 +227,6 @@ textarea#answer::placeholder{color:rgba(255,255,255,0.2);}
       <div class="rp-mic-wrap" id="rp-mic-wrap" style="display:none;">
         <div class="rp-mic">🎤</div>
       </div>
-
       <div id="rp-feedback-wrap" style="display:none;">
         <div class="rp-feedback-card">
           <div class="rp-score" id="rp-score"></div>
@@ -440,34 +443,58 @@ function uploadResume(){
 }
 
 // ===== ROLEPLAY =====
+
+// AudioWorklet code for capturing raw PCM — runs on audio rendering thread
+var _RP_WORKLET_CODE = `
+class PCMCaptureProcessor extends AudioWorkletProcessor {
+  constructor() { super(); this._buf = []; }
+  process(inputs) {
+    var ch = inputs[0] && inputs[0][0];
+    if (!ch) return true;
+    for (var i = 0; i < ch.length; i++) this._buf.push(ch[i]);
+    if (this._buf.length >= 4096) {
+      var slice = this._buf.splice(0, 4096);
+      var int16 = new Int16Array(slice.length);
+      for (var i = 0; i < slice.length; i++) {
+        var s = slice[i] < -1 ? -1 : slice[i] > 1 ? 1 : slice[i];
+        int16[i] = s < 0 ? (s * 32768) | 0 : (s * 32767) | 0;
+      }
+      this.port.postMessage(int16.buffer, [int16.buffer]);
+    }
+    return true;
+  }
+}
+registerProcessor('pcm-capture', PCMCaptureProcessor);
+`;
+
 var rp = {
   ws: null,
-  mediaRecorder: null,
-  stream: null,
-  audioCtx: null,
-  analyser: null,
-  isListening: false,
-  silenceStart: null,
-  speechStart: null,
-  currentAudio: null
+  stream: null,         // kept open for the whole session
+  audioCtx: null,       // kept open for the whole session
+  workletNode: null,    // AudioWorkletNode for PCM capture
+  sourceNode: null,     // MediaStreamAudioSourceNode
+  isStreaming: false,
+  currentAudio: null,
+  audioQueue: [],       // queued base64 audio chunks for sequential playback
+  isPlayingChunk: false,
+  questionReceived: false,  // true once 'question' marker arrives in streaming mode
+  firstChunkOfTurn: true    // cleared after first audio_chunk so subsequent ones append
 };
-var RP_SILENCE_THRESHOLD = 0.015;
-var RP_SILENCE_MS        = 1500;
-var RP_MIN_SPEECH_MS     = 600;
 
 function rpSetState(state, label){
-  var dot = document.getElementById('rp-dot');
-  var lbl = document.getElementById('rp-state-lbl');
-  var mic = document.getElementById('rp-mic-wrap');
-  var colors = {connecting:'#f59e0b', speaking:'#818cf8', listening:'#34d399', processing:'#f59e0b', done:'#34d399', error:'#f87171'};
+  var dot    = document.getElementById('rp-dot');
+  var lbl    = document.getElementById('rp-state-lbl');
+  var mic    = document.getElementById('rp-mic-wrap');
+  var colors = {connecting:'#f59e0b', speaking:'#818cf8', listening:'#10b981', processing:'#f59e0b', done:'#10b981', error:'#f87171'};
   if(dot) dot.style.background = colors[state] || '#fff';
   if(lbl) lbl.textContent = label;
   if(mic) mic.style.display = (state === 'listening') ? 'flex' : 'none';
 }
 
 function startRoleplay(){
-  var domain = document.getElementById('domain').value.trim();
-  if(!domain){ alert('Please enter a topic first'); return; }
+  var scenario = document.getElementById('scenario').value.trim();
+  var domain   = document.getElementById('domain').value.trim();
+  if(!scenario){ alert('Please enter a roleplay scenario first'); return; }
 
   document.getElementById('empty-state').style.display = 'none';
   document.getElementById('session-area').classList.remove('active');
@@ -476,11 +503,15 @@ function startRoleplay(){
   document.getElementById('rp-start-btn').disabled = true;
 
   var charLabel = document.getElementById('rp-char-lbl');
-  if(charLabel) charLabel.textContent = scenario ? scenario : 'AI Interviewer';
+  if(charLabel) charLabel.textContent = scenario || 'AI Interviewer';
 
   rpSetState('connecting', 'Connecting...');
 
-  var scenario = document.getElementById('scenario').value.trim();
+  // Pre-open mic while WebSocket connects (user gesture is active here)
+  rpEnsureMic().catch(function(err){
+    rpSetState('error', 'Microphone access denied');
+  });
+
   var wsUrl = 'ws://127.0.0.1:8000/ws/roleplay?domain=' + encodeURIComponent(domain || 'General') + '&scenario=' + encodeURIComponent(scenario);
   rp.ws = new WebSocket(wsUrl);
 
@@ -491,9 +522,11 @@ function startRoleplay(){
   rp.ws.onmessage = function(event){
     var data;
     try{ data = JSON.parse(event.data); } catch(e){ return; }
-    if(data.type === 'question')  rpShowQuestion(data.text, data.audio);
-    if(data.type === 'feedback')  rpShowFeedback(data.score, data.feedback);
-    if(data.type === 'error')     rpSetState('error', 'Error: ' + data.message);
+    if(data.type === 'audio_chunk') rpQueueAudioChunk(data.audio, data.text);
+    if(data.type === 'question')    rpShowQuestion(data.text, data.audio);
+    if(data.type === 'processing')  rpOnProcessing();
+    if(data.type === 'feedback')    rpShowFeedback(data.score, data.feedback);
+    if(data.type === 'error')       rpSetState('error', 'Error: ' + data.message);
   };
 
   rp.ws.onclose = function(){
@@ -507,78 +540,128 @@ function startRoleplay(){
   };
 }
 
-function rpShowQuestion(text, audioB64){
-  document.getElementById('rp-question').textContent = text;
-  document.getElementById('rp-feedback-wrap').style.display = 'none';
-  rpSetState('speaking', 'AI Speaking');
-
-  if(rp.currentAudio){ rp.currentAudio.pause(); }
-  rp.currentAudio = new Audio('data:audio/mp3;base64,' + audioB64);
-  rp.currentAudio.onended = function(){ rpStartListening(); };
-  rp.currentAudio.play().catch(function(){ rpStartListening(); });
+// Open mic + AudioContext once; register worklet; reuse for the whole session
+async function rpEnsureMic(){
+  if(rp.stream && rp.audioCtx) return;
+  rp.stream = await navigator.mediaDevices.getUserMedia({audio:{channelCount:1}});
+  rp.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  var blob = new Blob([_RP_WORKLET_CODE], {type:'application/javascript'});
+  var url  = URL.createObjectURL(blob);
+  await rp.audioCtx.audioWorklet.addModule(url);
+  URL.revokeObjectURL(url);
 }
 
-async function rpStartListening(){
-  rpSetState('listening', 'Listening...');
-  rp.isListening = true;
-  rp.silenceStart = null;
-  rp.speechStart = Date.now();
-
-  try{
-    rp.stream = await navigator.mediaDevices.getUserMedia({audio:true});
-  } catch(e){
-    rpSetState('error', 'Microphone access denied');
+// Play the next queued audio chunk; when queue drains, start user turn if question received
+function rpPlayNextChunk(){
+  if(rp.audioQueue.length === 0){
+    rp.isPlayingChunk = false;
+    if(rp.questionReceived){
+      rp.questionReceived = false;
+      rpBeginStreaming();
+    }
     return;
   }
-
-  rp.audioCtx  = new AudioContext();
-  rp.analyser  = rp.audioCtx.createAnalyser();
-  rp.analyser.fftSize = 1024;
-  rp.audioCtx.createMediaStreamSource(rp.stream).connect(rp.analyser);
-
-  rp.mediaRecorder = new MediaRecorder(rp.stream);
-  rp.mediaRecorder.ondataavailable = function(e){
-    if(rp.ws && rp.ws.readyState === WebSocket.OPEN && e.data.size > 0)
-      rp.ws.send(e.data);
-  };
-  rp.mediaRecorder.start(100);
-
-  rpCheckSilence();
+  rp.isPlayingChunk = true;
+  var b64 = rp.audioQueue.shift();
+  var audio = new Audio('data:audio/mp3;base64,' + b64);
+  rp.currentAudio = audio;
+  audio.onended = rpPlayNextChunk;
+  audio.onerror = rpPlayNextChunk;
+  audio.play().catch(rpPlayNextChunk);
 }
 
-function rpCheckSilence(){
-  if(!rp.isListening) return;
-  var buf = new Float32Array(rp.analyser.fftSize);
-  rp.analyser.getFloatTimeDomainData(buf);
-  var rms = Math.sqrt(buf.reduce(function(s,v){return s+v*v;},0) / buf.length);
-
-  if(Date.now() - rp.speechStart > RP_MIN_SPEECH_MS){
-    if(rms < RP_SILENCE_THRESHOLD){
-      if(!rp.silenceStart) rp.silenceStart = Date.now();
-      else if(Date.now() - rp.silenceStart > RP_SILENCE_MS){
-        rpStopListening();
-        return;
-      }
+// Queue a streaming audio chunk; update question card text in sync with audio
+function rpQueueAudioChunk(b64, text){
+  rpSetState('speaking', 'AI Speaking...');
+  var qEl = document.getElementById('rp-question');
+  if(qEl && text){
+    if(rp.firstChunkOfTurn){
+      qEl.textContent = text;
+      rp.firstChunkOfTurn = false;
     } else {
-      rp.silenceStart = null;
+      qEl.textContent += ' ' + text;
     }
   }
-  requestAnimationFrame(rpCheckSilence);
+  rp.audioQueue.push(b64);
+  if(!rp.isPlayingChunk) rpPlayNextChunk();
 }
 
-function rpStopListening(){
-  rp.isListening = false;
-  rpSetState('processing', 'Processing...');
+// Called when server sends 'question':
+//   audioB64 non-empty → non-streaming (opening / interview): play directly
+//   audioB64 empty     → streaming: all chunks already queued; signal queue to start user turn when done
+function rpShowQuestion(text, audioB64){
+  rpStopStreaming();
+  document.getElementById('rp-question').textContent = text;
+  document.getElementById('rp-feedback-wrap').style.display = 'none';
 
-  if(rp.mediaRecorder && rp.mediaRecorder.state !== 'inactive'){
-    rp.mediaRecorder.onstop = function(){
-      if(rp.ws && rp.ws.readyState === WebSocket.OPEN)
-        rp.ws.send(JSON.stringify({type:'end_of_speech'}));
-    };
-    rp.mediaRecorder.stop();
+  if(audioB64){
+    // Non-streaming path (opening message / interview mode): play single clip
+    rpSetState('speaking', 'AI Speaking...');
+    if(rp.currentAudio){ rp.currentAudio.pause(); rp.currentAudio = null; }
+    rp.audioQueue = [];
+    rp.isPlayingChunk = false;
+    rp.questionReceived = false;
+    rp.firstChunkOfTurn = true;
+    rp.currentAudio = new Audio('data:audio/mp3;base64,' + audioB64);
+    rp.currentAudio.onended = function(){ rpBeginStreaming(); };
+    rp.currentAudio.play().catch(function(){ rpBeginStreaming(); });
+  } else {
+    // Streaming end-of-turn marker: text already rendered by audio_chunk handlers.
+    // Reset firstChunkOfTurn for the next turn and signal queue to start user turn.
+    rp.firstChunkOfTurn = true;
+    rp.questionReceived = true;
+    if(!rp.isPlayingChunk && rp.audioQueue.length === 0){
+      rp.questionReceived = false;
+      rpBeginStreaming();
+    }
+    // Otherwise rpPlayNextChunk will call rpBeginStreaming when queue drains
   }
-  if(rp.stream)   rp.stream.getTracks().forEach(function(t){t.stop();});
-  if(rp.audioCtx) rp.audioCtx.close().catch(function(){});
+}
+
+// Called when server sends {"type":"processing"} — stop streaming + clear audio queue
+function rpOnProcessing(){
+  rpStopStreaming();
+  if(rp.currentAudio){ rp.currentAudio.pause(); rp.currentAudio = null; }
+  rp.audioQueue = [];
+  rp.isPlayingChunk = false;
+  rp.questionReceived = false;
+  rp.firstChunkOfTurn = true;
+  rpSetState('processing', 'Processing...');
+}
+
+// Create worklet node, connect to mic, start sending PCM to server
+async function rpBeginStreaming(){
+  if(rp.isStreaming) return;
+  try{ await rpEnsureMic(); } catch(e){ rpSetState('error', 'Microphone access denied'); return; }
+
+  rp.isStreaming = true;
+  rpSetState('listening', 'Your turn — speak now');
+
+  // Notify server of sample rate so it can resample for Silero VAD
+  if(rp.ws && rp.ws.readyState === WebSocket.OPEN){
+    rp.ws.send(JSON.stringify({type:'stream_start', sample_rate: rp.audioCtx.sampleRate}));
+  }
+
+  rp.sourceNode  = rp.audioCtx.createMediaStreamSource(rp.stream);
+  rp.workletNode = new AudioWorkletNode(rp.audioCtx, 'pcm-capture');
+  rp.workletNode.port.onmessage = function(e){
+    if(rp.ws && rp.ws.readyState === WebSocket.OPEN && rp.isStreaming){
+      rp.ws.send(e.data);
+    }
+  };
+  rp.sourceNode.connect(rp.workletNode);
+}
+
+// Disconnect worklet, keep stream alive for next turn
+function rpStopStreaming(){
+  if(!rp.isStreaming) return;
+  rp.isStreaming = false;
+  if(rp.workletNode){
+    rp.workletNode.port.onmessage = null;
+    rp.workletNode.disconnect();
+    rp.workletNode = null;
+  }
+  if(rp.sourceNode){ rp.sourceNode.disconnect(); rp.sourceNode = null; }
 }
 
 function rpShowFeedback(score, feedback){
@@ -594,16 +677,20 @@ function rpShowFeedback(score, feedback){
 }
 
 function endRoleplay(){
-  rp.isListening = false;
+  rpStopStreaming();
+  if(rp.currentAudio){ rp.currentAudio.pause(); rp.currentAudio = null; }
+  rp.audioQueue = [];
+  rp.isPlayingChunk = false;
+  rp.questionReceived = false;
   if(rp.ws && rp.ws.readyState === WebSocket.OPEN){
     rp.ws.send(JSON.stringify({type:'end_session'}));
     rp.ws.close();
   }
   rp.ws = null;
-  if(rp.stream)      rp.stream.getTracks().forEach(function(t){t.stop();});
-  if(rp.audioCtx)    rp.audioCtx.close().catch(function(){});
-  if(rp.currentAudio){ rp.currentAudio.pause(); rp.currentAudio = null; }
-
+  if(rp.stream)   rp.stream.getTracks().forEach(function(t){t.stop()});
+  rp.stream = null;
+  if(rp.audioCtx) rp.audioCtx.close().catch(function(){});
+  rp.audioCtx = null;
   document.getElementById('roleplay-area').classList.remove('active');
   document.getElementById('empty-state').style.display = '';
   document.getElementById('rp-start-btn').disabled = false;

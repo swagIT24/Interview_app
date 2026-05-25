@@ -3,118 +3,147 @@
 <head>
 <title>CareerQuest — Dashboard</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif;}
-html{font-size:19px;}
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Inter',Arial,sans-serif;}
+html{font-size:16px;}
 body{background:#111118;color:#fff;min-height:100vh;display:flex;flex-direction:column;}
 
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;border-bottom:0.5px solid rgba(255,255,255,0.07);}
-.logo{display:flex;align-items:center;gap:8px;}
-.lm{width:28px;height:28px;background:#6366f1;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;}
-.ln{font-size:15px;font-weight:600;color:#fff;}
-.pills{display:flex;gap:2px;background:rgba(255,255,255,0.05);border-radius:10px;padding:3px;}
-.pill{padding:7px 16px;border-radius:8px;font-size:13px;color:rgba(255,255,255,0.4);cursor:pointer;border:none;background:none;transition:all .2s;}
-.pill:hover{color:rgba(255,255,255,0.7);}
-.pill.active{background:#1e1e2e;color:#fff;}
-.ib{width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;cursor:pointer;}
-.av{width:32px;height:32px;border-radius:50%;background:#4f46e5;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;}
+/* ── Topbar ─────────────────────────────────────────────────── */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:13px 28px;border-bottom:1px solid rgba(255,255,255,0.05);}
+.logo{display:flex;align-items:center;gap:9px;}
+.lm{width:30px;height:30px;background:#6366f1;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;}
+.ln{font-size:15px;font-weight:700;color:#fff;letter-spacing:-0.01em;}
+.pills{display:flex;gap:2px;background:rgba(255,255,255,0.04);border-radius:10px;padding:3px;}
+.pill{padding:7px 15px;border-radius:8px;font-size:13px;color:rgba(255,255,255,0.35);cursor:pointer;border:none;background:none;transition:all .18s;font-weight:500;}
+.pill:hover{color:rgba(255,255,255,0.65);}
+.pill.active{background:#1e1e2e;color:#fff;box-shadow:0 1px 4px rgba(0,0,0,0.3);}
+.ib{width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;}
+.av{width:32px;height:32px;border-radius:50%;background:#4f46e5;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;}
 
+/* ── Layout ─────────────────────────────────────────────────── */
 .body{flex:1;padding:22px 28px;overflow:hidden;}
 .page{display:none;}.page.active{display:block;}
 
-.ft{opacity:0;transform:translateY(-40px);transition:opacity 0.45s ease,transform 0.45s ease;}
-.fl{opacity:0;transform:translateX(-60px);transition:opacity 0.45s ease,transform 0.45s ease;}
-.fr{opacity:0;transform:translateX(60px);transition:opacity 0.45s ease,transform 0.45s ease;}
-.fb{opacity:0;transform:translateY(40px);transition:opacity 0.45s ease,transform 0.45s ease;}
+/* ── Animations ─────────────────────────────────────────────── */
+.ft{opacity:0;transform:translateY(-36px);transition:opacity 0.42s ease,transform 0.42s ease;}
+.fl{opacity:0;transform:translateX(-52px);transition:opacity 0.42s ease,transform 0.42s ease;}
+.fr{opacity:0;transform:translateX(52px);transition:opacity 0.42s ease,transform 0.42s ease;}
+.fb{opacity:0;transform:translateY(36px);transition:opacity 0.42s ease,transform 0.42s ease;}
 .in{opacity:1!important;transform:translate(0,0)!important;}
 
+/* ── Welcome ─────────────────────────────────────────────────── */
 .welcome{margin-bottom:20px;}
-.wname{font-size:28px;font-weight:800;color:#fff;}
-.wname span{color:#818cf8;}
-.wsub{font-size:13px;color:rgba(255,255,255,0.35);margin-top:3px;}
+.wname{font-size:32px;font-weight:700;color:#fff;letter-spacing:-0.02em;}
+.wname span{color:#a78bfa;}
+.wsub{font-size:13px;color:rgba(255,255,255,0.3);margin-top:4px;}
 
-.pbars{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
-.pb{background:#1a1a26;border-radius:11px;padding:14px 16px;}
-.pb-lbl{font-size:11px;color:rgba(255,255,255,0.35);margin-bottom:10px;}
-.pb-track{height:7px;background:rgba(255,255,255,0.07);border-radius:4px;overflow:hidden;margin-bottom:8px;}
-.pb-fill{height:7px;border-radius:4px;width:0%;transition:width 1s ease;}
-.f1{background:#6366f1;}.f2{background:#f59e0b;}.f3{background:#34d399;}.f4{background:#ec4899;}
-.pb-val{font-size:24px;font-weight:800;color:#fff;}
+/* ── Top row: bars + big numbers ──────────────────────────────── */
+.top-row{display:grid;grid-template-columns:3fr 2fr;gap:12px;margin-bottom:14px;}
 
-.mid{display:grid;grid-template-columns:200px 1fr 190px;gap:12px;margin-bottom:12px;}
-.card{background:#1a1a26;border-radius:12px;padding:15px 16px;}
-.ctitle{font-size:12px;font-weight:600;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;}
+/* Progress bars (2x2 grid) */
+.pbars-grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:10px;}
+.pb{background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px 22px;}
+.pb-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:11px;}
+.pb-lbl{font-size:11px;font-weight:600;color:rgba(255,255,255,0.3);letter-spacing:0.06em;text-transform:uppercase;}
+.pb-pct{font-size:11px;font-weight:700;color:rgba(255,255,255,0.45);}
+.pb-track{height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;margin-bottom:9px;}
+.pb-fill{height:5px;border-radius:3px;width:0%;transition:width 1s ease;}
+.f1{background:linear-gradient(90deg,#7c3aed,#a78bfa);}
+.f2{background:linear-gradient(90deg,#f59e0b,#fbbf24);}
+.f3{background:linear-gradient(90deg,#10b981,#34d399);}
+.f4{background:linear-gradient(90deg,#ec4899,#f472b6);}
+.pb-val{font-size:22px;font-weight:800;color:#fff;}
 
-.jlist{display:flex;flex-direction:column;gap:7px;}
-.ji{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:8px;background:rgba(255,255,255,0.03);}
-.ji.cur{background:rgba(245,158,11,0.08);border:0.5px solid rgba(245,158,11,0.2);}
+/* Big numbers */
+.big-nums{display:flex;align-items:center;justify-content:space-around;background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:22px 28px;}
+.bn{display:flex;flex-direction:column;align-items:center;text-align:center;flex:1;padding:0 8px;}
+.bn-divider{width:1px;height:60px;background:rgba(255,255,255,0.08);flex-shrink:0;}
+.bn-badge{display:inline-block;font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;margin-bottom:12px;letter-spacing:0.04em;}
+.badge-up{background:rgba(16,185,129,0.15);color:#10b981;}
+.badge-neutral{background:rgba(99,102,241,0.15);color:#818cf8;}
+.badge-best{background:rgba(245,158,11,0.15);color:#f59e0b;}
+.bn-val{font-size:52px;font-weight:800;color:#fff;line-height:1;letter-spacing:-0.04em;margin-bottom:8px;}
+.bn-lbl{font-size:11px;font-weight:500;color:rgba(255,255,255,0.3);}
+
+/* ── Middle row ──────────────────────────────────────────────── */
+.mid{display:grid;grid-template-columns:200px 1fr 200px;gap:12px;margin-bottom:12px;}
+.card{background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px 22px;}
+.ctitle{font-size:11px;font-weight:600;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:13px;}
+
+/* Journey map */
+.jlist{display:flex;flex-direction:column;gap:6px;}
+.ji{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:8px;background:rgba(255,255,255,0.02);}
+.ji.cur{background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.18);}
 .jdot{width:7px;height:7px;border-radius:50%;min-width:7px;}
 .jn{font-size:12px;color:#fff;flex:1;}
 .jn.lk{color:rgba(255,255,255,0.2);}.jn.gl{color:#34d399;}
 .jbg{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:500;white-space:nowrap;}
-.bg1{background:rgba(99,102,241,0.15);color:#818cf8;}
-.bg2{background:rgba(245,158,11,0.15);color:#f59e0b;}
+.bg1{background:rgba(99,102,241,0.13);color:#818cf8;}
+.bg2{background:rgba(245,158,11,0.13);color:#f59e0b;}
 .bg3{background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.2);}
 .bg4{background:rgba(52,211,153,0.1);color:#34d399;}
 
+/* Chart */
 .chart-wrap{height:130px;margin-bottom:8px;}
 svg.ch{width:100%;height:100%;}
-.clbls{display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,0.2);}
+.clbls{display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,0.18);}
 
-.focus{background:#1d4ed8;border-radius:12px;padding:15px 16px;display:flex;flex-direction:column;}
-.ficon{width:30px;height:30px;background:rgba(255,255,255,0.15);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;font-size:16px;}
-.ftitle{font-size:13px;font-weight:500;color:#fff;margin-bottom:5px;}
-.fdesc{font-size:11px;color:rgba(255,255,255,0.6);line-height:1.6;flex:1;margin-bottom:12px;}
-.fbtn{padding:8px;background:rgba(255,255,255,0.15);border:none;border-radius:7px;color:#fff;font-size:12px;font-weight:500;cursor:pointer;text-align:center;width:100%;}
-.fbtn:hover{background:rgba(255,255,255,0.25);}
+/* Focus card */
+.focus{background:#1d3cac;background:linear-gradient(135deg,#1e3a8a 0%,#2563eb 100%);border:1px solid rgba(99,140,255,0.25);border-radius:16px;padding:20px 22px;display:flex;flex-direction:column;}
+.ficon{width:32px;height:32px;background:rgba(255,255,255,0.15);border-radius:9px;display:flex;align-items:center;justify-content:center;margin-bottom:11px;font-size:16px;}
+.ftitle{font-size:13px;font-weight:600;color:#fff;margin-bottom:5px;}
+.fdesc{font-size:11px;color:rgba(255,255,255,0.65);line-height:1.65;flex:1;margin-bottom:13px;}
+.fbtn{padding:9px;background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:#fff;font-size:12px;font-weight:600;cursor:pointer;text-align:center;width:100%;transition:background .15s;}
+.fbtn:hover{background:rgba(255,255,255,0.28);}
 
-.bot{display:grid;grid-template-columns:1fr 180px 180px;gap:12px;}
-.srow{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid rgba(255,255,255,0.04);}
+/* ── Bottom row ──────────────────────────────────────────────── */
+.bot{display:grid;grid-template-columns:1fr 190px 190px;gap:12px;}
+
+/* Sessions list */
+.srow{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.04);}
 .srow:last-child{border-bottom:none;}
 .sdot{width:7px;height:7px;border-radius:50%;margin-right:8px;min-width:7px;}
 .sn{font-size:12px;color:#fff;font-weight:500;}
-.sd{font-size:10px;color:rgba(255,255,255,0.25);}
-.ss{font-size:12px;font-weight:600;}
+.sd{font-size:10px;color:rgba(255,255,255,0.22);}
+.ss{font-size:12px;font-weight:700;}
 .sh{color:#34d399;}.sm{color:#f59e0b;}.sl{color:#f87171;}
-.stk-num{font-size:36px;font-weight:600;color:#f59e0b;margin-bottom:4px;}
-.stk-sub{font-size:11px;color:rgba(255,255,255,0.3);margin-bottom:12px;}
+
+/* Streak */
+.stk-num{font-size:42px;font-weight:800;color:#fbbf24;letter-spacing:-0.03em;line-height:1;margin-bottom:4px;}
+.stk-sub{font-size:11px;color:rgba(255,255,255,0.25);margin-bottom:14px;}
 .days{display:flex;gap:4px;flex-wrap:wrap;}
-.day{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;}
-.don{background:rgba(99,102,241,0.3);color:#818cf8;}.doff{background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.2);}
+.day{width:25px;height:25px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;}
+.don{background:rgba(99,102,241,0.25);color:#818cf8;border:1px solid rgba(99,102,241,0.3);}
+.doff{background:rgba(255,255,255,0.03);color:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.04);}
+
+/* CTA card */
 .go-card{display:flex;flex-direction:column;}
-.go-txt{font-size:12px;color:rgba(255,255,255,0.4);line-height:1.7;flex:1;margin-bottom:14px;}
-.go-btn{padding:11px;background:#f59e0b;border:none;border-radius:9px;color:#1a0f00;font-size:13px;font-weight:600;cursor:pointer;width:100%;}
+.go-txt{font-size:12px;color:rgba(255,255,255,0.35);line-height:1.75;flex:1;margin-bottom:14px;}
+.go-btn{padding:12px;background:#f59e0b;border:none;border-radius:9px;color:#1a0f00;font-size:13px;font-weight:700;cursor:pointer;width:100%;letter-spacing:0.01em;transition:background .15s;}
 .go-btn:hover{background:#d97706;}
 
-.pg-card{background:#1a1a26;border-radius:12px;padding:16px;margin-bottom:12px;}
-.pr-lbl{font-size:12px;color:rgba(255,255,255,0.35);margin-bottom:7px;}
-.pr-inp{width:100%;padding:12px 14px;background:rgba(255,255,255,0.04);border:0.5px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;font-size:13px;outline:none;margin-bottom:12px;}
-.pr-inp:focus{border-color:rgba(99,102,241,0.5);}
-.pr-inp::placeholder{color:rgba(255,255,255,0.2);}
-.pr-res{display:flex;align-items:center;gap:8px;padding:10px 12px;background:rgba(52,211,153,0.07);border:0.5px solid rgba(52,211,153,0.15);border-radius:8px;margin-bottom:14px;}
-.pr-res-txt{font-size:12px;color:rgba(255,255,255,0.4);flex:1;}
+/* ── Progress page ───────────────────────────────────────────── */
+.pg-card{background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px 22px;margin-bottom:12px;}
+.pr-lbl{font-size:12px;color:rgba(255,255,255,0.3);margin-bottom:7px;}
+.pr-inp{width:100%;padding:12px 14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:#fff;font-size:13px;outline:none;margin-bottom:12px;}
+.pr-inp:focus{border-color:rgba(99,102,241,0.45);}
+.pr-inp::placeholder{color:rgba(255,255,255,0.18);}
+.pr-res{display:flex;align-items:center;gap:8px;padding:10px 12px;background:rgba(52,211,153,0.06);border:1px solid rgba(52,211,153,0.13);border-radius:8px;margin-bottom:14px;}
+.pr-res-txt{font-size:12px;color:rgba(255,255,255,0.35);flex:1;}
 .pr-res-a{font-size:11px;color:#818cf8;cursor:pointer;}
-.pr-btn{width:100%;padding:13px;background:#f59e0b;border:none;border-radius:9px;color:#1a0f00;font-size:14px;font-weight:600;cursor:pointer;}
+.pr-btn{width:100%;padding:13px;background:#f59e0b;border:none;border-radius:9px;color:#1a0f00;font-size:14px;font-weight:700;cursor:pointer;}
 .pr-btn:hover{background:#d97706;}
 .pg-stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
-.pg-stat{background:#1a1a26;border-radius:11px;padding:16px;}
-.pg-stat-val{font-size:28px;font-weight:600;color:#fff;margin-bottom:3px;}
-.pg-stat-lbl{font-size:11px;color:rgba(255,255,255,0.3);}
+.pg-stat{background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:18px;}
+.pg-stat-val{font-size:32px;font-weight:800;color:#fff;letter-spacing:-0.02em;margin-bottom:3px;}
+.pg-stat-lbl{font-size:11px;color:rgba(255,255,255,0.28);}
 .pg-stat-trend{font-size:11px;color:#34d399;margin-top:3px;}
+
+/* ── Profile page ────────────────────────────────────────────── */
 .prof-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-.pfl{font-size:11px;color:rgba(255,255,255,0.3);margin-bottom:4px;}
-.pfv{font-size:14px;color:#fff;}
+.pfl{font-size:11px;color:rgba(255,255,255,0.28);margin-bottom:5px;}
+.pfv{font-size:14px;color:#fff;font-weight:500;}
 
-input{font-family:Arial,sans-serif;}
-
-.wname span{color:#a78bfa;}
-.pb-val{color:#fff;}
-.stk-num{color:#fbbf24;}
-.sh{color:#34d399;font-size:14px;}
-.sm{color:#fbbf24;font-size:14px;}
-.sl{color:#f87171;font-size:14px;}
-.pg-stat-val{font-size:32px;font-weight:700;}
-.go-btn{font-size:15px;letter-spacing:0.02em;}
-.fbtn{font-size:13px;}
+input{font-family:inherit;}
 </style>
 </head>
 <body>
@@ -124,13 +153,13 @@ input{font-family:Arial,sans-serif;}
     <div class="lm">🧠</div>
     <span class="ln">CareerQuest</span>
   </div>
-<div class="pills">
-  <button class="pill active">Overview</button>
-  <button class="pill" onclick="window.location.href='/practice'">Practice</button>
-  <button class="pill" onclick="window.location.href='/progress'">Progress</button>
-  <button class="pill" onclick="window.location.href='/jobs-tracker'">Jobs</button>
-  <button class="pill" onclick="window.location.href='/profile'">Profile</button>
-</div>
+  <div class="pills">
+    <button class="pill active">Overview</button>
+    <button class="pill" onclick="window.location.href='/practice'">Practice</button>
+    <button class="pill" onclick="window.location.href='/progress'">Progress</button>
+    <button class="pill" onclick="window.location.href='/jobs-tracker'">Jobs</button>
+    <button class="pill" onclick="window.location.href='/profile'">Profile</button>
+  </div>
   <div style="display:flex;align-items:center;gap:10px;">
     <div class="ib">🔔</div>
     <div class="av" id="user-avatar">?</div>
@@ -142,17 +171,54 @@ input{font-family:Arial,sans-serif;}
   <!-- HOME PAGE -->
   <div class="page active" id="pg-home">
     <div class="ft welcome" id="h-welcome">
-      <div class="wname">Welcome in, <span id="user-name">there</span></div>
+      <div class="wname">Welcome back, <span id="user-name">there</span></div>
       <div class="wsub">Here's your preparation overview — let's keep moving.</div>
     </div>
 
-    <div class="pbars">
-      <div class="pb ft" id="h-pb1"><div class="pb-lbl">Sessions done</div><div class="pb-track"><div class="pb-fill f1" id="b1"></div></div><div class="pb-val" id="v1">0</div></div>
-      <div class="pb ft" id="h-pb2"><div class="pb-lbl">Avg score / 15</div><div class="pb-track"><div class="pb-fill f2" id="b2"></div></div><div class="pb-val" id="v2">0</div></div>
-      <div class="pb ft" id="h-pb3"><div class="pb-lbl">Best score / 15</div><div class="pb-track"><div class="pb-fill f3" id="b3"></div></div><div class="pb-val" id="v3">0</div></div>
-      <div class="pb ft" id="h-pb4"><div class="pb-lbl">Journey to goal</div><div class="pb-track"><div class="pb-fill f4" id="b4"></div></div><div class="pb-val" id="v4">0%</div></div>
+    <!-- Top row: 4 progress bars (2×2) + 3 big numbers -->
+    <div class="top-row">
+      <div class="pbars-grid">
+        <div class="pb ft" id="h-pb1">
+          <div class="pb-header"><div class="pb-lbl">Sessions done</div><span class="pb-pct">80%</span></div>
+          <div class="pb-track"><div class="pb-fill f1" id="b1"></div></div>
+        </div>
+        <div class="pb ft" id="h-pb2">
+          <div class="pb-header"><div class="pb-lbl">Avg score / 15</div><span class="pb-pct">63%</span></div>
+          <div class="pb-track"><div class="pb-fill f2" id="b2"></div></div>
+        </div>
+        <div class="pb ft" id="h-pb3">
+          <div class="pb-header"><div class="pb-lbl">Best score / 15</div><span class="pb-pct">87%</span></div>
+          <div class="pb-track"><div class="pb-fill f3" id="b3"></div></div>
+        </div>
+        <div class="pb ft" id="h-pb4">
+          <div class="pb-header"><div class="pb-lbl">Journey to goal</div><span class="pb-pct">35%</span></div>
+          <div class="pb-track"><div class="pb-fill f4" id="b4"></div></div>
+          <div class="pb-val" id="v4">0%</div>
+        </div>
+      </div>
+
+      <div class="big-nums fr" id="h-bignums">
+        <div class="bn">
+          <span class="bn-badge badge-up">+12%</span>
+          <div class="bn-val" id="v1">0</div>
+          <div class="bn-lbl">Sessions done</div>
+        </div>
+        <div class="bn-divider"></div>
+        <div class="bn">
+          <span class="bn-badge badge-neutral">+24%</span>
+          <div class="bn-val" id="v2">0</div>
+          <div class="bn-lbl">Avg score / 15</div>
+        </div>
+        <div class="bn-divider"></div>
+        <div class="bn">
+          <span class="bn-badge badge-best">🔥</span>
+          <div class="bn-val" id="v3">0</div>
+          <div class="bn-lbl">Best score / 15</div>
+        </div>
+      </div>
     </div>
 
+    <!-- Middle row: journey + chart + focus -->
     <div class="mid">
       <div class="card fl" id="h-journey">
         <div class="ctitle">Your journey</div>
@@ -171,17 +237,17 @@ input{font-family:Arial,sans-serif;}
           <svg class="ch" viewBox="0 0 400 120" preserveAspectRatio="none">
             <defs>
               <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#6366f1" stop-opacity="0.25"/>
-                <stop offset="100%" stop-color="#6366f1" stop-opacity="0"/>
+                <stop offset="0%" stop-color="#818cf8" stop-opacity="0.45"/>
+                <stop offset="100%" stop-color="#818cf8" stop-opacity="0"/>
               </linearGradient>
             </defs>
             <path id="cp-area" d="" fill="url(#g1)"/>
-            <path id="cp-line" d="" fill="none" stroke="#6366f1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-            <circle id="dot0" cx="0" cy="0" r="4" fill="#6366f1" opacity="0"/>
-            <circle id="dot1" cx="0" cy="0" r="4" fill="#6366f1" opacity="0"/>
-            <circle id="dot2" cx="0" cy="0" r="4" fill="#6366f1" opacity="0"/>
-            <circle id="dot3" cx="0" cy="0" r="4" fill="#6366f1" opacity="0"/>
-            <circle id="dot4" cx="0" cy="0" r="4" fill="#f59e0b" opacity="0"/>
+            <path id="cp-line" d="" fill="none" stroke="#818cf8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle id="dot0" cx="0" cy="0" r="4" fill="#818cf8" opacity="0"/>
+            <circle id="dot1" cx="0" cy="0" r="4" fill="#818cf8" opacity="0"/>
+            <circle id="dot2" cx="0" cy="0" r="4" fill="#818cf8" opacity="0"/>
+            <circle id="dot3" cx="0" cy="0" r="4" fill="#818cf8" opacity="0"/>
+            <circle id="dot4" cx="0" cy="0" r="5" fill="#f59e0b" opacity="0"/>
           </svg>
         </div>
         <div class="clbls"><span>Session 1</span><span>Session 2</span><span>Session 3</span><span>Session 4</span><span>Today</span></div>
@@ -195,11 +261,12 @@ input{font-family:Arial,sans-serif;}
       </div>
     </div>
 
+    <!-- Bottom row: sessions + streak + CTA -->
     <div class="bot">
       <div class="card fl" id="h-sessions">
         <div class="ctitle">Recent sessions</div>
         <div id="sessions-list">
-          <div style="font-size:12px;color:rgba(255,255,255,0.3);padding:12px 0;">No sessions yet — start your first one!</div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.25);padding:12px 0;">No sessions yet — start your first one!</div>
         </div>
       </div>
       <div class="card fb" id="h-streak">
@@ -218,30 +285,29 @@ input{font-family:Arial,sans-serif;}
       </div>
       <div class="card fr go-card" id="h-cta">
         <div class="ctitle">Ready?</div>
-        <div class="go-txt">Every session moves you forward on the journey. Your dream role is waiting.</div>
+        <div class="go-txt">Every session moves you forward. Your dream role is closer than you think.</div>
         <button class="go-btn" onclick="go('practice',document.querySelectorAll('.pill')[1])">Start session now</button>
       </div>
     </div>
   </div>
 
 
-  
   <!-- PROGRESS PAGE -->
   <div class="page" id="pg-progress">
     <div class="ft" id="pg-title" style="margin-bottom:20px;">
-      <div style="font-size:22px;font-weight:600;color:#fff;margin-bottom:4px;">Progress</div>
-      <div style="font-size:13px;color:rgba(255,255,255,0.35);">Your growth over time</div>
+      <div style="font-size:22px;font-weight:700;color:#fff;letter-spacing:-0.01em;margin-bottom:4px;">Progress</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.3);">Your growth over time</div>
     </div>
     <div class="pg-stat-grid">
       <div class="pg-stat ft" id="pg-s1"><div class="pg-stat-val" id="pg-sessions">0</div><div class="pg-stat-lbl">Sessions done</div><div class="pg-stat-trend">Keep going</div></div>
       <div class="pg-stat ft" id="pg-s2"><div class="pg-stat-val" id="pg-avg">0</div><div class="pg-stat-lbl">Avg score / 15</div><div class="pg-stat-trend">Improving</div></div>
-      <div class="pg-stat ft" id="pg-s3"><div class="pg-stat-val" id="pg-best">0</div><div class="pg-stat-lbl">Best score</div><div style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:3px;">Personal best</div></div>
-      <div class="pg-stat ft" id="pg-s4"><div class="pg-stat-val" style="color:#f59e0b;">5</div><div class="pg-stat-lbl">Day streak</div><div style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:3px;">days</div></div>
+      <div class="pg-stat ft" id="pg-s3"><div class="pg-stat-val" id="pg-best">0</div><div class="pg-stat-lbl">Best score</div><div style="font-size:11px;color:rgba(255,255,255,0.25);margin-top:3px;">Personal best</div></div>
+      <div class="pg-stat ft" id="pg-s4"><div class="pg-stat-val" style="color:#fbbf24;">5</div><div class="pg-stat-lbl">Day streak</div><div style="font-size:11px;color:rgba(255,255,255,0.25);margin-top:3px;">days</div></div>
     </div>
     <div class="pg-card fb" id="pg-history">
       <div class="ctitle">Session history</div>
       <div id="history-list">
-        <div style="font-size:12px;color:rgba(255,255,255,0.3);padding:12px 0;">No sessions yet.</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.25);padding:12px 0;">No sessions yet.</div>
       </div>
     </div>
   </div>
@@ -249,8 +315,8 @@ input{font-family:Arial,sans-serif;}
   <!-- PROFILE PAGE -->
   <div class="page" id="pg-profile">
     <div class="ft" id="pf-title" style="margin-bottom:20px;">
-      <div style="font-size:22px;font-weight:600;color:#fff;margin-bottom:4px;">Profile</div>
-      <div style="font-size:13px;color:rgba(255,255,255,0.35);">Your career information</div>
+      <div style="font-size:22px;font-weight:700;color:#fff;letter-spacing:-0.01em;margin-bottom:4px;">Profile</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.3);">Your career information</div>
     </div>
     <div class="pg-card fl" id="pf-personal" style="max-width:480px;">
       <div class="ctitle">Personal</div>
@@ -262,13 +328,13 @@ input{font-family:Arial,sans-serif;}
     <div class="pg-card fr" id="pf-resume" style="max-width:480px;">
       <div class="ctitle">Resume</div>
       <div style="display:flex;align-items:center;justify-content:space-between;">
-        <div style="font-size:13px;color:rgba(255,255,255,0.5);" id="resume-profile-status">Not uploaded yet</div>
-        <button onclick="uploadResume()" style="padding:7px 14px;background:#4f46e5;border:none;border-radius:7px;color:#fff;font-size:12px;cursor:pointer;">Upload Resume</button>
+        <div style="font-size:13px;color:rgba(255,255,255,0.4);" id="resume-profile-status">Not uploaded yet</div>
+        <button onclick="uploadResume()" style="padding:7px 14px;background:#4f46e5;border:none;border-radius:7px;color:#fff;font-size:12px;font-weight:500;cursor:pointer;">Upload Resume</button>
       </div>
     </div>
     <div class="pg-card fb" id="pf-logout" style="max-width:480px;">
       <div class="ctitle">Account</div>
-      <button onclick="logout()" style="padding:9px 18px;background:rgba(248,113,113,0.1);border:0.5px solid rgba(248,113,113,0.2);border-radius:8px;color:#f87171;font-size:13px;cursor:pointer;">Log out</button>
+      <button onclick="logout()" style="padding:9px 18px;background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.18);border-radius:8px;color:#f87171;font-size:13px;cursor:pointer;">Log out</button>
     </div>
   </div>
 
@@ -280,16 +346,17 @@ var pages={
   home:{
     anims:[
       {id:'h-welcome',delay:0},
-      {id:'h-pb1',delay:100},
-      {id:'h-pb2',delay:160},
-      {id:'h-pb3',delay:220},
-      {id:'h-pb4',delay:280},
-      {id:'h-journey',delay:380},
-      {id:'h-chart',delay:420},
-      {id:'h-focus',delay:380},
-      {id:'h-sessions',delay:540},
-      {id:'h-streak',delay:580},
-      {id:'h-cta',delay:540}
+      {id:'h-pb1',delay:80},
+      {id:'h-pb2',delay:130},
+      {id:'h-pb3',delay:180},
+      {id:'h-pb4',delay:230},
+      {id:'h-bignums',delay:280},
+      {id:'h-journey',delay:360},
+      {id:'h-chart',delay:400},
+      {id:'h-focus',delay:360},
+      {id:'h-sessions',delay:500},
+      {id:'h-streak',delay:540},
+      {id:'h-cta',delay:500}
     ],
     onIn:function(){
       ['b1','b2','b3','b4'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.width='0%';});
@@ -382,7 +449,19 @@ function ab(id,pct,dur){
 
 function drawChart(){
   var data=[[0,95],[100,78],[200,82],[300,58],[400,42]];
-  var line=data.map(function(p,i){return(i===0?'M':'L')+p[0]+','+p[1];}).join(' ');
+  // Smooth bezier curve
+  function smoothLine(pts){
+    if(pts.length<2) return '';
+    var d='M'+pts[0][0]+','+pts[0][1];
+    for(var i=0;i<pts.length-1;i++){
+      var x0=pts[i][0],y0=pts[i][1];
+      var x1=pts[i+1][0],y1=pts[i+1][1];
+      var cpx=(x0+x1)/2;
+      d+=' C'+cpx+','+y0+' '+cpx+','+y1+' '+x1+','+y1;
+    }
+    return d;
+  }
+  var line=smoothLine(data);
   var area=line+' L400,120 L0,120 Z';
   var lp=document.getElementById('cp-line');
   var ap=document.getElementById('cp-area');
@@ -411,159 +490,42 @@ window.startInterview = async function(){
   window.location.href='/frontend/interview.html';
 };
 
-fetch('/me', {
-    credentials: 'include'
-})
-
+fetch('/me',{credentials:'include'})
 .then(function(response){
-
-    if(!response.ok){
-
-        window.location.href = '/';
-        return;
-
-    }
-
-    return response.json();
-
+  if(!response.ok){ window.location.href='/'; return; }
+  return response.json();
 })
-
-
 .then(function(user){
+  if(!user) return;
 
-    // ===== TOPBAR =====
+  var userName=document.getElementById('user-name');
+  if(userName) userName.textContent=user.name;
 
-    const userName =
-    document.getElementById('user-name');
+  var avatar=document.getElementById('user-avatar');
+  if(avatar) avatar.textContent=user.name.charAt(0).toUpperCase();
 
-    if(userName){
+  var hiddenName=document.getElementById('name');
+  if(hiddenName) hiddenName.value=user.name;
 
-        userName.textContent =
-        user.name;
+  var profileName=document.getElementById('profile-name');
+  if(profileName) profileName.textContent=user.name;
 
-    }
+  var profileEmail=document.getElementById('profile-email');
+  if(profileEmail) profileEmail.textContent=user.email;
 
+  var resumeTxt=document.getElementById('resume-status-txt');
+  var resumeProfile=document.getElementById('resume-profile-status');
 
-    const avatar =
-    document.getElementById('user-avatar');
-
-    if(avatar){
-
-        avatar.textContent =
-        user.name.charAt(0)
-        .toUpperCase();
-
-    }
-
-
-
-    // ===== PRACTICE =====
-
-    const hiddenName =
-    document.getElementById('name');
-
-    if(hiddenName){
-
-        hiddenName.value =
-        user.name;
-
-    }
-
-
-
-    // ===== PROFILE =====
-
-    const profileName =
-    document.getElementById('profile-name');
-
-    if(profileName){
-
-        profileName.textContent =
-        user.name;
-
-    }
-
-
-    const profileEmail =
-    document.getElementById('profile-email');
-
-    if(profileEmail){
-
-        profileEmail.textContent =
-        user.email;
-
-    }
-
-
-
-    // ===== RESUME STATUS =====
-
-    const resumeTxt =
-    document.getElementById(
-        'resume-status-txt'
-    );
-
-
-    const resumeProfile =
-    document.getElementById(
-        'resume-profile-status'
-    );
-
-
-
-    if(user.resume_text){
-
-        if(resumeTxt){
-
-            resumeTxt.textContent =
-            'Resume uploaded — questions tailored to you';
-
-        }
-
-
-        if(resumeProfile){
-
-            resumeProfile.textContent =
-            'Resume uploaded';
-
-            resumeProfile.style.color =
-            '#34d399';
-
-        }
-
-    }
-
-
-    else{
-
-        if(resumeTxt){
-
-            resumeTxt.textContent =
-            'No resume — upload for personalized questions';
-
-        }
-
-
-        if(resumeProfile){
-
-            resumeProfile.textContent =
-            'Not uploaded yet';
-
-        }
-
-    }
-
+  if(user.resume_text){
+    if(resumeTxt) resumeTxt.textContent='Resume uploaded — questions tailored to you';
+    if(resumeProfile){ resumeProfile.textContent='Resume uploaded'; resumeProfile.style.color='#34d399'; }
+  } else {
+    if(resumeTxt) resumeTxt.textContent='No resume — upload for personalized questions';
+    if(resumeProfile) resumeProfile.textContent='Not uploaded yet';
+  }
 })
+.catch(function(error){ console.log('User loading failed:',error); });
 
-
-.catch(function(error){
-
-    console.log(
-        "User loading failed:",
-        error
-    );
-
-});
 setTimeout(function(){ runPage('home'); },150);
 </script>
 </body>

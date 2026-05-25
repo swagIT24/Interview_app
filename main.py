@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from database.connections import init_db, migrate_schema
-from routes import interviwe, auth, voice, resume, jobs, roleplay
+from routes import interviwe, auth, voice, resume, jobs, roleplay, profile_setup
 
 app = FastAPI()
 
@@ -23,6 +23,7 @@ app.include_router(voice.router)
 app.include_router(resume.router)
 app.include_router(jobs.router)
 app.include_router(roleplay.router)
+app.include_router(profile_setup.router)
 
 migrate_schema()
 
@@ -55,6 +56,10 @@ def serve_profile():
 @app.get("/jobs-tracker")
 def serve_jobs():
     return FileResponse("frontend/jobs.html")
+
+@app.get("/goal-setting")
+def serve_goal_setting():
+    return FileResponse("frontend/goal-setting.html")
 
 @app.get("/favicon.ico")
 def favicon():

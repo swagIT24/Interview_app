@@ -47,7 +47,7 @@ def init_db():
         user_id INTEGER NOT NULL,
 
         target_role TEXT NOT NULL,
-        experience_level REAL NOT NULL,
+        experience_level REAL NOT NULL DEFAULT 0,
 
         desired_goals TEXT NOT NULL DEFAULT '[]',
 
@@ -55,6 +55,14 @@ def init_db():
         strong_areas TEXT DEFAULT '[]',
         weak_areas TEXT DEFAULT '[]',
         areas_to_improve TEXT DEFAULT '[]',
+
+        target_company TEXT DEFAULT '',
+        preparation_weeks INTEGER DEFAULT 4,
+        daily_hours REAL DEFAULT 2,
+        preferred_time TEXT DEFAULT 'evening',
+        goal_score INTEGER DEFAULT 12,
+        confidence_levels TEXT DEFAULT '{}',
+        study_plan TEXT DEFAULT '{}',
 
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -275,6 +283,46 @@ def migrate_schema():
 
     try:
         cursor.execute("ALTER TABLE users ADD COLUMN onboarding_completed INTEGER DEFAULT 0")
+    except:
+        pass
+
+    try:
+        cursor.execute("ALTER TABLE users ADD COLUMN profile_completed INTEGER DEFAULT 0")
+    except:
+        pass
+
+    try:
+        cursor.execute("ALTER TABLE interview_profiles ADD COLUMN target_company TEXT DEFAULT ''")
+    except:
+        pass
+
+    try:
+        cursor.execute("ALTER TABLE interview_profiles ADD COLUMN preparation_weeks INTEGER DEFAULT 4")
+    except:
+        pass
+
+    try:
+        cursor.execute("ALTER TABLE interview_profiles ADD COLUMN daily_hours REAL DEFAULT 2")
+    except:
+        pass
+
+    try:
+        cursor.execute("ALTER TABLE interview_profiles ADD COLUMN preferred_time TEXT DEFAULT 'evening'")
+    except:
+        pass
+
+    try:
+        cursor.execute("ALTER TABLE interview_profiles ADD COLUMN goal_score INTEGER DEFAULT 12")
+    except:
+        pass
+
+    try:
+        cursor.execute("ALTER TABLE interview_profiles ADD COLUMN confidence_levels TEXT DEFAULT '{}'")
+    except:
+        pass
+
+    try:
+        cursor.execute("ALTER TABLE interview_profiles ADD COLUMN study_plan TEXT DEFAULT '{}'")
     except:
         pass
 

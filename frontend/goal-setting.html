@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Goal Setting — CareerQuest</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Inter',Arial,sans-serif;}
+html{font-size:16px;}
+body{background:#111118;color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;}
+
+/* ── Topbar ── */
+.topbar{width:100%;display:flex;align-items:center;justify-content:space-between;padding:14px 28px;border-bottom:1px solid rgba(255,255,255,0.05);}
+.logo{display:flex;align-items:center;gap:9px;}
+.lm{width:30px;height:30px;background:#6366f1;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;}
+.ln{font-size:15px;font-weight:700;color:#fff;letter-spacing:-0.01em;}
+.step-counter{font-size:12px;color:rgba(255,255,255,0.3);font-weight:500;letter-spacing:0.02em;}
+
+/* ── Progress ── */
+.prog-track{width:100%;height:3px;background:rgba(255,255,255,0.06);}
+.prog-fill{height:3px;background:linear-gradient(90deg,#7c3aed,#a78bfa);transition:width 0.4s cubic-bezier(0.4,0,0.2,1);}
+
+/* ── Container ── */
+.container{width:100%;max-width:580px;padding:38px 24px 110px;flex:1;}
+
+/* ── Step ── */
+.step{display:none;}
+.step.active{display:block;animation:stepIn 0.3s ease;}
+@keyframes stepIn{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── Step header ── */
+.step-num{font-size:11px;font-weight:700;color:#7c3aed;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;}
+.step-title{font-size:28px;font-weight:800;color:#fff;letter-spacing:-0.02em;margin-bottom:7px;line-height:1.2;}
+.step-sub{font-size:13px;color:rgba(255,255,255,0.35);margin-bottom:30px;line-height:1.6;}
+
+/* ── Fields ── */
+.field{margin-bottom:16px;}
+.field-label{font-size:11px;font-weight:600;color:rgba(255,255,255,0.35);letter-spacing:0.07em;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.field-opt{color:rgba(255,255,255,0.18);font-weight:400;text-transform:none;letter-spacing:0;font-size:11px;}
+.field input{width:100%;background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px 16px;font-size:15px;color:#fff;outline:none;transition:border-color 0.18s,box-shadow 0.18s;}
+.field input::placeholder{color:rgba(255,255,255,0.2);}
+.field input:focus{border-color:rgba(124,58,237,0.5);box-shadow:0 0 0 3px rgba(124,58,237,0.1);}
+.field input[type=number]{max-width:160px;}
+
+/* ── Chips ── */
+.chip-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;}
+.chip{padding:8px 16px;background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:20px;font-size:13px;color:rgba(255,255,255,0.5);cursor:pointer;transition:all 0.16s;font-weight:500;user-select:none;}
+.chip:hover{border-color:rgba(124,58,237,0.35);color:rgba(255,255,255,0.8);}
+.chip.sel{background:rgba(124,58,237,0.15);border-color:rgba(124,58,237,0.45);color:#a78bfa;}
+
+/* ── Add topic row ── */
+.add-row{display:flex;gap:8px;}
+.add-row input{flex:1;background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:11px 14px;font-size:13px;color:#fff;outline:none;transition:border-color 0.18s;}
+.add-row input::placeholder{color:rgba(255,255,255,0.2);}
+.add-row input:focus{border-color:rgba(124,58,237,0.4);}
+.add-btn{padding:11px 20px;background:#7c3aed;border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;transition:background 0.18s;white-space:nowrap;}
+.add-btn:hover{background:#6d28d9;}
+
+/* ── Confidence ── */
+.conf-list{display:flex;flex-direction:column;gap:8px;}
+.conf-empty{font-size:13px;color:rgba(255,255,255,0.25);padding:14px 0;}
+.conf-row{display:flex;align-items:center;background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:12px 16px;gap:14px;}
+.conf-name{flex:1;font-size:13px;font-weight:600;color:#fff;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.conf-btns{display:flex;gap:6px;flex-shrink:0;}
+.conf-btn{padding:6px 13px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:rgba(255,255,255,0.38);font-size:12px;font-weight:500;cursor:pointer;transition:all 0.15s;}
+.conf-btn:hover{border-color:rgba(124,58,237,0.35);color:rgba(255,255,255,0.7);}
+.conf-btn.sel{background:rgba(124,58,237,0.2);border-color:rgba(124,58,237,0.5);color:#a78bfa;}
+
+/* ── Time sections ── */
+.time-section{margin-bottom:26px;}
+.time-label{font-size:11px;font-weight:600;color:rgba(255,255,255,0.35);letter-spacing:0.07em;text-transform:uppercase;margin-bottom:10px;}
+
+/* ── Slider ── */
+.slider-card{background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:24px 24px 20px;}
+.slider-row{display:flex;align-items:center;gap:20px;margin-bottom:14px;}
+.score-big{font-size:56px;font-weight:800;color:#a78bfa;letter-spacing:-0.04em;line-height:1;min-width:72px;}
+.slider-right{flex:1;}
+input[type=range]{width:100%;-webkit-appearance:none;height:6px;border-radius:3px;background:rgba(255,255,255,0.08);outline:none;cursor:pointer;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:#7c3aed;cursor:pointer;box-shadow:0 0 0 4px rgba(124,58,237,0.2),0 2px 8px rgba(0,0,0,0.4);}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:#7c3aed;cursor:pointer;border:none;box-shadow:0 0 0 4px rgba(124,58,237,0.2);}
+.slider-labels{display:flex;justify-content:space-between;margin-top:8px;}
+.slider-labels span{font-size:10px;color:rgba(255,255,255,0.2);}
+.slider-msg{font-size:14px;color:rgba(255,255,255,0.45);line-height:1.6;margin-bottom:12px;}
+.slider-msg strong{color:#fff;font-weight:600;}
+.rec-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.2);color:#10b981;font-size:11px;font-weight:700;padding:4px 11px;border-radius:10px;letter-spacing:0.04em;}
+
+/* ── Fixed nav bar ── */
+.nav-bar{position:fixed;bottom:0;left:0;right:0;padding:14px 24px;background:rgba(17,17,24,0.95);backdrop-filter:blur(12px);border-top:1px solid rgba(255,255,255,0.05);display:flex;justify-content:center;}
+.nav-inner{width:100%;max-width:580px;display:flex;justify-content:space-between;align-items:center;}
+.btn-back{padding:12px 24px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;color:rgba(255,255,255,0.45);font-size:14px;font-weight:600;cursor:pointer;transition:all 0.18s;}
+.btn-back:hover:not(:disabled){background:rgba(255,255,255,0.07);color:#fff;}
+.btn-back:disabled{opacity:0.2;cursor:default;pointer-events:none;}
+.btn-next{padding:12px 30px;background:#7c3aed;border:none;border-radius:12px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.18s;letter-spacing:0.01em;}
+.btn-next:hover{background:#6d28d9;transform:translateY(-1px);box-shadow:0 4px 16px rgba(124,58,237,0.35);}
+
+/* ── Loading overlay ── */
+.loading{display:none;position:fixed;inset:0;background:#111118;z-index:200;flex-direction:column;align-items:center;justify-content:center;gap:18px;}
+.loading.show{display:flex;}
+.spinner{width:48px;height:48px;border:3px solid rgba(124,58,237,0.15);border-top-color:#7c3aed;border-radius:50%;animation:spin 0.75s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-title{font-size:20px;font-weight:700;color:#fff;letter-spacing:-0.01em;}
+.loading-sub{font-size:13px;color:rgba(255,255,255,0.35);}
+.dots{display:flex;gap:7px;margin-top:6px;}
+.dots span{width:7px;height:7px;border-radius:50%;background:#7c3aed;animation:dot 1.4s infinite ease-in-out;}
+.dots span:nth-child(2){animation-delay:0.2s;}
+.dots span:nth-child(3){animation-delay:0.4s;}
+@keyframes dot{0%,60%,100%{opacity:0.15;transform:scale(0.75);}30%{opacity:1;transform:scale(1);}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">
+    <div class="lm">🧠</div>
+    <span class="ln">CareerQuest</span>
+  </div>
+  <div class="step-counter" id="step-counter">Step 1 of 5</div>
+</div>
+
+<div class="prog-track">
+  <div class="prog-fill" id="prog-fill" style="width:20%"></div>
+</div>
+
+<div class="container">
+
+  <!-- ── Step 1: Role ── -->
+  <div class="step active" id="step-1">
+    <div class="step-num">Step 1 of 5</div>
+    <div class="step-title">What role are you targeting?</div>
+    <div class="step-sub">Tell us your dream job so we can personalise every question and practice session for you.</div>
+
+    <div class="field">
+      <div class="field-label">Target Role</div>
+      <input type="text" id="s1-role" placeholder="e.g. Data Scientist, Backend Engineer, PM…">
+    </div>
+    <div class="field">
+      <div class="field-label">Target Company <span class="field-opt">(optional)</span></div>
+      <input type="text" id="s1-company" placeholder="e.g. Google, Meta, any company…">
+    </div>
+    <div class="field">
+      <div class="field-label">Years of Experience</div>
+      <input type="number" id="s1-exp" placeholder="0" min="0" max="30">
+    </div>
+  </div>
+
+  <!-- ── Step 2: Topics ── -->
+  <div class="step" id="step-2">
+    <div class="step-num">Step 2 of 5</div>
+    <div class="step-title">What topics do you need to master?</div>
+    <div class="step-sub">Select all that are relevant to your target role. You can add custom topics too.</div>
+
+    <div class="chip-grid" id="topic-chips"></div>
+
+    <div class="add-row">
+      <input type="text" id="custom-topic" placeholder="Add a custom topic…">
+      <button class="add-btn" id="add-topic-btn">Add</button>
+    </div>
+  </div>
+
+  <!-- ── Step 3: Confidence ── -->
+  <div class="step" id="step-3">
+    <div class="step-num">Step 3 of 5</div>
+    <div class="step-title">How confident are you in each topic?</div>
+    <div class="step-sub">Be honest — we'll weight your practice sessions toward your weak spots.</div>
+    <div class="conf-list" id="conf-list"></div>
+  </div>
+
+  <!-- ── Step 4: Time ── -->
+  <div class="step" id="step-4">
+    <div class="step-num">Step 4 of 5</div>
+    <div class="step-title">How much time can you commit?</div>
+    <div class="step-sub">We'll build a realistic study plan that fits your schedule — not an impossible one.</div>
+
+    <div class="time-section">
+      <div class="time-label">Preparation window</div>
+      <div class="chip-grid" id="weeks-chips"></div>
+    </div>
+    <div class="time-section">
+      <div class="time-label">Daily study time</div>
+      <div class="chip-grid" id="hours-chips"></div>
+    </div>
+    <div class="time-section">
+      <div class="time-label">Preferred study time</div>
+      <div class="chip-grid" id="time-chips"></div>
+    </div>
+  </div>
+
+  <!-- ── Step 5: Score ── -->
+  <div class="step" id="step-5">
+    <div class="step-num">Step 5 of 5</div>
+    <div class="step-title">What score do you want to achieve?</div>
+    <div class="step-sub">Answers are scored out of 15. We'll track your progress toward this target in every session.</div>
+
+    <div class="slider-card">
+      <div class="slider-row">
+        <div class="score-big" id="score-display">12</div>
+        <div class="slider-right">
+          <input type="range" id="score-slider" min="8" max="15" value="12">
+          <div class="slider-labels">
+            <span>8</span><span>9</span><span>10</span><span>11</span>
+            <span>12</span><span>13</span><span>14</span><span>15</span>
+          </div>
+        </div>
+      </div>
+      <div class="slider-msg">You need to score <strong id="score-msg-val">12</strong>/15 consistently to be interview ready.</div>
+      <div class="rec-badge" id="rec-badge">Recommended</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Fixed nav -->
+<div class="nav-bar">
+  <div class="nav-inner">
+    <button class="btn-back" id="btn-back" disabled>Back</button>
+    <button class="btn-next" id="btn-next">Continue</button>
+  </div>
+</div>
+
+<!-- Loading -->
+<div class="loading" id="loading">
+  <div class="spinner"></div>
+  <div class="loading-title">Building your study plan…</div>
+  <div class="loading-sub">Personalising your interview journey</div>
+  <div class="dots"><span></span><span></span><span></span></div>
+</div>
+
+<script>
+/* ── State ── */
+var state = {
+  role: '', company: '', experience: 0,
+  skills: [], confidenceLevels: {},
+  prepWeeks: 4, dailyHours: 2, preferredTime: 'evening',
+  goalScore: 12
+};
+
+var currentStep = 1;
+var TOTAL = 5;
+
+var PRESET_TOPICS = [
+  'Python','JavaScript','React','Node.js','SQL',
+  'Machine Learning','System Design','Statistics',
+  'AWS','Product Management','Data Structures','Algorithms',
+  'Deep Learning','NLP','Computer Vision','DevOps','Docker'
+];
+
+var WEEKS_OPTS = [
+  {label:'2 weeks',  val:2},
+  {label:'4 weeks',  val:4},
+  {label:'8 weeks',  val:8},
+  {label:'12 weeks', val:12}
+];
+var HOURS_OPTS = [
+  {label:'1 hour',   val:1},
+  {label:'2 hours',  val:2},
+  {label:'3 hours',  val:3},
+  {label:'4+ hours', val:4}
+];
+var TIME_OPTS = [
+  {label:'Morning',   val:'morning'},
+  {label:'Afternoon', val:'afternoon'},
+  {label:'Evening',   val:'evening'},
+  {label:'Night',     val:'night'}
+];
+
+/* ── Auth guard ── */
+fetch('/me', {credentials:'include'})
+  .then(function(r){ if(!r.ok){ window.location.href='/'; return null; } return r.json(); })
+  .then(function(user){
+    if(!user) return;
+    fetch('/profile-status', {credentials:'include'})
+      .then(function(r){ return r.json(); })
+      .then(function(ps){ if(ps && ps.profile_completed){ window.location.href='/dashboard'; } })
+      .catch(function(){});
+  })
+  .catch(function(){ window.location.href='/'; });
+
+/* ── Step 2: topic chips ── */
+function buildTopicChips(){
+  var grid = document.getElementById('topic-chips');
+  grid.innerHTML = '';
+  PRESET_TOPICS.forEach(function(t){
+    var el = document.createElement('div');
+    el.className = 'chip' + (state.skills.indexOf(t) > -1 ? ' sel' : '');
+    el.textContent = t;
+    el.addEventListener('click', function(){
+      var idx = state.skills.indexOf(t);
+      if(idx > -1){ state.skills.splice(idx,1); el.classList.remove('sel'); }
+      else{ state.skills.push(t); el.classList.add('sel'); }
+    });
+    grid.appendChild(el);
+  });
+}
+
+document.getElementById('add-topic-btn').addEventListener('click', addCustomTopic);
+document.getElementById('custom-topic').addEventListener('keydown', function(e){
+  if(e.key === 'Enter') addCustomTopic();
+});
+
+function addCustomTopic(){
+  var inp = document.getElementById('custom-topic');
+  var t = inp.value.trim();
+  if(!t) return;
+  if(PRESET_TOPICS.indexOf(t) === -1) PRESET_TOPICS.push(t);
+  if(state.skills.indexOf(t) === -1) state.skills.push(t);
+  inp.value = '';
+  buildTopicChips();
+}
+
+/* ── Step 3: confidence ── */
+function buildConfidence(){
+  var list = document.getElementById('conf-list');
+  list.innerHTML = '';
+
+  if(state.skills.length === 0){
+    var empty = document.createElement('div');
+    empty.className = 'conf-empty';
+    empty.textContent = 'Go back and select at least one topic first.';
+    list.appendChild(empty);
+    return;
+  }
+
+  state.skills.forEach(function(topic){
+    if(!state.confidenceLevels[topic]) state.confidenceLevels[topic] = 'Beginner';
+
+    var row = document.createElement('div');
+    row.className = 'conf-row';
+
+    var nameEl = document.createElement('div');
+    nameEl.className = 'conf-name';
+    nameEl.textContent = topic;
+    row.appendChild(nameEl);
+
+    var btnsEl = document.createElement('div');
+    btnsEl.className = 'conf-btns';
+
+    ['Beginner','Intermediate','Advanced'].forEach(function(lv){
+      var btn = document.createElement('button');
+      btn.className = 'conf-btn' + (state.confidenceLevels[topic] === lv ? ' sel' : '');
+      btn.textContent = lv;
+      btn.addEventListener('click', function(){
+        state.confidenceLevels[topic] = lv;
+        btnsEl.querySelectorAll('.conf-btn').forEach(function(b){ b.classList.remove('sel'); });
+        btn.classList.add('sel');
+      });
+      btnsEl.appendChild(btn);
+    });
+
+    row.appendChild(btnsEl);
+    list.appendChild(row);
+  });
+}
+
+/* ── Step 4: time chips ── */
+function buildTimeChips(){
+  buildSingleSelect('weeks-chips', WEEKS_OPTS,
+    function(v){ return v === state.prepWeeks; },
+    function(v){ state.prepWeeks = v; });
+
+  buildSingleSelect('hours-chips', HOURS_OPTS,
+    function(v){ return v === state.dailyHours; },
+    function(v){ state.dailyHours = v; });
+
+  buildSingleSelect('time-chips', TIME_OPTS,
+    function(v){ return v === state.preferredTime; },
+    function(v){ state.preferredTime = v; });
+}
+
+function buildSingleSelect(id, opts, isActive, onSelect){
+  var grid = document.getElementById(id);
+  grid.innerHTML = '';
+  opts.forEach(function(opt){
+    var el = document.createElement('div');
+    el.className = 'chip' + (isActive(opt.val) ? ' sel' : '');
+    el.textContent = opt.label;
+    el.addEventListener('click', function(){
+      grid.querySelectorAll('.chip').forEach(function(c){ c.classList.remove('sel'); });
+      el.classList.add('sel');
+      onSelect(opt.val);
+    });
+    grid.appendChild(el);
+  });
+}
+
+/* ── Step 5: slider ── */
+var slider = document.getElementById('score-slider');
+slider.addEventListener('input', function(){
+  var v = parseInt(slider.value);
+  state.goalScore = v;
+  document.getElementById('score-display').textContent = v;
+  document.getElementById('score-msg-val').textContent = v;
+  document.getElementById('rec-badge').style.display = (v === 12) ? 'inline-flex' : 'none';
+});
+
+/* ── Navigation ── */
+document.getElementById('btn-back').addEventListener('click', prevStep);
+document.getElementById('btn-next').addEventListener('click', nextStep);
+
+function goToStep(n){
+  document.getElementById('step-' + currentStep).classList.remove('active');
+  currentStep = n;
+  document.getElementById('step-' + n).classList.add('active');
+
+  document.getElementById('prog-fill').style.width = (n / TOTAL * 100) + '%';
+  document.getElementById('step-counter').textContent = 'Step ' + n + ' of ' + TOTAL;
+  document.getElementById('btn-back').disabled = (n === 1);
+  document.getElementById('btn-next').textContent = (n === TOTAL) ? 'Build my study plan →' : 'Continue';
+
+  if(n === 2) buildTopicChips();
+  if(n === 3) buildConfidence();
+  if(n === 4) buildTimeChips();
+}
+
+function nextStep(){
+  if(!validateCurrent()) return;
+  if(currentStep === TOTAL){ submit(); return; }
+  goToStep(currentStep + 1);
+}
+
+function prevStep(){
+  if(currentStep > 1) goToStep(currentStep - 1);
+}
+
+function validateCurrent(){
+  if(currentStep === 1){
+    var role = document.getElementById('s1-role').value.trim();
+    if(!role){
+      flashField('s1-role');
+      return false;
+    }
+    state.role       = role;
+    state.company    = document.getElementById('s1-company').value.trim();
+    state.experience = parseFloat(document.getElementById('s1-exp').value) || 0;
+  }
+  return true;
+}
+
+function flashField(id){
+  var el = document.getElementById(id);
+  el.style.borderColor = 'rgba(239,68,68,0.6)';
+  el.style.boxShadow   = '0 0 0 3px rgba(239,68,68,0.1)';
+  el.focus();
+  setTimeout(function(){
+    el.style.borderColor = '';
+    el.style.boxShadow   = '';
+  }, 1800);
+}
+
+/* ── Submit ── */
+async function submit(){
+  document.getElementById('loading').classList.add('show');
+
+  var payload = {
+    target_role:       state.role,
+    target_company:    state.company,
+    experience_level:  state.experience,
+    skills:            state.skills,
+    confidence_levels: state.confidenceLevels,
+    preparation_weeks: state.prepWeeks,
+    daily_hours:       state.dailyHours,
+    preferred_time:    state.preferredTime,
+    goal_score:        state.goalScore,
+    desired_goals:     []
+  };
+
+  try {
+    var r = await fetch('/save-profile-setup', {
+      method: 'POST',
+      credentials: 'include',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(payload)
+    });
+    if(!r.ok) throw new Error('save failed');
+  } catch(e) {
+    document.getElementById('loading').classList.remove('show');
+    alert('Something went wrong. Please try again.');
+    return;
+  }
+
+  setTimeout(function(){ window.location.href = '/dashboard'; }, 1400);
+}
+</script>
+</body>
+</html>

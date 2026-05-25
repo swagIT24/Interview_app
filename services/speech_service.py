@@ -9,7 +9,8 @@ def speech_to_text(filename: str, audio_bytes: bytes, content_type: str):
     try:
         transcript = client.audio.transcriptions.create(
             model="gpt-4o-mini-transcribe",
-            file=(filename, audio_bytes, content_type)
+            file=(filename, audio_bytes, content_type),
+            language="en"
         )
         return transcript.text
     except Exception as e:

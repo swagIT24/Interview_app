@@ -3,6 +3,8 @@ from pydantic import BaseModel
 from typing import Optional
 from database.connections import get_connection
 from services.auth_service import get_current_user
+from services.resume_tailor_service import calculate_match
+
 
 router = APIRouter(prefix="/jobs", tags=["jobs"])
 
@@ -18,6 +20,9 @@ class JobCreate(BaseModel):
 class JobUpdate(BaseModel):
     status: Optional[str] = None
     notes: Optional[str] = None
+
+class TailorRequest(BaseModel):
+    job_description: str
 
 
 @router.post("")
@@ -105,3 +110,30 @@ def delete_job(job_id: int, user_id: int = Depends(get_current_user)):
     conn.close()
 
     return {"message": "Job application deleted"}
+
+
+@router.post("/tailor-resume")
+async def tailor_resume(request: TailorRequest, user_id: int = Depends(get_current_user)):
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT resume_text FROM users WHERE id = ?
+    """, (user_id,))
+ 
+    row = cursor.fetchone()  # ← store it in a variable
+    if not row:
+        conn.close()
+        raise HTTPException(status_code=404, detail="Resume not found")
+    resume_text = row[0]
+    conn.commit()
+    conn.close()
+    score, matches, missing = calculate_match(resume_text, request.job_description)
+    return {
+    "score": score,
+    "matches": matches,
+    "missing": missing
+}
+
+
