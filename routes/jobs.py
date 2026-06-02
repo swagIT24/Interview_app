@@ -32,11 +32,12 @@ def add_job(data: JobCreate, user_id: int = Depends(get_current_user)):
 
     cursor.execute("""
         INSERT INTO job_applications (user_id, company, role, status, notes, date_applied)
-        VALUES (?, ?, ?, ?, ?, ?)
+        VALUES (%s, %s, %s, %s, %s, %s)
+        RETURNING id
     """, (user_id, data.company, data.role, data.status, data.notes, data.date_applied))
 
+    job_id = cursor.fetchone()[0]
     conn.commit()
-    job_id = cursor.lastrowid
     conn.close()
 
     return {"message": "Job application added", "job_id": job_id}
@@ -50,7 +51,7 @@ def get_jobs(user_id: int = Depends(get_current_user)):
     cursor.execute("""
         SELECT id, company, role, status, notes, date_applied, created_at
         FROM job_applications
-        WHERE user_id = ?
+        WHERE user_id = %s
         ORDER BY created_at DESC
     """, (user_id,))
 
@@ -66,7 +67,7 @@ def update_job(job_id: int, data: JobUpdate, user_id: int = Depends(get_current_
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT id FROM job_applications WHERE id = ? AND user_id = ?
+        SELECT id FROM job_applications WHERE id = %s AND user_id = %s
     """, (job_id, user_id))
 
     if not cursor.fetchone():
@@ -75,12 +76,12 @@ def update_job(job_id: int, data: JobUpdate, user_id: int = Depends(get_current_
 
     if data.status is not None:
         cursor.execute("""
-            UPDATE job_applications SET status = ? WHERE id = ? AND user_id = ?
+            UPDATE job_applications SET status = %s WHERE id = %s AND user_id = %s
         """, (data.status, job_id, user_id))
 
     if data.notes is not None:
         cursor.execute("""
-            UPDATE job_applications SET notes = ? WHERE id = ? AND user_id = ?
+            UPDATE job_applications SET notes = %s WHERE id = %s AND user_id = %s
         """, (data.notes, job_id, user_id))
 
     conn.commit()
@@ -95,7 +96,7 @@ def delete_job(job_id: int, user_id: int = Depends(get_current_user)):
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT id FROM job_applications WHERE id = ? AND user_id = ?
+        SELECT id FROM job_applications WHERE id = %s AND user_id = %s
     """, (job_id, user_id))
 
     if not cursor.fetchone():
@@ -103,7 +104,7 @@ def delete_job(job_id: int, user_id: int = Depends(get_current_user)):
         raise HTTPException(status_code=404, detail="Job application not found")
 
     cursor.execute("""
-        DELETE FROM job_applications WHERE id = ? AND user_id = ?
+        DELETE FROM job_applications WHERE id = %s AND user_id = %s
     """, (job_id, user_id))
 
     conn.commit()
@@ -119,7 +120,7 @@ async def tailor_resume(request: TailorRequest, user_id: int = Depends(get_curre
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT resume_text FROM users WHERE id = ?
+        SELECT resume_text FROM users WHERE id = %s
     """, (user_id,))
  
     row = cursor.fetchone()  # ← store it in a variable

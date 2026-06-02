@@ -116,6 +116,39 @@ textarea#answer::placeholder{color:rgba(255,255,255,0.18);}
 .rp-feedback-body b{color:#fff;}
 
 input,textarea,select{font-family:inherit;}
+
+/* ── Evaluation result ── */
+.eval-score-number{font-size:48px;font-weight:700;line-height:1;letter-spacing:-0.03em;}
+.eval-score-number.score-low{color:#f87171;}
+.eval-score-number.score-mid{color:#f59e0b;}
+.eval-score-number.score-high{color:#10b981;}
+.eval-verdict{font-size:14px;color:rgba(255,255,255,0.38);margin-top:5px;}
+.eval-score-header{margin-bottom:20px;}
+.dim-rows{display:flex;flex-direction:column;gap:10px;margin-bottom:14px;}
+.dim-row{display:flex;align-items:center;gap:12px;}
+.dim-row.weakest{border-left:3px solid #f59e0b;padding-left:8px;}
+.dim-label{font-size:12px;color:rgba(255,255,255,0.45);width:90px;flex-shrink:0;font-weight:500;}
+.dim-bar-track{flex:1;height:6px;border-radius:3px;background:rgba(255,255,255,0.07);}
+.dim-bar-fill{height:100%;border-radius:3px;width:0%;transition:width 0.6s ease;}
+.dim-bar-fill.bar-low{background:#f87171;}
+.dim-bar-fill.bar-mid{background:#f59e0b;}
+.dim-bar-fill.bar-high{background:#10b981;}
+.dim-fraction{font-size:12px;color:rgba(255,255,255,0.35);width:24px;text-align:right;flex-shrink:0;}
+.eval-badges{display:flex;gap:6px;margin-bottom:16px;}
+.badge-strong{font-size:11px;padding:3px 10px;border-radius:4px;background:rgba(16,185,129,0.12);color:#10b981;font-weight:600;}
+.badge-weak{font-size:11px;padding:3px 10px;border-radius:4px;background:rgba(245,158,11,0.12);color:#f59e0b;font-weight:600;}
+.eval-section-lbl{font-size:11px;font-weight:600;color:rgba(255,255,255,0.28);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;margin-top:14px;}
+.eval-card{border-radius:10px;padding:13px 16px;font-size:14px;line-height:1.75;margin-top:6px;}
+.eval-card.feedback-prose{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);color:rgba(255,255,255,0.72);}
+.eval-card.missed{background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.18);color:#fcd34d;}
+.eval-card.model-answer{background:rgba(20,184,166,0.07);border:1px solid rgba(20,184,166,0.18);color:#5eead4;}
+.session-summary-card{background:linear-gradient(135deg,rgba(99,102,241,0.12) 0%,rgba(124,58,237,0.08) 100%);border:1px solid rgba(99,102,241,0.22);border-radius:16px;padding:26px 28px;text-align:center;margin-top:8px;}
+.ss-heading{font-size:18px;font-weight:700;color:#fff;margin-bottom:6px;}
+.ss-avg{font-size:40px;font-weight:800;letter-spacing:-0.04em;margin:12px 0 4px;}
+.ss-avg-label{font-size:13px;color:rgba(255,255,255,0.4);margin-bottom:16px;}
+.ss-tip{font-size:14px;color:rgba(255,255,255,0.65);background:rgba(255,255,255,0.04);border-radius:10px;padding:12px 16px;line-height:1.7;margin-bottom:16px;text-align:left;}
+.btn-restart{padding:11px 24px;background:#6366f1;border:none;border-radius:9px;color:#fff;font-size:14px;font-weight:600;cursor:pointer;transition:background .15s;}
+.btn-restart:hover{background:#4f46e5;}
 </style>
 </head>
 <body>
@@ -248,6 +281,8 @@ var nextQuestionData = null;
 var questionCount = 1;
 var currentAudio = null;
 var domainName = '';
+var weakestDimensions = [];
+var sessionScores = [];
 
 // Pre-fill domain from jobs tracker "Practice for this role"
 (function(){
@@ -329,13 +364,8 @@ async function submitAnswer(){
   if(!answerText.trim()){ alert('Please write an answer first'); return; }
 
   var feedbackCard = document.getElementById('feedback-card');
-  var feedbackScore = document.getElementById('feedback-score');
-  var feedbackBody = document.getElementById('feedback-body');
-
-  feedbackScore.textContent = 'Evaluating...';
-  feedbackBody.textContent = '';
+  feedbackCard.innerHTML = '<div style="color:rgba(255,255,255,0.35);font-size:14px;padding:8px 0;">Evaluating...</div>';
   feedbackCard.style.display = 'block';
-  document.getElementById('feedback-card').classList.add('in');
 
   var response = await fetch('/submit-answer', {
     method: 'POST',
@@ -373,20 +403,14 @@ async function submitAnswer(){
   }
 
   var data = await response.json();
-
-  feedbackScore.innerHTML = '<b>Score: ' + data.score + ' / 15</b>';
-  feedbackBody.innerHTML = data.feedback
-    .replace(/Strengths:/g, '<b>Strengths:</b>')
-    .replace(/Weaknesses:/g, '<br><br><b>Weaknesses:</b>')
-    .replace(/Tip:/g, '<br><br><b>Tip:</b>')
-    .replace(/Example:/g, '<br><br><b>Example:</b>');
+  renderEvaluation(data);
 
   if(data.next_question){
     nextQuestionData = data;
     document.getElementById('next-btn').style.display = 'inline-block';
   } else if(data.is_completed){
-    document.getElementById('question').textContent = 'Session complete! Great work.';
     document.getElementById('next-btn').style.display = 'none';
+    showSessionSummary();
   }
 }
 
@@ -400,7 +424,9 @@ function nextQuestion(){
   document.getElementById('question').textContent = currentQuestion;
   document.getElementById('q-num').textContent = questionCount;
   document.getElementById('answer').value = '';
-  document.getElementById('feedback-card').style.display = 'none';
+  var fc = document.getElementById('feedback-card');
+  fc.style.display = 'none';
+  fc.innerHTML = '';
   document.getElementById('next-btn').style.display = 'none';
   nextQuestionData = null;
 }
@@ -440,6 +466,127 @@ function uploadResume(){
     }
   };
   input.click();
+}
+
+// ===== EVALUATION RENDER =====
+
+function renderEvaluation(data){
+  if(data.weakest_dimension) weakestDimensions.push(data.weakest_dimension);
+  if(typeof data.score === 'number') sessionScores.push(data.score);
+
+  var dims = ['correctness','depth','clarity','examples','completeness'];
+  var breakdown = data.score_breakdown || {};
+  var weakest = data.weakest_dimension || '';
+
+  var scoreClass = data.score >= 8 ? 'score-high' : data.score >= 5 ? 'score-mid' : 'score-low';
+
+  var barsHTML = dims.map(function(dim, i){
+    var val = breakdown[dim] !== undefined ? breakdown[dim] : 0;
+    var barClass = val === 2 ? 'bar-high' : val === 1 ? 'bar-mid' : 'bar-low';
+    var weakClass = dim === weakest ? ' weakest' : '';
+    var label = dim.charAt(0).toUpperCase() + dim.slice(1);
+    return '<div class="dim-row' + weakClass + '" style="transition-delay:' + (i * 100) + 'ms">' +
+      '<div class="dim-label">' + label + '</div>' +
+      '<div class="dim-bar-track"><div class="dim-bar-fill ' + barClass + '" data-target="' + (val / 2 * 100) + '%"></div></div>' +
+      '<div class="dim-fraction">' + val + '/2</div>' +
+      '</div>';
+  }).join('');
+
+  var missedHTML = data.missed_key_point
+    ? '<div class="eval-section-lbl">What you skipped</div><div class="eval-card missed">' + data.missed_key_point + '</div>'
+    : '';
+
+  var hintHTML = data.model_answer_hint
+    ? '<div class="eval-section-lbl">What 10/10 looks like</div><div class="eval-card model-answer">&#9733; ' + data.model_answer_hint + '</div>'
+    : '';
+
+  var html =
+    '<div class="eval-score-header">' +
+      '<div class="eval-score-number ' + scoreClass + '">' + data.score + '/10</div>' +
+      '<div class="eval-verdict">' + (data.one_line_verdict || '') + '</div>' +
+    '</div>' +
+    '<div class="dim-rows">' + barsHTML + '</div>' +
+    '<div class="eval-badges">' +
+      '<span class="badge-strong">Strongest: ' + (data.strongest_dimension || '—') + '</span>' +
+      (data.weakest_dimension && data.weakest_dimension !== '—' && data.weakest_dimension !== 'none' && data.weakest_dimension !== ''
+        ? '<span class="badge-weak">Weakest: ' + data.weakest_dimension + '</span>'
+        : '<span class="badge-strong">All dimensions: full marks</span>') +
+    '</div>' +
+    '<div class="eval-section-lbl">Coach feedback</div>' +
+    '<div class="eval-card feedback-prose">' + (data.feedback || '') + '</div>' +
+    missedHTML + hintHTML;
+
+  var feedbackCard = document.getElementById('feedback-card');
+  feedbackCard.innerHTML = html;
+  feedbackCard.style.display = 'block';
+  feedbackCard.classList.add('in');
+
+  // Trigger bar animations after DOM paint
+  setTimeout(function(){
+    feedbackCard.querySelectorAll('.dim-bar-fill').forEach(function(fill){
+      fill.style.width = fill.getAttribute('data-target');
+    });
+  }, 50);
+
+  feedbackCard.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+var _WEAKNESS_TIPS = {
+  examples:     'Try adding a real story to every answer (STAR format)',
+  depth:        'Practice explaining tradeoffs, not just how things work',
+  clarity:      'Structure answers: situation → what you did → result',
+  correctness:  'Review core concepts for this topic before next session',
+  completeness: 'Read the full question carefully — answer every part',
+};
+
+function showSessionSummary(){
+  var freq = {};
+  weakestDimensions.forEach(function(d){ freq[d] = (freq[d] || 0) + 1; });
+  var modeWeakest = weakestDimensions.length
+    ? Object.keys(freq).reduce(function(a, b){ return freq[a] >= freq[b] ? a : b; })
+    : 'depth';
+
+  var avg = sessionScores.length
+    ? (sessionScores.reduce(function(a, b){ return a + b; }, 0) / sessionScores.length).toFixed(1)
+    : '—';
+
+  var avgColor = avg >= 8 ? '#10b981' : avg >= 5 ? '#f59e0b' : '#f87171';
+  var tip = _WEAKNESS_TIPS[modeWeakest] || 'Keep practicing — consistency builds confidence';
+  var count = sessionScores.length;
+
+  var html =
+    '<div class="session-summary-card">' +
+      '<div class="ss-heading">Session complete</div>' +
+      '<div class="ss-avg" style="color:' + avgColor + '">' + avg + '/10</div>' +
+      '<div class="ss-avg-label">average across ' + count + ' answer' + (count !== 1 ? 's' : '') + '</div>' +
+      '<div class="ss-tip"><b>You consistently scored low on ' + modeWeakest + '.</b><br>' + tip + '</div>' +
+      '<button class="btn-restart" onclick="restartSession()">Practice again →</button>' +
+    '</div>';
+
+  document.getElementById('session-area').insertAdjacentHTML('beforeend', html);
+  document.querySelector('.session-summary-card').scrollIntoView({behavior:'smooth'});
+}
+
+function restartSession(){
+  weakestDimensions = [];
+  sessionScores = [];
+  questionCount = 1;
+  sessionId = null;
+  currentQuestion = null;
+  nextQuestionData = null;
+
+  var summary = document.querySelector('.session-summary-card');
+  if(summary) summary.parentNode.removeChild(summary);
+
+  var fc = document.getElementById('feedback-card');
+  fc.style.display = 'none';
+  fc.innerHTML = '';
+  document.getElementById('next-btn').style.display = 'none';
+  document.getElementById('session-area').classList.remove('active');
+  document.getElementById('empty-state').style.display = '';
+  document.getElementById('empty-state').classList.add('in');
+  document.getElementById('start-btn').textContent = 'Start session →';
+  document.getElementById('start-btn').disabled = false;
 }
 
 // ===== ROLEPLAY =====
@@ -722,20 +869,13 @@ window.addEventListener('load', function(){
           .then(function(data){
             answerBox.value = data.transcript;
             if(data.evaluation){
-              var feedbackCard = document.getElementById('feedback-card');
-              var feedbackScore = document.getElementById('feedback-score');
-              var feedbackBody = document.getElementById('feedback-body');
-              feedbackScore.innerHTML = '<b>Score: ' + data.evaluation.score + ' / 15</b>';
-              feedbackBody.innerHTML = data.evaluation.feedback
-                .replace(/Strengths:/g, '<b>Strengths:</b>')
-                .replace(/Weaknesses:/g, '<br><br><b>Weaknesses:</b>')
-                .replace(/Tip:/g, '<br><br><b>Tip:</b>')
-                .replace(/Example:/g, '<br><br><b>Example:</b>');
-              feedbackCard.style.display = 'block';
+              renderEvaluation(data.evaluation);
               if(data.next_question){
                 nextQuestionData = {next_question: data.next_question, audio: data.audio};
                 currentAudioB64 = null;
                 document.getElementById('next-btn').style.display = 'inline-block';
+              } else if(data.evaluation.is_completed){
+                showSessionSummary();
               }
             }
             recordStatus.textContent = 'Ready';

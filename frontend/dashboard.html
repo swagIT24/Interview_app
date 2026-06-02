@@ -65,7 +65,7 @@ body{background:#111118;color:#fff;min-height:100vh;display:flex;flex-direction:
 .bn-lbl{font-size:11px;font-weight:500;color:rgba(255,255,255,0.3);}
 
 /* ── Middle row ──────────────────────────────────────────────── */
-.mid{display:grid;grid-template-columns:200px 1fr 200px;gap:12px;margin-bottom:12px;}
+.mid{display:grid;grid-template-columns:200px 1fr;gap:12px;margin-bottom:12px;}
 .card{background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px 22px;}
 .ctitle{font-size:11px;font-weight:600;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:13px;}
 
@@ -82,18 +82,15 @@ body{background:#111118;color:#fff;min-height:100vh;display:flex;flex-direction:
 .bg3{background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.2);}
 .bg4{background:rgba(52,211,153,0.1);color:#34d399;}
 
-/* Chart */
-.chart-wrap{height:130px;margin-bottom:8px;}
-svg.ch{width:100%;height:100%;}
-.clbls{display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,0.18);}
-
-/* Focus card */
-.focus{background:#1d3cac;background:linear-gradient(135deg,#1e3a8a 0%,#2563eb 100%);border:1px solid rgba(99,140,255,0.25);border-radius:16px;padding:20px 22px;display:flex;flex-direction:column;}
-.ficon{width:32px;height:32px;background:rgba(255,255,255,0.15);border-radius:9px;display:flex;align-items:center;justify-content:center;margin-bottom:11px;font-size:16px;}
-.ftitle{font-size:13px;font-weight:600;color:#fff;margin-bottom:5px;}
-.fdesc{font-size:11px;color:rgba(255,255,255,0.65);line-height:1.65;flex:1;margin-bottom:13px;}
-.fbtn{padding:9px;background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:#fff;font-size:12px;font-weight:600;cursor:pointer;text-align:center;width:100%;transition:background .15s;}
-.fbtn:hover{background:rgba(255,255,255,0.28);}
+/* Prep mode cards */
+.prep-wrap{background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px 22px;display:flex;flex-direction:column;}
+.prep-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px 16px;cursor:pointer;position:relative;transition:transform .18s,border-color .18s,background .18s;flex:1;}
+.prep-card:hover{transform:translateY(-2px);border-color:rgba(255,255,255,0.2);background:rgba(255,255,255,0.07);}
+.prep-card.selected{border-color:#6366f1;background:rgba(99,102,241,0.1);}
+.prep-tag{position:absolute;top:12px;right:12px;font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;letter-spacing:0.04em;}
+.prep-icon{font-size:20px;margin-bottom:8px;}
+.prep-title{font-size:13px;font-weight:600;color:#fff;margin-bottom:4px;}
+.prep-desc{font-size:11px;color:rgba(255,255,255,0.45);line-height:1.55;padding-right:50px;}
 
 /* ── Bottom row ──────────────────────────────────────────────── */
 .bot{display:grid;grid-template-columns:1fr 190px 190px;gap:12px;}
@@ -175,50 +172,36 @@ input{font-family:inherit;}
       <div class="wsub">Here's your preparation overview — let's keep moving.</div>
     </div>
 
-    <!-- Top row: 4 progress bars (2×2) + 3 big numbers -->
-    <div class="top-row">
-      <div class="pbars-grid">
-        <div class="pb ft" id="h-pb1">
-          <div class="pb-header"><div class="pb-lbl">Sessions done</div><span class="pb-pct">80%</span></div>
-          <div class="pb-track"><div class="pb-fill f1" id="b1"></div></div>
-        </div>
-        <div class="pb ft" id="h-pb2">
-          <div class="pb-header"><div class="pb-lbl">Avg score / 15</div><span class="pb-pct">63%</span></div>
-          <div class="pb-track"><div class="pb-fill f2" id="b2"></div></div>
-        </div>
-        <div class="pb ft" id="h-pb3">
-          <div class="pb-header"><div class="pb-lbl">Best score / 15</div><span class="pb-pct">87%</span></div>
-          <div class="pb-track"><div class="pb-fill f3" id="b3"></div></div>
-        </div>
-        <div class="pb ft" id="h-pb4">
-          <div class="pb-header"><div class="pb-lbl">Journey to goal</div><span class="pb-pct">35%</span></div>
-          <div class="pb-track"><div class="pb-fill f4" id="b4"></div></div>
-          <div class="pb-val" id="v4">0%</div>
-        </div>
-      </div>
-
+    <div style="margin-bottom:14px;">
       <div class="big-nums fr" id="h-bignums">
         <div class="bn">
-          <span class="bn-badge badge-up">+12%</span>
           <div class="bn-val" id="v1">0</div>
           <div class="bn-lbl">Sessions done</div>
+          <div style="display:flex;gap:28px;justify-content:center;margin-top:10px;">
+            <div style="text-align:center;">
+              <div class="bn-val" style="color:#34d399;" id="v-completed">0</div>
+              <div class="bn-lbl">Completed</div>
+            </div>
+            <div style="text-align:center;">
+              <div class="bn-val" style="color:#f59e0b;" id="v-incomplete">0</div>
+              <div class="bn-lbl">Incomplete</div>
+            </div>
+          </div>
         </div>
         <div class="bn-divider"></div>
         <div class="bn">
-          <span class="bn-badge badge-neutral">+24%</span>
           <div class="bn-val" id="v2">0</div>
-          <div class="bn-lbl">Avg score / 15</div>
+          <div class="bn-lbl" id="lbl-avgscore">Avg score / 10</div>
         </div>
         <div class="bn-divider"></div>
         <div class="bn">
-          <span class="bn-badge badge-best">🔥</span>
           <div class="bn-val" id="v3">0</div>
-          <div class="bn-lbl">Best score / 15</div>
+          <div class="bn-lbl" id="lbl-bestscore">Best score / 10</div>
         </div>
       </div>
     </div>
 
-    <!-- Middle row: journey + chart + focus -->
+    <!-- Middle row: journey + plan -->
     <div class="mid">
       <div class="card fl" id="h-journey">
         <div class="ctitle">Your journey</div>
@@ -231,33 +214,44 @@ input{font-family:inherit;}
         </div>
       </div>
 
-      <div class="card fb" id="h-chart">
-        <div class="ctitle">Score trend — last 5 sessions</div>
-        <div class="chart-wrap">
-          <svg class="ch" viewBox="0 0 400 120" preserveAspectRatio="none">
-            <defs>
-              <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#818cf8" stop-opacity="0.45"/>
-                <stop offset="100%" stop-color="#818cf8" stop-opacity="0"/>
-              </linearGradient>
-            </defs>
-            <path id="cp-area" d="" fill="url(#g1)"/>
-            <path id="cp-line" d="" fill="none" stroke="#818cf8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-            <circle id="dot0" cx="0" cy="0" r="4" fill="#818cf8" opacity="0"/>
-            <circle id="dot1" cx="0" cy="0" r="4" fill="#818cf8" opacity="0"/>
-            <circle id="dot2" cx="0" cy="0" r="4" fill="#818cf8" opacity="0"/>
-            <circle id="dot3" cx="0" cy="0" r="4" fill="#818cf8" opacity="0"/>
-            <circle id="dot4" cx="0" cy="0" r="5" fill="#f59e0b" opacity="0"/>
-          </svg>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="prep-wrap fr" id="h-focus" style="flex:1;">
+          <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px;">
+            <span style="font-size:14px;">🗺️</span>
+            <span style="font-size:13px;font-weight:600;color:#fff;">How do you want to prepare?</span>
+          </div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.3);margin-bottom:14px;">Choose your preparation style</div>
+          <div style="display:flex;flex-direction:column;gap:8px;flex:1;">
+            <div class="prep-card selected" id="prep-guided" onclick="selectPrep('guided')">
+              <span class="prep-tag" style="background:rgba(16,185,129,0.15);color:#10b981;">Recommended</span>
+              <div class="prep-icon">🎯</div>
+              <div class="prep-title">Guided Path</div>
+              <div class="prep-desc">Science-based plan built around your goal and deadline.</div>
+            </div>
+            <div class="prep-card" id="prep-custom" onclick="selectPrep('custom')">
+              <span class="prep-tag" style="background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.35);">Self-directed</span>
+              <div class="prep-icon">⚙️</div>
+              <div class="prep-title">Custom Plan</div>
+              <div class="prep-desc">You decide what to practice and when.</div>
+            </div>
+          </div>
         </div>
-        <div class="clbls"><span>Session 1</span><span>Session 2</span><span>Session 3</span><span>Session 4</span><span>Today</span></div>
-      </div>
-
-      <div class="focus fr" id="h-focus">
-        <div class="ficon">⚡</div>
-        <div class="ftitle">Today's focus</div>
-        <div class="fdesc" id="focus-text">Start your first session to get personalized focus recommendations.</div>
-        <button class="fbtn" onclick="go('practice',document.querySelectorAll('.pill')[1])">Start practicing</button>
+        <div class="card fr" id="h-mini-stats" style="display:flex;align-items:center;justify-content:space-around;">
+          <div style="text-align:center;">
+            <div style="font-size:28px;font-weight:800;color:#fff;line-height:1;letter-spacing:-0.03em;" id="ms-sessions">0</div>
+            <div style="font-size:11px;font-weight:500;color:rgba(255,255,255,0.3);margin-top:5px;">Sessions done</div>
+          </div>
+          <div style="width:1px;height:40px;background:rgba(255,255,255,0.08);"></div>
+          <div style="text-align:center;">
+            <div style="font-size:28px;font-weight:800;color:#fff;line-height:1;letter-spacing:-0.03em;" id="ms-avg">0</div>
+            <div style="font-size:11px;font-weight:500;color:rgba(255,255,255,0.3);margin-top:5px;">Avg score / 10</div>
+          </div>
+          <div style="width:1px;height:40px;background:rgba(255,255,255,0.08);"></div>
+          <div style="text-align:center;">
+            <div style="font-size:28px;font-weight:800;color:#fff;line-height:1;letter-spacing:-0.03em;" id="ms-best">0</div>
+            <div style="font-size:11px;font-weight:500;color:rgba(255,255,255,0.3);margin-top:5px;">Best score / 10</div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -342,6 +336,7 @@ input{font-family:inherit;}
 
 <script src="/frontend/script.js"></script>
 <script>
+var currentUser = null;
 var pages={
   home:{
     anims:[
@@ -352,22 +347,56 @@ var pages={
       {id:'h-pb4',delay:230},
       {id:'h-bignums',delay:280},
       {id:'h-journey',delay:360},
-      {id:'h-chart',delay:400},
-      {id:'h-focus',delay:360},
+      {id:'h-focus',delay:380},
+      {id:'h-mini-stats',delay:440},
       {id:'h-sessions',delay:500},
       {id:'h-streak',delay:540},
       {id:'h-cta',delay:500}
     ],
-    onIn:function(){
-      ['b1','b2','b3','b4'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.width='0%';});
-      ['v1','v2','v3','v4','snum'].forEach(function(id){var el=document.getElementById(id);if(el)el.innerText='0';});
-      setTimeout(function(){
-        ab('b1',80,900); ab('b2',63,900); ab('b3',87,900); ab('b4',35,900);
-        cu('v1',12,900,false); cu('v2',9.4,900,true); cu('v3',13,900,false); cu('v4',35,900,false,'%');
-        cu('snum',5,700,false);
-        drawChart();
-      },300);
-    }
+    onIn: function(){
+  ['v1','v2','v3','v4','snum'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el) el.innerText='0';
+  });
+
+  setTimeout(function(){
+    fetch('/sessions', {credentials:'include'})
+      .then(function(r){ return r.json(); })
+      .then(function(sessions){
+        if(!sessions || sessions.length === 0) return;
+
+        var totalSessions = sessions.length;
+        var completed = sessions.filter(function(s){ return s.is_completed == 1; }).length;
+        var incomplete = sessions.filter(function(s){ return s.is_completed == 0; }).length;
+        var incomplete = sessions.filter(function(s){ return s.is_completed == 0; }).length;
+        var avg = sessions.reduce(function(sum,s){ return sum+(s.avg_score||0); },0) / sessions.length;
+        var best = Math.max.apply(null, sessions.map(function(s){ return s.avg_score||0; }));
+
+        cu('v1', totalSessions, 900, false);
+        document.getElementById('v-completed').innerText = completed;
+        document.getElementById('v-incomplete').innerText = incomplete;
+        cu('v2', avg, 900, true);
+        cu('v3', best, 900, true);
+        document.getElementById('ms-sessions').innerText = totalSessions;
+        document.getElementById('ms-avg').innerText = avg.toFixed(1);
+        document.getElementById('ms-best').innerText = best.toFixed(1);
+
+        // Recent sessions list
+        var list = document.getElementById('sessions-list');
+        if(list){
+          list.innerHTML = '';
+          sessions.slice(0,5).forEach(function(s){
+            var score = s.avg_score || 0;
+            var colorClass = score>=7?'sh':score>=5?'sm':'sl';
+            var dotColor = score>=7?'#34d399':score>=5?'#f59e0b':'#f87171';
+            var date = new Date(s.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric'});
+            list.innerHTML += '<div class="srow"><div style="display:flex;align-items:center;"><div class="sdot" style="background:'+dotColor+'"></div><div><div class="sn">'+s.domain+'</div><div class="sd">'+date+'</div></div></div><div class="ss '+colorClass+'">'+score.toFixed(1)+'</div></div>';
+          });
+        }
+
+      });
+  }, 300);
+}
   },
   practice:{
     anims:[
@@ -417,6 +446,53 @@ function runPage(name){
   if(pg.onIn) pg.onIn();
 }
 
+async function selectPrep(type){
+  document.getElementById('prep-guided').classList.toggle('selected', type === 'guided');
+  document.getElementById('prep-custom').classList.toggle('selected', type === 'custom');
+
+  if(type !== 'guided') return;
+
+  // Use cached user; fall back to a single /me call if not yet populated
+  var user = currentUser;
+  if(!user){
+    var meRes = await fetch('/me', {credentials:'include'}).catch(function(){ return null; });
+    if(!meRes || !meRes.ok) return;
+    user = await meRes.json().catch(function(){ return null; });
+    if(!user) return;
+    currentUser = user;
+  }
+
+  if(!user.profile_completed){
+    window.location.href = '/goal-setting';
+    return;
+  }
+
+  var card = document.getElementById('prep-guided');
+  var savedHTML = card.innerHTML;
+  card.style.pointerEvents = 'none';
+  card.innerHTML =
+    '<div class="prep-icon">⏳</div>' +
+    '<div class="prep-title">Generating your plan…</div>' +
+    '<div class="prep-desc">This will only take a moment.</div>';
+
+  try{
+    var r = await fetch('/plan/generate', {method:'POST', credentials:'include'});
+    if(r.ok){
+      window.location.href = '/progress';
+    } else {
+      throw new Error('non-2xx');
+    }
+  } catch(e){
+    card.innerHTML = savedHTML;
+    card.style.pointerEvents = '';
+    var errEl = document.createElement('div');
+    errEl.style.cssText = 'font-size:11px;color:#f87171;margin-top:6px;padding:0 4px;';
+    errEl.textContent = 'Could not generate plan. Please try again.';
+    card.after(errEl);
+    setTimeout(function(){ if(errEl.parentNode) errEl.parentNode.removeChild(errEl); }, 4000);
+  }
+}
+
 function go(name,el){
   document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
   document.querySelectorAll('.pill').forEach(function(p){p.classList.remove('active');});
@@ -447,32 +523,6 @@ function ab(id,pct,dur){
   },16);
 }
 
-function drawChart(){
-  var data=[[0,95],[100,78],[200,82],[300,58],[400,42]];
-  // Smooth bezier curve
-  function smoothLine(pts){
-    if(pts.length<2) return '';
-    var d='M'+pts[0][0]+','+pts[0][1];
-    for(var i=0;i<pts.length-1;i++){
-      var x0=pts[i][0],y0=pts[i][1];
-      var x1=pts[i+1][0],y1=pts[i+1][1];
-      var cpx=(x0+x1)/2;
-      d+=' C'+cpx+','+y0+' '+cpx+','+y1+' '+x1+','+y1;
-    }
-    return d;
-  }
-  var line=smoothLine(data);
-  var area=line+' L400,120 L0,120 Z';
-  var lp=document.getElementById('cp-line');
-  var ap=document.getElementById('cp-area');
-  if(lp) lp.setAttribute('d',line);
-  if(ap) ap.setAttribute('d',area);
-  data.forEach(function(p,i){
-    var d=document.getElementById('dot'+i);
-    if(d){d.setAttribute('cx',p[0]);d.setAttribute('cy',p[1]);d.setAttribute('opacity','1');}
-  });
-}
-
 window.startInterview = async function(){
   var name=document.getElementById('name').value;
   var domain=document.getElementById('domain').value;
@@ -497,6 +547,7 @@ fetch('/me',{credentials:'include'})
 })
 .then(function(user){
   if(!user) return;
+  currentUser = user;
 
   var userName=document.getElementById('user-name');
   if(userName) userName.textContent=user.name;
@@ -527,6 +578,59 @@ fetch('/me',{credentials:'include'})
 .catch(function(error){ console.log('User loading failed:',error); });
 
 setTimeout(function(){ runPage('home'); },150);
+
+fetch('/sessions', {credentials:'include'})
+  .then(function(r){ return r.json(); })
+  .then(function(sessions){
+
+    // if no sessions, stop here
+    if(!sessions || sessions.length === 0) return;
+
+    // Step 1 — Total sessions
+    var totalSessions = sessions.length;
+
+    // Step 2 — Avg score
+    var avg = sessions.reduce(function(sum, s){ 
+      return sum + (s.avg_score || 0); 
+    }, 0) / sessions.length;
+
+    // Step 3 — Best score
+    var best = Math.max.apply(null, sessions.map(function(s){ 
+      return s.avg_score || 0; 
+    }));
+
+    // Step 4 — Put in HTML (big numbers + mini stats)
+    document.getElementById('v1').innerText = totalSessions;
+    document.getElementById('v2').innerText = avg.toFixed(1);
+    document.getElementById('v3').innerText = best.toFixed(1);
+    document.getElementById('ms-sessions').innerText = totalSessions;
+    document.getElementById('ms-avg').innerText = avg.toFixed(1);
+    document.getElementById('ms-best').innerText = best.toFixed(1);
+
+    // Step 5 — Recent sessions list
+    var list = document.getElementById('sessions-list');
+    if(list){
+      list.innerHTML = '';
+      sessions.slice(0, 5).forEach(function(s){
+        var score = s.avg_score || 0;
+        var colorClass = score >= 10 ? 'sh' : score >= 7 ? 'sm' : 'sl';
+        var dotColor = score >= 10 ? '#34d399' : score >= 7 ? '#f59e0b' : '#f87171';
+        var date = new Date(s.created_at).toLocaleDateString('en-US', {month:'short', day:'numeric'});
+        list.innerHTML += `
+          <div class="srow">
+            <div style="display:flex;align-items:center;">
+              <div class="sdot" style="background:${dotColor}"></div>
+              <div>
+                <div class="sn">${s.domain}</div>
+                <div class="sd">${date}</div>
+              </div>
+            </div>
+            <div class="ss ${colorClass}">${score.toFixed(1)}</div>
+          </div>`;
+      });
+    }
+
+  });
 </script>
 </body>
 </html>

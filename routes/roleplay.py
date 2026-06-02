@@ -45,6 +45,56 @@ def _detect_voice(scenario: str) -> str:
     return "alloy"
 
 
+def build_roleplay_system_prompt(
+    character_brief: str,
+    conversation_history: list,
+    target_role: str = "",
+    weak_areas: str = "",
+) -> str:
+    """
+    Augment a GPT character brief with a PLAYBOOK section and candidate context.
+    Keeps the character anchored while giving GPT concrete moves to apply.
+    """
+    profile_section = ""
+    if target_role or weak_areas:
+        profile_section = (
+            f"\nCANDIDATE PROFILE:\n"
+            f"- Target role: {target_role or 'Not specified'}\n"
+            f"- Known weak areas to probe: {weak_areas or 'Not identified'}\n"
+        )
+
+    history_text = "None yet — this is the start of the conversation."
+    if conversation_history:
+        turns = []
+        for msg in conversation_history[-8:]:
+            label = "Candidate" if msg["role"] == "user" else "You"
+            turns.append(f"{label}: {msg['content']}")
+        history_text = "\n".join(turns)
+
+    playbook = """
+PLAYBOOK — apply these moves in real time:
+- Vague answer → "Can you be more specific? What exactly did you do?"
+- No example given → "Walk me through a concrete situation where that happened."
+- Two consecutive strong responses → escalate: ask a curveball, edge case, or failure mode
+- Candidate struggling → do NOT rescue them. Let silence sit, then say: "Take your time."
+- Every 3-4 exchanges → reference something they said earlier in this conversation
+- Occasionally push back even on good answers to test conviction and depth
+
+HARD RULES:
+- Stay in character 100% — never break the fourth wall
+- Max 2-3 sentences per response
+- End ~30% of your responses with a direct follow-up question or challenge
+- Do NOT soften your tone because the candidate seems nervous — maintain professional pressure
+- Never hint at what you want to hear"""
+
+    return (
+        f"{character_brief}"
+        f"{profile_section}"
+        f"\nCONVERSATION SO FAR:\n{history_text}"
+        f"{playbook}"
+    )
+
+
 def _generate_character(scenario: str) -> str:
     """Use GPT to build a vivid, specific character for the scenario."""
     resp = openai_client.chat.completions.create(
@@ -92,7 +142,8 @@ def _scenario_opening(character: str) -> str:
 _SENTENCE_RE = re.compile(r'[.?!]\s+')
 
 
-async def _stream_roleplay_sentences(character: str, history: list, loop):
+async def _stream_roleplay_sentences(character: str, history: list, loop,
+                                     target_role: str = "", weak_areas: str = ""):
     """
     Async generator. Streams GPT tokens from a background thread into an
     asyncio.Queue, then yields complete sentences as they arrive.
@@ -100,11 +151,13 @@ async def _stream_roleplay_sentences(character: str, history: list, loop):
     """
     token_q: asyncio.Queue = asyncio.Queue()
 
+    augmented_prompt = build_roleplay_system_prompt(character, history, target_role, weak_areas)
+
     def _produce():
         try:
             stream = openai_client.chat.completions.create(
                 model="gpt-4o-mini",
-                messages=[{"role": "system", "content": character}] + history,
+                messages=[{"role": "system", "content": augmented_prompt}] + history,
                 temperature=0.9,
                 max_tokens=120,
                 stream=True,
@@ -162,15 +215,25 @@ async def roleplay_ws(
         await websocket.close(code=4001, reason="Invalid token")
         return
 
-    # Fetch resume text for personalised interview questions
-    resume_text = None
+    # Fetch resume text and candidate profile for personalisation
+    resume_text  = None
+    target_role  = ""
+    weak_areas   = ""
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT resume_text FROM users WHERE id = ?", (user_id,))
+    cursor.execute("SELECT resume_text FROM users WHERE id = %s", (user_id,))
     row = cursor.fetchone()
-    conn.close()
     if row and row[0]:
         resume_text = row[0]
+    cursor.execute("""
+        SELECT target_role, weak_areas FROM interview_profiles
+        WHERE user_id = %s ORDER BY updated_at DESC LIMIT 1
+    """, (user_id,))
+    profile_row = cursor.fetchone()
+    if profile_row:
+        target_role = profile_row[0] or ""
+        weak_areas  = profile_row[1] or ""
+    conn.close()
 
     loop = asyncio.get_event_loop()
     vad = VADProcessor()
@@ -217,7 +280,7 @@ async def roleplay_ws(
             print(f"[ROLEPLAY TIMING] GPT stream start: {time.time()-t0:.2f}s")
             try:
                 async for sentence in _stream_roleplay_sentences(
-                    character, list(conversation_history), loop
+                    character, list(conversation_history), loop, target_role, weak_areas
                 ):
                     reply_parts.append(sentence)
                     tts_t = time.time()
@@ -242,9 +305,12 @@ async def roleplay_ws(
             # ── Interview: generate next question immediately, then transcribe +
             #    evaluate in parallel ──────────────────────────────────────────
             t0 = time.time()
-            gen_task = loop.run_in_executor(
-                _executor, generate_question, domain, asked_questions, resume_text
-            )
+
+            def _gen_question_text():
+                result = generate_question(domain, asked_questions, resume_text)
+                return result["question"] if isinstance(result, dict) else result
+
+            gen_task = loop.run_in_executor(_executor, _gen_question_text)
 
             print(f"[ROLEPLAY TIMING] Whisper start: {time.time()-t0:.2f}s")
             try:
@@ -265,7 +331,11 @@ async def roleplay_ws(
             try:
                 evaluation, next_q = await asyncio.gather(eval_task, gen_task)
             except Exception:
-                evaluation = {"score": 0, "feedback": "Evaluation failed. Please try again."}
+                evaluation = {
+                    "total": 0,
+                    "one_line_verdict": "Evaluation failed. Please try again.",
+                    "weakest_dimension": "depth",
+                }
                 try:
                     next_q = await gen_task
                 except Exception:
@@ -279,8 +349,9 @@ async def roleplay_ws(
             await send({
                 "type":       "feedback",
                 "transcript": transcript,
-                "score":      evaluation["score"],
-                "feedback":   evaluation["feedback"]
+                "score":      evaluation.get("total", 0),
+                "feedback":   evaluation.get("one_line_verdict", ""),
+                "weakest_dimension": evaluation.get("weakest_dimension", ""),
             })
 
             try:
@@ -303,7 +374,8 @@ async def roleplay_ws(
             conversation_history.append({"role": "assistant", "content": opening})
             await send_question(opening)
         else:
-            first_q = await run(generate_question, domain, asked_questions, resume_text)
+            first_q_result = await run(generate_question, domain, asked_questions, resume_text)
+            first_q = first_q_result["question"] if isinstance(first_q_result, dict) else first_q_result
             asked_questions.append(first_q)
             current_question = first_q
             await send_question(first_q)

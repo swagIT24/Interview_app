@@ -1,35 +1,42 @@
-from database.connections import create_session
-from database.connections import insert_answer
-from database.connections import *
-from services.questions import *
-import random
+import asyncio
 import json
-from services.evaluation_service import evaluate_answer
+import logging
+from database.connections import create_session, insert_answer, get_connection, get_session_with_answer, get_last_n_scores
+from services.evaluation_service import evaluate_answer, generate_feedback
 from services.question_generation_service import generate_question
-from services.tts_service import text_to_speech
 
-ADAPTIVE_WINDOW = 3
+logger = logging.getLogger(__name__)
+
+ADAPTIVE_WINDOW = 5
 
 
 def start_interview(user_id: int, candidate_name: str, domain: str):
     session_id = create_session(user_id, candidate_name, domain)
-
     return {
         "session_id": session_id,
         "message": "Interview session started",
-        "asked_questions": []
+        "asked_questions": [],
     }
 
 
-def process_answer(answer: str, session_id: int, question_text: str):
+def _difficulty_from_scores(scores: list) -> str:
+    if not scores:
+        return "intermediate"
+    avg = sum(scores) / len(scores)
+    if avg >= 7.5:
+        return "advanced"
+    if avg <= 4.5:
+        return "beginner"
+    return "intermediate"
 
+
+def process_answer(answer: str, session_id: int, question_text: str):
     if not answer or answer.strip() == "":
         return {
             "score": 0,
             "feedback": "Please provide an answer before submitting.",
             "is_completed": False,
             "current_question_number": None,
-            "difficulty_level": None
         }
 
     conn = get_connection()
@@ -38,82 +45,84 @@ def process_answer(answer: str, session_id: int, question_text: str):
     try:
         cursor.execute("""
             SELECT current_question_number, is_completed
-            FROM interview_sessions
-            WHERE id = ?
+            FROM interview_sessions WHERE id = %s
         """, (session_id,))
-
         session = cursor.fetchone()
 
         if not session:
             return {"error": "Session not found"}
 
-        current_q, is_completed = session
+        current_q, is_completed = session["current_question_number"], session["is_completed"]
 
         if is_completed:
             return {"error": "Interview already completed"}
 
-        # Evaluate via LLM using question passed directly
-        try:
-            result = evaluate_answer(question_text, answer)
-            score, feedback = result["score"], result["feedback"]
-        except Exception as e:
-            print("LLM failed:", e)
-            score = len(answer) // 10
-            feedback = "Fallback evaluation"
+        # Adaptive difficulty from recent history
+        recent_scores = get_last_n_scores(cursor, session_id, ADAPTIVE_WINDOW)
+        difficulty = _difficulty_from_scores(recent_scores)
 
-        # Save answer with correct question_text
-        time_taken = 30
+        # 1+2. Run chain-of-thought evaluation then feedback in one event loop.
+        # process_answer runs in a ThreadPoolExecutor thread (no running loop),
+        # so asyncio.run() is safe here.
+        async def _evaluate_and_feedback():
+            sr = await evaluate_answer(question_text, answer, difficulty)
+            fb = await generate_feedback(
+                question_text, answer, sr, difficulty,
+                sr.get("analysis_text", ""),
+            )
+            return sr, fb
+
+        try:
+            score_result, feedback = asyncio.run(_evaluate_and_feedback())
+        except Exception as e:
+            logger.error(f"evaluation pipeline failed: {e}")
+            score_result = {
+                "scores": {}, "total": 5,
+                "strongest_dimension": "clarity", "weakest_dimension": "depth",
+                "one_line_verdict": "Could not evaluate.", "missed_key_point": None,
+                "model_answer_hint": "", "analysis_text": "",
+            }
+            feedback = f"Score: 5/10. Focus on {score_result.get('weakest_dimension', 'depth')}."
+
+        # 3. Persist — including rubric columns and analysis text
         insert_answer(
             cursor,
             session_id,
             question_text,
             answer,
-            score,
+            score_result["total"],
             feedback,
-            time_taken
+            time_taken=30,
+            score_breakdown=score_result.get("scores"),
+            weakest_dimension=score_result.get("weakest_dimension"),
+            model_answer_hint=score_result.get("model_answer_hint"),
+            analysis_text=score_result.get("analysis_text"),
         )
 
-        # Increment question number
         cursor.execute("""
             UPDATE interview_sessions
             SET current_question_number = current_question_number + 1
-            WHERE id = ?
+            WHERE id = %s
         """, (session_id,))
 
         cursor.execute("""
-            SELECT current_question_number
-            FROM interview_sessions
-            WHERE id = ?
+            SELECT current_question_number FROM interview_sessions WHERE id = %s
         """, (session_id,))
-
         new_q = cursor.fetchone()[0]
 
-        # Adaptive difficulty every 3 answers
-        scores = get_last_n_scores(cursor, session_id, ADAPTIVE_WINDOW)
-
-        # if len(scores) == ADAPTIVE_WINDOW:
-        #     avg_score = sum(scores) / len(scores)
-        #     levels = ["easy", "medium", "hard"]
-        #     index = levels.index(difficulty)
-
-        #     if avg_score > 12 and index < len(levels) - 1:
-        #         difficulty = levels[index + 1]
-        #     elif avg_score < 6 and index > 0:
-        #         difficulty = levels[index - 1]
-
-        #     cursor.execute("""
-        #         UPDATE interview_sessions
-        #         SET difficulty_level = ?
-        #         WHERE id = ?
-        #     """, (difficulty, session_id))
-
-        # conn.commit()
+        conn.commit()
 
         return {
-            "score": score,
-            "feedback": feedback,
+            "score":               score_result["total"],
+            "feedback":            feedback,
+            "score_breakdown":     score_result.get("scores"),
+            "strongest_dimension": score_result.get("strongest_dimension"),
+            "weakest_dimension":   score_result.get("weakest_dimension"),
+            "one_line_verdict":    score_result.get("one_line_verdict"),
+            "missed_key_point":    score_result.get("missed_key_point"),
+            "model_answer_hint":   score_result.get("model_answer_hint"),
             "current_question_number": new_q,
-            "is_completed": False
+            "is_completed": False,
         }
 
     except Exception as e:
@@ -125,9 +134,7 @@ def process_answer(answer: str, session_id: int, question_text: str):
 
 
 def fetch_session(session_id: int, user_id: int):
-
     result = get_session_with_answer(session_id, user_id)
-
     if not result:
         return {"error": "session not found"}
 
@@ -135,87 +142,74 @@ def fetch_session(session_id: int, user_id: int):
     answers = result["answers"]
 
     return {
-        "session_id": session_id,
-        "domain": session["domain"],
-        "difficulty_level": session["difficulty_level"],
+        "session_id":              session_id,
+        "domain":                  session["domain"],
         "current_question_number": session["current_question_number"],
-        "is_completed": bool(session["is_completed"]),
-        "current_question": answers[-1]["question"] if answers else None
+        "is_completed":            bool(session["is_completed"]),
+        "current_question":        answers[-1]["question"] if answers else None,
     }
 
 
-# def get_next_question(domain, difficulty, asked_questions):
-
-#     difficulty = difficulty.lower()
-
-#     domain_map = {
-#         "ML": "Machine Learning",
-#         "Machine Learning": "Machine Learning",
-#         "Python": "Python",
-#         "Java": "Java",
-#         "Statistics": "Statistics"
-#     }
-
-#     domain = domain_map.get(domain, domain)
-
-#     level_order = ["easy", "medium", "hard"]
-#     current_index = level_order.index(difficulty)
-
-#     for level in level_order[current_index:]:
-#         questions = QUESTION_BANK.get(domain, {}).get(level, [])
-#         remaining = [q for q in questions if q["id"] not in asked_questions]
-
-#         if remaining:
-#             return {
-#                 "question": random.choice(remaining),
-#                 "actual_difficulty": level
-#             }
-
-#     return None
-
-
-def get_next_question(domain, asked_questions, user_id=None):  # ← add user_id
-
-    # ← fetch resume text if user_id provided
+def get_next_question(domain, asked_questions, user_id=None):
+    """Fetch resume text, compute difficulty from history, delegate to generate_question."""
     resume_text = None
+    recent_scores = []
+
     if user_id:
         conn = get_connection()
         cursor = conn.cursor()
-        cursor.execute("SELECT resume_text FROM users WHERE id = ?", (user_id,))
+        cursor.execute("SELECT resume_text FROM users WHERE id = %s", (user_id,))
         row = cursor.fetchone()
-        conn.close()
         if row and row[0]:
             resume_text = row[0]
 
-    question_text = generate_question(domain, asked_questions=asked_questions, resume_text=resume_text)
+        # Pull recent scores for adaptive difficulty
+        recent_scores = get_last_n_scores(cursor, _get_active_session_id(cursor, user_id), ADAPTIVE_WINDOW)
+        conn.close()
+
+    result = generate_question(
+        domain=domain,
+        asked_questions=asked_questions,
+        resume_text=resume_text,
+        session_history=recent_scores,
+    )
+
+    question_text = result["question"] if isinstance(result, dict) else result
 
     return {
         "question": {
-            "id": question_text,
-            "question": question_text,
-            "topic": domain
+            "id":         question_text,
+            "question":   question_text,
+            "topic":      domain,
+            "difficulty": result.get("difficulty", "intermediate") if isinstance(result, dict) else "intermediate",
         }
     }
 
 
-def update_asked_questions(session_id, question_id):
+def _get_active_session_id(cursor, user_id: int):
+    """Return the most recent session id for a user, or 0 if none."""
+    cursor.execute("""
+        SELECT id FROM interview_sessions
+        WHERE user_id = %s
+        ORDER BY id DESC LIMIT 1
+    """, (user_id,))
+    row = cursor.fetchone()
+    return row[0] if row else 0
 
+
+def update_asked_questions(session_id, question_id):
     conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT asked_questions FROM interview_sessions
-        WHERE id = ?
+        SELECT asked_questions FROM interview_sessions WHERE id = %s
     """, (session_id,))
-
     row = cursor.fetchone()
     asked = json.loads(row[0]) if row and row[0] else []
     asked.append(question_id)
 
     cursor.execute("""
-        UPDATE interview_sessions
-        SET asked_questions = ?
-        WHERE id = ?
+        UPDATE interview_sessions SET asked_questions = %s WHERE id = %s
     """, (json.dumps(asked), session_id))
 
     conn.commit()

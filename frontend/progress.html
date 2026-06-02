@@ -83,6 +83,96 @@ svg.ch{width:100%;height:100%;}
 .day-chip{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;}
 .day-on{background:rgba(124,58,237,0.25);color:#a78bfa;border:1px solid rgba(124,58,237,0.3);}
 .day-off{background:rgba(255,255,255,0.03);color:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.04);}
+
+/* ── Roadmap redesign ── */
+.roadmap-wrap{margin-bottom:14px;}
+
+/* Summary bar */
+.rm-summary-bar{display:flex;align-items:stretch;background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;overflow:hidden;margin-bottom:10px;}
+.rm-sum-item{flex:1;display:flex;align-items:center;gap:10px;padding:16px 18px;}
+.rm-sum-icon{font-size:18px;flex-shrink:0;line-height:1;}
+.rm-sum-val{font-size:14px;font-weight:700;color:#fff;line-height:1.2;}
+.rm-sum-lbl{font-size:11px;color:rgba(255,255,255,0.3);margin-top:2px;}
+.rm-sum-div{width:1px;background:rgba(255,255,255,0.07);flex-shrink:0;margin:14px 0;}
+
+/* Phase progress bar */
+.rm-phase-bar{display:flex;align-items:center;gap:12px;background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:13px 18px;margin-bottom:12px;}
+.rm-phase-name{font-size:11px;font-weight:700;color:#818cf8;text-transform:uppercase;letter-spacing:0.08em;white-space:nowrap;}
+.rm-pbar{flex:1;height:6px;background:rgba(255,255,255,0.07);border-radius:99px;overflow:hidden;}
+.rm-pbar-fill{height:100%;background:linear-gradient(90deg,#6366f1,#818cf8);border-radius:99px;transition:width .6s ease;}
+.rm-pct{font-size:11px;color:rgba(255,255,255,0.35);white-space:nowrap;}
+
+/* Today callout */
+.today-callout{background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.18);border-radius:14px;padding:18px 20px;margin-bottom:12px;}
+.today-callout-hdr{font-size:11px;font-weight:700;color:#f59e0b;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:12px;}
+.today-sessions{display:flex;gap:10px;margin-bottom:14px;}
+.today-session-card{flex:1;background:rgba(255,255,255,0.03);border:1px solid rgba(245,158,11,0.12);border-left:3px solid #f59e0b;border-radius:10px;padding:12px 14px;}
+.tsc-topic{font-size:13px;font-weight:700;color:#fff;margin-bottom:3px;}
+.tsc-meta{font-size:11px;color:rgba(255,255,255,0.38);text-transform:capitalize;}
+.today-start-btn{display:block;width:100%;padding:11px;background:#f59e0b;border:none;border-radius:10px;color:#1a0f00;font-size:13px;font-weight:700;cursor:pointer;text-align:center;transition:background .15s;}
+.today-start-btn:hover{background:#d97706;}
+
+/* Week cards */
+.week-card{background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:14px;margin-bottom:10px;overflow:hidden;}
+.week-card:last-child{margin-bottom:0;}
+.week-card-hdr{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;user-select:none;transition:background .15s;}
+.week-card-hdr:hover{background:rgba(255,255,255,0.02);}
+.wk-chip-wrap{position:relative;flex-shrink:0;}
+.wk-chip{width:34px;height:34px;border-radius:50%;background:rgba(99,102,241,0.12);border:1.5px solid rgba(99,102,241,0.25);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#818cf8;}
+.wk-today-dot{position:absolute;top:-2px;right:-2px;width:8px;height:8px;border-radius:50%;background:#f59e0b;border:2px solid #1a1a2e;}
+.wk-info{flex:1;min-width:0;}
+.wk-name{font-size:13px;font-weight:700;color:#fff;}
+.wk-desc{font-size:11px;color:rgba(255,255,255,0.28);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.wk-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.wk-count{font-size:11px;color:rgba(255,255,255,0.22);}
+.wk-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;letter-spacing:0.04em;}
+.badge-done{background:rgba(16,185,129,0.15);color:#10b981;}
+.badge-inprogress{background:rgba(245,158,11,0.15);color:#f59e0b;}
+.badge-upcoming{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.28);}
+.wk-chevron{font-size:11px;color:rgba(255,255,255,0.18);transition:transform .25s;margin-left:4px;}
+.wk-chevron.open{transform:rotate(180deg);}
+
+/* Week body — collapsible */
+.week-card-body{overflow:hidden;max-height:0;opacity:0;transition:max-height 0.32s ease,opacity 0.22s ease;}
+.week-card-body-inner{padding:0 16px 14px;}
+
+/* Day rows */
+.day-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;}
+.day-row:last-child{margin-bottom:0;}
+.day-date-lbl{font-size:11px;color:rgba(255,255,255,0.22);min-width:38px;padding-top:10px;flex-shrink:0;}
+.day-sessions{display:flex;gap:8px;flex:1;}
+
+/* Session pills */
+.session-pill{flex:1;position:relative;background:#13131f;border:1px solid rgba(255,255,255,0.07);border-left:3px solid transparent;border-radius:10px;padding:10px 12px;min-width:0;transition:opacity .2s;}
+.session-pill.is-completed{border-left-color:#10b981;opacity:0.5;}
+.session-pill.is-today{border-left-color:#f59e0b;background:rgba(245,158,11,0.05);box-shadow:0 0 0 1px rgba(245,158,11,0.12);}
+.sp-badge{position:absolute;top:8px;right:8px;font-size:10px;font-weight:700;padding:2px 6px;border-radius:8px;}
+.sp-badge-today{background:rgba(245,158,11,0.15);color:#f59e0b;}
+.sp-badge-score-high{background:rgba(16,185,129,0.12);color:#10b981;}
+.sp-badge-score-mid{background:rgba(245,158,11,0.12);color:#f59e0b;}
+.sp-badge-score-low{background:rgba(248,113,113,0.1);color:#f87171;}
+.sp-topic{font-size:12px;font-weight:700;color:#fff;margin-bottom:3px;padding-right:46px;}
+.sp-type{font-size:11px;color:rgba(255,255,255,0.28);text-transform:capitalize;}
+
+/* Empty state */
+.rm-empty{text-align:center;padding:44px 20px;background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;}
+.rm-empty-icon{font-size:48px;margin-bottom:14px;line-height:1;}
+.rm-empty-title{font-size:16px;font-weight:700;color:#fff;margin-bottom:8px;}
+.rm-empty-sub{font-size:13px;color:rgba(255,255,255,0.3);line-height:1.6;margin-bottom:22px;}
+.rm-empty-btn{padding:10px 24px;background:#f59e0b;border:none;border-radius:10px;color:#1a0f00;font-size:13px;font-weight:700;cursor:pointer;transition:background .15s;}
+.rm-empty-btn:hover{background:#d97706;}
+
+/* Loading / error */
+.rm-loading{font-size:13px;color:rgba(255,255,255,0.22);text-align:center;padding:22px;background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;}
+.rm-error{font-size:13px;color:rgba(248,113,113,0.5);text-align:center;padding:22px;background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;}
+
+/* Mobile */
+@media(max-width:600px){
+  .rm-summary-bar{flex-wrap:wrap;}
+  .rm-sum-item{flex:1 1 calc(50% - 1px);}
+  .rm-sum-div:nth-child(4){display:none;}
+  .today-sessions,.day-sessions{flex-direction:column;}
+}
 </style>
 </head>
 <body>
@@ -107,6 +197,11 @@ svg.ch{width:100%;height:100%;}
   <div class="page-header ft" id="pg-header">
     <div class="page-title">Your <span>Progress</span></div>
     <div class="page-sub">Track your growth across every session.</div>
+  </div>
+
+  <!-- Roadmap -->
+  <div class="roadmap-wrap ft" id="pg-roadmap">
+    <div class="rm-loading">Loading roadmap…</div>
   </div>
 
   <!-- Big 4 stats -->
@@ -197,10 +292,11 @@ svg.ch{width:100%;height:100%;}
 <script>
 var anims = [
   {id:'pg-header',       delay:0},
-  {id:'pg-stats',        delay:80},
-  {id:'pg-chart',        delay:180},
-  {id:'pg-history',      delay:280},
-  {id:'pg-streak-card',  delay:320}
+  {id:'pg-roadmap',      delay:80},
+  {id:'pg-stats',        delay:160},
+  {id:'pg-chart',        delay:260},
+  {id:'pg-history',      delay:360},
+  {id:'pg-streak-card',  delay:400}
 ];
 
 setTimeout(function(){
@@ -321,12 +417,242 @@ function escHtml(s){
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
+function formatDayDate(isoStr){
+  if(!isoStr) return '';
+  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var parts = String(isoStr).split('T')[0].split('-');
+  return months[parseInt(parts[1],10)-1] + ' ' + parseInt(parts[2],10);
+}
+
+function toggleWeek(idx){
+  var body = document.getElementById('wkb-'+idx);
+  var chev = document.getElementById('wkc-'+idx);
+  if(!body) return;
+  var isOpen = body.dataset.open === '1';
+  if(isOpen){
+    body.style.maxHeight = '0px';
+    body.style.opacity   = '0';
+    body.dataset.open    = '0';
+    if(chev) chev.classList.remove('open');
+  } else {
+    body.style.maxHeight = body.scrollHeight + 'px';
+    body.style.opacity   = '1';
+    body.dataset.open    = '1';
+    if(chev) chev.classList.add('open');
+  }
+}
+
+function renderRoadmap(data, goals){
+  var el = document.getElementById('pg-roadmap');
+  if(!el) return;
+
+  /* ── Empty state ── */
+  if(!data.has_plan){
+    el.innerHTML =
+      '<div class="rm-empty">'+
+        '<div class="rm-empty-icon">🗺️</div>'+
+        '<div class="rm-empty-title">No roadmap yet</div>'+
+        '<div class="rm-empty-sub">Create your Guided Path to get a personalised study plan</div>'+
+        '<button class="rm-empty-btn" onclick="window.location.href=\'/dashboard\'">Create my plan →</button>'+
+      '</div>';
+    return;
+  }
+
+  var plan  = data.plan;
+  var weeks = data.weeks || [];
+  var pct   = plan.total_days > 0
+    ? Math.min(100, Math.round((plan.current_day / plan.total_days) * 100))
+    : 0;
+
+  var daysRemaining = 0;
+  if(plan.end_date){
+    var endD   = new Date(plan.end_date);
+    var todayD = new Date();
+    todayD.setHours(0,0,0,0);
+    daysRemaining = Math.max(0, Math.round((endD - todayD) / 86400000));
+  }
+
+  /* ── Summary bar ── */
+  var roleVal = '—';
+  if(goals && goals.target_role){
+    roleVal = escHtml(goals.target_role);
+    if(goals.target_company) roleVal += ' at ' + escHtml(goals.target_company);
+  }
+
+  var html =
+    '<div class="rm-summary-bar">'+
+      '<div class="rm-sum-item">'+
+        '<div class="rm-sum-icon">🎯</div>'+
+        '<div><div class="rm-sum-val">'+roleVal+'</div><div class="rm-sum-lbl">Goal</div></div>'+
+      '</div>'+
+      '<div class="rm-sum-div"></div>'+
+      '<div class="rm-sum-item">'+
+        '<div class="rm-sum-icon">📅</div>'+
+        '<div><div class="rm-sum-val">Day '+plan.current_day+' of '+plan.total_days+'</div><div class="rm-sum-lbl">Progress</div></div>'+
+      '</div>'+
+      '<div class="rm-sum-div"></div>'+
+      '<div class="rm-sum-item">'+
+        '<div class="rm-sum-icon">⭐</div>'+
+        '<div><div class="rm-sum-val">'+plan.target_score+' / 10</div><div class="rm-sum-lbl">Target score</div></div>'+
+      '</div>'+
+      '<div class="rm-sum-div"></div>'+
+      '<div class="rm-sum-item">'+
+        '<div class="rm-sum-icon">⏳</div>'+
+        '<div><div class="rm-sum-val">'+daysRemaining+' days</div><div class="rm-sum-lbl">Remaining</div></div>'+
+      '</div>'+
+    '</div>';
+
+  /* ── Phase progress bar ── */
+  var phaseName = ((plan.phase || 'baseline').toUpperCase()) + ' PHASE';
+  html +=
+    '<div class="rm-phase-bar">'+
+      '<div class="rm-phase-name">'+escHtml(phaseName)+'</div>'+
+      '<div class="rm-pbar"><div class="rm-pbar-fill" style="width:'+pct+'%"></div></div>'+
+      '<div class="rm-pct">'+pct+'% complete</div>'+
+    '</div>';
+
+  /* ── Today callout ── */
+  var todaySessions = [];
+  weeks.forEach(function(w){
+    (w.days||[]).forEach(function(d){ if(d.is_today) todaySessions.push(d); });
+  });
+
+  if(todaySessions.length){
+    var todayDayN  = todaySessions[0].day_number;
+    var todayPhase = todaySessions[0].phase || '';
+    var phaseLabel = todayPhase.charAt(0).toUpperCase() + todayPhase.slice(1);
+    var sCards = todaySessions.map(function(d){
+      var tl = (d.session_type||'').replace(/_/g,' ');
+      return '<div class="today-session-card">'+
+        '<div class="tsc-topic">'+escHtml(d.topic)+'</div>'+
+        '<div class="tsc-meta">'+escHtml(tl)+' · '+d.questions_count+' questions</div>'+
+      '</div>';
+    }).join('');
+    html +=
+      '<div class="today-callout">'+
+        '<div class="today-callout-hdr">Today — Day '+todayDayN+' · '+escHtml(phaseLabel)+' Phase</div>'+
+        '<div class="today-sessions">'+sCards+'</div>'+
+        '<button class="today-start-btn" onclick="window.location.href=\'/practice\'">Start today\'s session →</button>'+
+      '</div>';
+  }
+
+  /* ── Week cards ── */
+  weeks.forEach(function(week, wkIdx){
+    var days         = week.days || [];
+    var allDone      = days.length > 0 && days.every(function(d){ return d.is_completed; });
+    var hasToday     = days.some(function(d){ return d.is_today; });
+    var completedCnt = days.filter(function(d){ return d.is_completed; }).length;
+    var shouldExpand = hasToday;
+
+    var badgeCls, badgeTxt;
+    if(allDone)       { badgeCls='badge-done';       badgeTxt='Done'; }
+    else if(hasToday) { badgeCls='badge-inprogress'; badgeTxt='In progress'; }
+    else              { badgeCls='badge-upcoming';   badgeTxt='Upcoming'; }
+
+    html +=
+      '<div class="week-card">'+
+        '<div class="week-card-hdr" onclick="toggleWeek('+wkIdx+')">'+
+          '<div class="wk-chip-wrap">'+
+            '<div class="wk-chip">W'+week.week_number+'</div>'+
+            (hasToday ? '<div class="wk-today-dot"></div>' : '')+
+          '</div>'+
+          '<div class="wk-info">'+
+            '<div class="wk-name">'+escHtml(week.phase.toUpperCase())+'</div>'+
+            '<div class="wk-desc">'+escHtml(week.phase_description||'')+'</div>'+
+          '</div>'+
+          '<div class="wk-right">'+
+            '<span class="wk-count">'+completedCnt+'/'+days.length+' sessions</span>'+
+            '<span class="wk-badge '+badgeCls+'">'+badgeTxt+'</span>'+
+          '</div>'+
+          '<div class="wk-chevron'+(shouldExpand?' open':'')+'" id="wkc-'+wkIdx+'">▾</div>'+
+        '</div>'+
+        '<div class="week-card-body" id="wkb-'+wkIdx+'" data-open="'+(shouldExpand?'1':'0')+'" data-expand="'+(shouldExpand?'1':'0')+'">'+
+          '<div class="week-card-body-inner">';
+
+    /* group sessions by day_number */
+    var dayMap = {}, dayOrder = [];
+    days.forEach(function(d){
+      if(!dayMap[d.day_number]){ dayMap[d.day_number]=[]; dayOrder.push(d.day_number); }
+      dayMap[d.day_number].push(d);
+    });
+
+    dayOrder.forEach(function(dayNum){
+      var sessions = dayMap[dayNum];
+      var dateStr  = formatDayDate(sessions[0].date);
+
+      var pillsHtml = sessions.map(function(d){
+        var pillCls = 'session-pill';
+        if(d.is_completed)  pillCls += ' is-completed';
+        else if(d.is_today) pillCls += ' is-today';
+
+        var bHtml = '';
+        if(d.is_today){
+          bHtml = '<span class="sp-badge sp-badge-today">Today</span>';
+        } else if(d.is_completed && d.score_achieved != null){
+          var sc    = parseFloat(d.score_achieved);
+          var scCls = sc>=7 ? 'sp-badge-score-high' : sc>=5 ? 'sp-badge-score-mid' : 'sp-badge-score-low';
+          bHtml = '<span class="sp-badge '+scCls+'">'+sc.toFixed(1)+'</span>';
+        }
+        var tl = (d.session_type||'').replace(/_/g,' ');
+        return '<div class="'+pillCls+'">'+bHtml+
+          '<div class="sp-topic">'+escHtml(d.topic)+'</div>'+
+          '<div class="sp-type">'+escHtml(tl)+'</div>'+
+        '</div>';
+      }).join('');
+
+      html +=
+        '<div class="day-row">'+
+          '<div class="day-date-lbl">'+dateStr+'</div>'+
+          '<div class="day-sessions">'+pillsHtml+'</div>'+
+        '</div>';
+    });
+
+    html += '</div></div></div>'; /* body-inner / body / week-card */
+  });
+
+  el.innerHTML = html;
+
+  /* expand current week after DOM is laid out */
+  requestAnimationFrame(function(){
+    document.querySelectorAll('.week-card-body[data-expand="1"]').forEach(function(body){
+      body.style.maxHeight = body.scrollHeight + 'px';
+      body.style.opacity   = '1';
+    });
+  });
+}
+
+function loadRoadmap(){
+  fetch('/plan/roadmap', {credentials:'include'})
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(data){
+      if(!data){
+        var el = document.getElementById('pg-roadmap');
+        if(el) el.innerHTML = '<div class="rm-error">Could not load roadmap.</div>';
+        return;
+      }
+      if(!data.has_plan){
+        renderRoadmap(data, null);
+        return;
+      }
+      fetch('/profile/goals', {credentials:'include'})
+        .then(function(r){ return r.ok ? r.json() : null; })
+        .then(function(goals){ renderRoadmap(data, goals); })
+        .catch(function(){ renderRoadmap(data, null); });
+    })
+    .catch(function(){
+      var el = document.getElementById('pg-roadmap');
+      if(el) el.innerHTML = '<div class="rm-error">Could not load roadmap.</div>';
+    });
+}
+
 fetch('/me', {credentials:'include'})
   .then(function(r){ if(!r.ok){ window.location.href='/'; return null; } return r.json(); })
   .then(function(user){
     if(!user) return;
     var av = document.getElementById('user-avatar');
     if(av) av.textContent = user.name.charAt(0).toUpperCase();
+
+    loadRoadmap();
 
     return fetch('/sessions', {credentials:'include'});
   })
