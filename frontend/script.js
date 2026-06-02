@@ -33,8 +33,10 @@ async function login() {
         const user = await meResponse.json();
         if (user.onboarding_completed === 0) {
             window.location.href = "/onboarding";
-        } else { 
-            window.location.href = "/frontend/dashboard.html";
+        } else if (!data.profile_completed) {
+            window.location.href = "/goal-setting";
+        } else {
+            window.location.href = "/dashboard";
         }
 
     } else {

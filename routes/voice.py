@@ -1,15 +1,18 @@
-from fastapi import APIRouter, UploadFile, File, Form
+from fastapi import APIRouter, Request, UploadFile, File, Form
 from services.interview_logic import process_answer
 from services.interview_logic import get_next_question, update_asked_questions
 from services.speech_service import speech_to_text
 from services.tts_service import text_to_speech
 from database.connections import get_connection
+from services.limiter import limiter
 import json
 
 router = APIRouter()
 
 @router.post("/voice/upload")
+@limiter.limit("10/minute")
 async def upload_audio(
+    request: Request,
     session_id: int,
     file: UploadFile = File(...),
     question_text: str = Form(...)
@@ -29,7 +32,7 @@ async def upload_audio(
         cursor.execute("""
             SELECT domain, asked_questions
             FROM interview_sessions
-            WHERE id = ?
+            WHERE id = %s
         """, (session_id,))
         row = cursor.fetchone()
         conn.close()
@@ -55,7 +58,7 @@ async def upload_audio(
             cursor.execute("""
                 UPDATE interview_sessions
                 SET is_completed = 1
-                WHERE id = ?
+                WHERE id = %s
             """, (session_id,))
             conn.commit()
             conn.close()

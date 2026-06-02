@@ -3,67 +3,176 @@
 <head>
 <title>Progress — CareerQuest</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif;}
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Inter',Arial,sans-serif;}
 html{font-size:16px;}
 body{background:#111118;color:#fff;min-height:100vh;display:flex;flex-direction:column;}
 
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;border-bottom:0.5px solid rgba(255,255,255,0.07);}
-.logo{display:flex;align-items:center;gap:8px;}
-.lm{width:28px;height:28px;background:#6366f1;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;}
-.ln{font-size:15px;font-weight:600;color:#fff;}
-.pills{display:flex;gap:2px;background:rgba(255,255,255,0.05);border-radius:10px;padding:3px;}
-.pill{padding:7px 16px;border-radius:8px;font-size:13px;color:rgba(255,255,255,0.4);cursor:pointer;border:none;background:none;transition:all .2s;}
-.pill:hover{color:rgba(255,255,255,0.7);}
-.pill.active{background:#1e1e2e;color:#fff;}
-.av{width:32px;height:32px;border-radius:50%;background:#4f46e5;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:13px 28px;border-bottom:1px solid rgba(255,255,255,0.05);}
+.logo{display:flex;align-items:center;gap:9px;}
+.lm{width:30px;height:30px;background:#6366f1;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;}
+.ln{font-size:15px;font-weight:700;color:#fff;letter-spacing:-0.01em;}
+.pills{display:flex;gap:2px;background:rgba(255,255,255,0.04);border-radius:10px;padding:3px;}
+.pill{padding:7px 15px;border-radius:8px;font-size:13px;color:rgba(255,255,255,0.35);cursor:pointer;border:none;background:none;transition:all .18s;font-weight:500;}
+.pill:hover{color:rgba(255,255,255,0.65);}
+.pill.active{background:#1e1e2e;color:#fff;box-shadow:0 1px 4px rgba(0,0,0,0.3);}
+.av{width:32px;height:32px;border-radius:50%;background:#4f46e5;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;}
 
 .body{flex:1;padding:22px 28px;}
 
-.ft{opacity:0;transform:translateY(-30px);transition:opacity 0.4s ease,transform 0.4s ease;}
-.fl{opacity:0;transform:translateX(-40px);transition:opacity 0.4s ease,transform 0.4s ease;}
-.fr{opacity:0;transform:translateX(40px);transition:opacity 0.4s ease,transform 0.4s ease;}
-.fb{opacity:0;transform:translateY(30px);transition:opacity 0.4s ease,transform 0.4s ease;}
+/* ── Animations ── */
+.ft{opacity:0;transform:translateY(-36px);transition:opacity 0.42s ease,transform 0.42s ease;}
+.fl{opacity:0;transform:translateX(-52px);transition:opacity 0.42s ease,transform 0.42s ease;}
+.fr{opacity:0;transform:translateX(52px);transition:opacity 0.42s ease,transform 0.42s ease;}
+.fb{opacity:0;transform:translateY(36px);transition:opacity 0.42s ease,transform 0.42s ease;}
 .in{opacity:1!important;transform:translate(0,0)!important;}
 
+/* ── Page header ── */
 .page-header{margin-bottom:22px;}
-.page-title{font-size:28px;font-weight:800;color:#fff;}
+.page-title{font-size:32px;font-weight:700;color:#fff;letter-spacing:-0.02em;}
 .page-title span{color:#a78bfa;}
-.page-sub{font-size:13px;color:rgba(255,255,255,0.35);margin-top:3px;}
+.page-sub{font-size:13px;color:rgba(255,255,255,0.3);margin-top:4px;}
 
-.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
-.stat-card{background:#1a1a26;border-radius:12px;padding:18px 20px;}
-.stat-lbl{font-size:11px;color:rgba(255,255,255,0.35);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.06em;}
-.stat-val{font-size:36px;font-weight:700;color:#fff;margin-bottom:4px;}
-.stat-sub{font-size:11px;color:rgba(255,255,255,0.3);}
-.stat-trend{font-size:11px;margin-top:4px;}
+/* ── Big stats row ── */
+.big-stats{display:flex;align-items:center;justify-content:space-around;background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:24px 28px;margin-bottom:14px;}
+.bs{display:flex;flex-direction:column;align-items:center;text-align:center;flex:1;}
+.bs-divider{width:1px;height:60px;background:rgba(255,255,255,0.08);flex-shrink:0;}
+.bs-badge{display:inline-block;font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;margin-bottom:10px;letter-spacing:0.04em;}
+.badge-purple{background:rgba(124,58,237,0.15);color:#a78bfa;}
+.badge-amber{background:rgba(245,158,11,0.15);color:#f59e0b;}
+.badge-green{background:rgba(16,185,129,0.15);color:#10b981;}
+.badge-gold{background:rgba(251,191,36,0.15);color:#fbbf24;}
+.bs-val{font-size:52px;font-weight:800;color:#fff;line-height:1;letter-spacing:-0.04em;margin-bottom:8px;}
+.bs-lbl{font-size:11px;font-weight:500;color:rgba(255,255,255,0.3);}
 
-.section-card{background:#1a1a26;border-radius:12px;padding:18px 20px;margin-bottom:14px;}
-.ctitle{font-size:11px;font-weight:600;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:16px;}
+/* ── Chart ── */
+.chart-card{background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px 22px;margin-bottom:14px;}
+.ctitle{font-size:11px;font-weight:600;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:14px;}
+.chart-wrap{height:140px;margin-bottom:8px;}
+svg.ch{width:100%;height:100%;}
+.clbls{display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,0.18);}
+.clbl{flex:1;text-align:center;}
 
-.session-row{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-radius:9px;background:rgba(255,255,255,0.03);margin-bottom:7px;}
+/* ── Bottom grid ── */
+.bottom-grid{display:grid;grid-template-columns:1fr 220px;gap:14px;}
+.section-card{background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px 22px;}
+
+/* Session history rows */
+.session-row{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-radius:10px;background:rgba(255,255,255,0.02);margin-bottom:8px;border:1px solid rgba(255,255,255,0.04);}
 .session-row:last-child{margin-bottom:0;}
 .session-left{display:flex;flex-direction:column;gap:3px;}
-.session-domain{font-size:13px;font-weight:500;color:#fff;}
-.session-date{font-size:11px;color:rgba(255,255,255,0.3);}
+.session-domain{font-size:13px;font-weight:600;color:#fff;}
+.session-date{font-size:11px;color:rgba(255,255,255,0.28);}
 .session-right{display:flex;align-items:center;gap:12px;}
-.session-qs{font-size:11px;color:rgba(255,255,255,0.3);}
-.score-pill{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;}
-.score-high{background:rgba(52,211,153,0.12);color:#34d399;}
+.session-qs{font-size:11px;color:rgba(255,255,255,0.28);}
+.score-pill{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;}
+.score-high{background:rgba(16,185,129,0.12);color:#10b981;}
 .score-mid{background:rgba(245,158,11,0.12);color:#f59e0b;}
 .score-low{background:rgba(248,113,113,0.1);color:#f87171;}
 
-.empty-state{text-align:center;padding:50px 20px;}
-.empty-icon{font-size:40px;margin-bottom:14px;opacity:0.3;}
-.empty-txt{font-size:14px;color:rgba(255,255,255,0.25);line-height:1.7;}
-.empty-cta{margin-top:18px;display:inline-block;padding:10px 22px;background:#f59e0b;border:none;border-radius:9px;color:#1a0f00;font-size:13px;font-weight:600;cursor:pointer;}
+/* Empty state */
+.empty-state{text-align:center;padding:40px 20px;}
+.empty-icon{font-size:36px;margin-bottom:12px;opacity:0.25;}
+.empty-txt{font-size:13px;color:rgba(255,255,255,0.22);line-height:1.7;}
+.empty-cta{margin-top:16px;display:inline-block;padding:10px 22px;background:#f59e0b;border:none;border-radius:10px;color:#1a0f00;font-size:13px;font-weight:700;cursor:pointer;transition:background .15s;}
 .empty-cta:hover{background:#d97706;}
 
-.streak-row{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px;}
-.day-chip{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;}
-.day-on{background:rgba(99,102,241,0.3);color:#818cf8;}
-.day-off{background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.2);}
+/* Streak */
+.stk-num{font-size:44px;font-weight:800;color:#fbbf24;letter-spacing:-0.03em;line-height:1;margin-bottom:4px;}
+.stk-sub{font-size:11px;color:rgba(255,255,255,0.25);margin-bottom:14px;}
+.streak-row{display:flex;gap:5px;flex-wrap:wrap;}
+.day-chip{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;}
+.day-on{background:rgba(124,58,237,0.25);color:#a78bfa;border:1px solid rgba(124,58,237,0.3);}
+.day-off{background:rgba(255,255,255,0.03);color:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.04);}
 
-.two-col{display:grid;grid-template-columns:1fr 220px;gap:14px;}
+/* ── Roadmap redesign ── */
+.roadmap-wrap{margin-bottom:14px;}
+
+/* Summary bar */
+.rm-summary-bar{display:flex;align-items:stretch;background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;overflow:hidden;margin-bottom:10px;}
+.rm-sum-item{flex:1;display:flex;align-items:center;gap:10px;padding:16px 18px;}
+.rm-sum-icon{font-size:18px;flex-shrink:0;line-height:1;}
+.rm-sum-val{font-size:14px;font-weight:700;color:#fff;line-height:1.2;}
+.rm-sum-lbl{font-size:11px;color:rgba(255,255,255,0.3);margin-top:2px;}
+.rm-sum-div{width:1px;background:rgba(255,255,255,0.07);flex-shrink:0;margin:14px 0;}
+
+/* Phase progress bar */
+.rm-phase-bar{display:flex;align-items:center;gap:12px;background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:13px 18px;margin-bottom:12px;}
+.rm-phase-name{font-size:11px;font-weight:700;color:#818cf8;text-transform:uppercase;letter-spacing:0.08em;white-space:nowrap;}
+.rm-pbar{flex:1;height:6px;background:rgba(255,255,255,0.07);border-radius:99px;overflow:hidden;}
+.rm-pbar-fill{height:100%;background:linear-gradient(90deg,#6366f1,#818cf8);border-radius:99px;transition:width .6s ease;}
+.rm-pct{font-size:11px;color:rgba(255,255,255,0.35);white-space:nowrap;}
+
+/* Today callout */
+.today-callout{background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.18);border-radius:14px;padding:18px 20px;margin-bottom:12px;}
+.today-callout-hdr{font-size:11px;font-weight:700;color:#f59e0b;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:12px;}
+.today-sessions{display:flex;gap:10px;margin-bottom:14px;}
+.today-session-card{flex:1;background:rgba(255,255,255,0.03);border:1px solid rgba(245,158,11,0.12);border-left:3px solid #f59e0b;border-radius:10px;padding:12px 14px;}
+.tsc-topic{font-size:13px;font-weight:700;color:#fff;margin-bottom:3px;}
+.tsc-meta{font-size:11px;color:rgba(255,255,255,0.38);text-transform:capitalize;}
+.today-start-btn{display:block;width:100%;padding:11px;background:#f59e0b;border:none;border-radius:10px;color:#1a0f00;font-size:13px;font-weight:700;cursor:pointer;text-align:center;transition:background .15s;}
+.today-start-btn:hover{background:#d97706;}
+
+/* Week cards */
+.week-card{background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:14px;margin-bottom:10px;overflow:hidden;}
+.week-card:last-child{margin-bottom:0;}
+.week-card-hdr{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;user-select:none;transition:background .15s;}
+.week-card-hdr:hover{background:rgba(255,255,255,0.02);}
+.wk-chip-wrap{position:relative;flex-shrink:0;}
+.wk-chip{width:34px;height:34px;border-radius:50%;background:rgba(99,102,241,0.12);border:1.5px solid rgba(99,102,241,0.25);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#818cf8;}
+.wk-today-dot{position:absolute;top:-2px;right:-2px;width:8px;height:8px;border-radius:50%;background:#f59e0b;border:2px solid #1a1a2e;}
+.wk-info{flex:1;min-width:0;}
+.wk-name{font-size:13px;font-weight:700;color:#fff;}
+.wk-desc{font-size:11px;color:rgba(255,255,255,0.28);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.wk-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.wk-count{font-size:11px;color:rgba(255,255,255,0.22);}
+.wk-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;letter-spacing:0.04em;}
+.badge-done{background:rgba(16,185,129,0.15);color:#10b981;}
+.badge-inprogress{background:rgba(245,158,11,0.15);color:#f59e0b;}
+.badge-upcoming{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.28);}
+.wk-chevron{font-size:11px;color:rgba(255,255,255,0.18);transition:transform .25s;margin-left:4px;}
+.wk-chevron.open{transform:rotate(180deg);}
+
+/* Week body — collapsible */
+.week-card-body{overflow:hidden;max-height:0;opacity:0;transition:max-height 0.32s ease,opacity 0.22s ease;}
+.week-card-body-inner{padding:0 16px 14px;}
+
+/* Day rows */
+.day-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;}
+.day-row:last-child{margin-bottom:0;}
+.day-date-lbl{font-size:11px;color:rgba(255,255,255,0.22);min-width:38px;padding-top:10px;flex-shrink:0;}
+.day-sessions{display:flex;gap:8px;flex:1;}
+
+/* Session pills */
+.session-pill{flex:1;position:relative;background:#13131f;border:1px solid rgba(255,255,255,0.07);border-left:3px solid transparent;border-radius:10px;padding:10px 12px;min-width:0;transition:opacity .2s;}
+.session-pill.is-completed{border-left-color:#10b981;opacity:0.5;}
+.session-pill.is-today{border-left-color:#f59e0b;background:rgba(245,158,11,0.05);box-shadow:0 0 0 1px rgba(245,158,11,0.12);}
+.sp-badge{position:absolute;top:8px;right:8px;font-size:10px;font-weight:700;padding:2px 6px;border-radius:8px;}
+.sp-badge-today{background:rgba(245,158,11,0.15);color:#f59e0b;}
+.sp-badge-score-high{background:rgba(16,185,129,0.12);color:#10b981;}
+.sp-badge-score-mid{background:rgba(245,158,11,0.12);color:#f59e0b;}
+.sp-badge-score-low{background:rgba(248,113,113,0.1);color:#f87171;}
+.sp-topic{font-size:12px;font-weight:700;color:#fff;margin-bottom:3px;padding-right:46px;}
+.sp-type{font-size:11px;color:rgba(255,255,255,0.28);text-transform:capitalize;}
+
+/* Empty state */
+.rm-empty{text-align:center;padding:44px 20px;background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;}
+.rm-empty-icon{font-size:48px;margin-bottom:14px;line-height:1;}
+.rm-empty-title{font-size:16px;font-weight:700;color:#fff;margin-bottom:8px;}
+.rm-empty-sub{font-size:13px;color:rgba(255,255,255,0.3);line-height:1.6;margin-bottom:22px;}
+.rm-empty-btn{padding:10px 24px;background:#f59e0b;border:none;border-radius:10px;color:#1a0f00;font-size:13px;font-weight:700;cursor:pointer;transition:background .15s;}
+.rm-empty-btn:hover{background:#d97706;}
+
+/* Loading / error */
+.rm-loading{font-size:13px;color:rgba(255,255,255,0.22);text-align:center;padding:22px;background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;}
+.rm-error{font-size:13px;color:rgba(248,113,113,0.5);text-align:center;padding:22px;background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;}
+
+/* Mobile */
+@media(max-width:600px){
+  .rm-summary-bar{flex-wrap:wrap;}
+  .rm-sum-item{flex:1 1 calc(50% - 1px);}
+  .rm-sum-div:nth-child(4){display:none;}
+  .today-sessions,.day-sessions{flex-direction:column;}
+}
 </style>
 </head>
 <body>
@@ -90,36 +199,67 @@ body{background:#111118;color:#fff;min-height:100vh;display:flex;flex-direction:
     <div class="page-sub">Track your growth across every session.</div>
   </div>
 
-  <div class="stats-grid">
-    <div class="stat-card ft" id="pg-s1">
-      <div class="stat-lbl">Sessions done</div>
-      <div class="stat-val" id="stat-sessions">0</div>
-      <div class="stat-sub">total interviews</div>
-      <div class="stat-trend" style="color:#818cf8;">keep going</div>
+  <!-- Roadmap -->
+  <div class="roadmap-wrap ft" id="pg-roadmap">
+    <div class="rm-loading">Loading roadmap…</div>
+  </div>
+
+  <!-- Big 4 stats -->
+  <div class="big-stats ft" id="pg-stats">
+    <div class="bs">
+      <span class="bs-badge badge-purple">All time</span>
+      <div class="bs-val" id="stat-sessions">0</div>
+      <div class="bs-lbl">Sessions done</div>
     </div>
-    <div class="stat-card ft" id="pg-s2">
-      <div class="stat-lbl">Avg score</div>
-      <div class="stat-val" id="stat-avg" style="color:#f59e0b;">0</div>
-      <div class="stat-sub">out of 15</div>
-      <div class="stat-trend" style="color:#34d399;">improving</div>
+    <div class="bs-divider"></div>
+    <div class="bs">
+      <span class="bs-badge badge-amber">Avg</span>
+      <div class="bs-val" id="stat-avg">0</div>
+      <div class="bs-lbl">Score / 15</div>
     </div>
-    <div class="stat-card ft" id="pg-s3">
-      <div class="stat-lbl">Best score</div>
-      <div class="stat-val" id="stat-best" style="color:#34d399;">0</div>
-      <div class="stat-sub">personal best</div>
-      <div class="stat-trend" style="color:rgba(255,255,255,0.3);">out of 15</div>
+    <div class="bs-divider"></div>
+    <div class="bs">
+      <span class="bs-badge badge-green">Personal best</span>
+      <div class="bs-val" id="stat-best">0</div>
+      <div class="bs-lbl">Best score</div>
     </div>
-    <div class="stat-card ft" id="pg-s4">
-      <div class="stat-lbl">Day streak</div>
-      <div class="stat-val" id="stat-streak" style="color:#fbbf24;">0</div>
-      <div class="stat-sub">days in a row</div>
-      <div class="stat-trend" style="color:rgba(255,255,255,0.3);">stay consistent</div>
+    <div class="bs-divider"></div>
+    <div class="bs">
+      <span class="bs-badge badge-gold">🔥 Streak</span>
+      <div class="bs-val" id="stat-streak">0</div>
+      <div class="bs-lbl">Days in a row</div>
     </div>
   </div>
 
-  <div class="two-col">
+  <!-- Score trend chart -->
+  <div class="chart-card fb" id="pg-chart">
+    <div class="ctitle">Score trend — last 5 sessions</div>
+    <div class="chart-wrap">
+      <svg class="ch" viewBox="0 0 400 130" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="pg1" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#818cf8" stop-opacity="0.45"/>
+            <stop offset="100%" stop-color="#818cf8" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <path id="pc-area" d="" fill="url(#pg1)"/>
+        <path id="pc-line" d="" fill="none" stroke="#818cf8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle id="pc-dot0" cx="0" cy="0" r="4" fill="#818cf8" opacity="0"/>
+        <circle id="pc-dot1" cx="0" cy="0" r="4" fill="#818cf8" opacity="0"/>
+        <circle id="pc-dot2" cx="0" cy="0" r="4" fill="#818cf8" opacity="0"/>
+        <circle id="pc-dot3" cx="0" cy="0" r="4" fill="#818cf8" opacity="0"/>
+        <circle id="pc-dot4" cx="0" cy="0" r="5" fill="#f59e0b" opacity="0"/>
+      </svg>
+    </div>
+    <div class="clbls" id="chart-labels">
+      <span class="clbl">—</span><span class="clbl">—</span><span class="clbl">—</span><span class="clbl">—</span><span class="clbl">Today</span>
+    </div>
+  </div>
 
-    <div class="section-card fb" id="pg-history">
+  <!-- Bottom: history + streak -->
+  <div class="bottom-grid">
+
+    <div class="section-card fl" id="pg-history">
       <div class="ctitle">Session history</div>
       <div id="history-list">
         <div class="empty-state">
@@ -132,8 +272,8 @@ body{background:#111118;color:#fff;min-height:100vh;display:flex;flex-direction:
 
     <div class="section-card fr" id="pg-streak-card">
       <div class="ctitle">This week</div>
-      <div style="font-size:42px;font-weight:700;color:#fbbf24;margin-bottom:4px;" id="streak-num">0</div>
-      <div style="font-size:12px;color:rgba(255,255,255,0.3);margin-bottom:16px;">days in a row</div>
+      <div class="stk-num" id="streak-num">0</div>
+      <div class="stk-sub">days in a row</div>
       <div class="streak-row">
         <div class="day-chip day-off" id="d-mon">M</div>
         <div class="day-chip day-off" id="d-tue">T</div>
@@ -151,13 +291,12 @@ body{background:#111118;color:#fff;min-height:100vh;display:flex;flex-direction:
 
 <script>
 var anims = [
-  {id:'pg-header', delay:0},
-  {id:'pg-s1',     delay:100},
-  {id:'pg-s2',     delay:160},
-  {id:'pg-s3',     delay:220},
-  {id:'pg-s4',     delay:280},
-  {id:'pg-history',delay:380},
-  {id:'pg-streak-card', delay:420}
+  {id:'pg-header',       delay:0},
+  {id:'pg-roadmap',      delay:80},
+  {id:'pg-stats',        delay:160},
+  {id:'pg-chart',        delay:260},
+  {id:'pg-history',      delay:360},
+  {id:'pg-streak-card',  delay:400}
 ];
 
 setTimeout(function(){
@@ -182,11 +321,61 @@ function formatDate(iso){
   return months[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();
 }
 
+function drawProgressChart(scores, labels){
+  if(!scores || !scores.length) return;
+  var W=400, H=130;
+  var pts = scores.map(function(s,i){
+    var x = scores.length===1 ? W/2 : Math.round((i/(scores.length-1))*W);
+    var y = Math.round(H - (s/15)*H*0.88 - 8);
+    return [x, y];
+  });
+
+  function smoothLine(p){
+    if(p.length<2) return 'M'+p[0][0]+','+p[0][1];
+    var d='M'+p[0][0]+','+p[0][1];
+    for(var i=0;i<p.length-1;i++){
+      var cpx=(p[i][0]+p[i+1][0])/2;
+      d+=' C'+cpx+','+p[i][1]+' '+cpx+','+p[i+1][1]+' '+p[i+1][0]+','+p[i+1][1];
+    }
+    return d;
+  }
+
+  var line=smoothLine(pts);
+  var area=line+' L'+W+','+H+' L0,'+H+' Z';
+  var lp=document.getElementById('pc-line');
+  var ap=document.getElementById('pc-area');
+  if(lp) lp.setAttribute('d',line);
+  if(ap) ap.setAttribute('d',area);
+
+  for(var i=0;i<5;i++){
+    var dot=document.getElementById('pc-dot'+i);
+    if(dot){
+      if(i<pts.length){
+        dot.setAttribute('cx',pts[i][0]);
+        dot.setAttribute('cy',pts[i][1]);
+        dot.setAttribute('opacity','1');
+      } else {
+        dot.setAttribute('opacity','0');
+      }
+    }
+  }
+
+  // Update x-axis labels
+  var lblEl = document.getElementById('chart-labels');
+  if(lblEl && labels && labels.length){
+    // Pad to 5
+    var padded = [];
+    while(padded.length < 5 - labels.length) padded.push('—');
+    padded = padded.concat(labels);
+    lblEl.innerHTML = padded.map(function(l){ return '<span class="clbl">'+l+'</span>'; }).join('');
+  }
+}
+
 function renderSessions(sessions){
   if(!sessions || !sessions.length) return;
 
   var totalSessions = sessions.length;
-  var allScores = sessions.map(function(s){ return s.avg_score || 0; });
+  var allScores = sessions.map(function(s){ return parseFloat(s.avg_score || 0); });
   var avgScore  = totalSessions ? (allScores.reduce(function(a,b){return a+b;},0) / totalSessions).toFixed(1) : 0;
   var bestScore = totalSessions ? Math.max.apply(null, allScores).toFixed(1) : 0;
 
@@ -194,6 +383,15 @@ function renderSessions(sessions){
   document.getElementById('stat-avg').textContent      = avgScore;
   document.getElementById('stat-best').textContent     = bestScore;
 
+  // Draw chart from last 5 sessions
+  var last5 = sessions.slice(-5);
+  var chartScores = last5.map(function(s){ return parseFloat(s.avg_score||0); });
+  var chartLabels = last5.map(function(s,i){
+    return i===last5.length-1 ? 'Today' : 'S'+(totalSessions-last5.length+i+1);
+  });
+  drawProgressChart(chartScores, chartLabels);
+
+  // Render history list
   var list = document.getElementById('history-list');
   list.innerHTML = '';
 
@@ -208,7 +406,7 @@ function renderSessions(sessions){
         '<div class="session-date">'+formatDate(s.created_at)+'</div>'+
       '</div>'+
       '<div class="session-right">'+
-        '<span class="session-qs">'+( s.question_count || '—')+' Qs</span>'+
+        '<span class="session-qs">'+(s.question_count || '—')+' Qs</span>'+
         '<span class="score-pill '+cls+'">'+avg+' / 15</span>'+
       '</div>';
     list.appendChild(row);
@@ -219,12 +417,242 @@ function escHtml(s){
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
+function formatDayDate(isoStr){
+  if(!isoStr) return '';
+  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var parts = String(isoStr).split('T')[0].split('-');
+  return months[parseInt(parts[1],10)-1] + ' ' + parseInt(parts[2],10);
+}
+
+function toggleWeek(idx){
+  var body = document.getElementById('wkb-'+idx);
+  var chev = document.getElementById('wkc-'+idx);
+  if(!body) return;
+  var isOpen = body.dataset.open === '1';
+  if(isOpen){
+    body.style.maxHeight = '0px';
+    body.style.opacity   = '0';
+    body.dataset.open    = '0';
+    if(chev) chev.classList.remove('open');
+  } else {
+    body.style.maxHeight = body.scrollHeight + 'px';
+    body.style.opacity   = '1';
+    body.dataset.open    = '1';
+    if(chev) chev.classList.add('open');
+  }
+}
+
+function renderRoadmap(data, goals){
+  var el = document.getElementById('pg-roadmap');
+  if(!el) return;
+
+  /* ── Empty state ── */
+  if(!data.has_plan){
+    el.innerHTML =
+      '<div class="rm-empty">'+
+        '<div class="rm-empty-icon">🗺️</div>'+
+        '<div class="rm-empty-title">No roadmap yet</div>'+
+        '<div class="rm-empty-sub">Create your Guided Path to get a personalised study plan</div>'+
+        '<button class="rm-empty-btn" onclick="window.location.href=\'/dashboard\'">Create my plan →</button>'+
+      '</div>';
+    return;
+  }
+
+  var plan  = data.plan;
+  var weeks = data.weeks || [];
+  var pct   = plan.total_days > 0
+    ? Math.min(100, Math.round((plan.current_day / plan.total_days) * 100))
+    : 0;
+
+  var daysRemaining = 0;
+  if(plan.end_date){
+    var endD   = new Date(plan.end_date);
+    var todayD = new Date();
+    todayD.setHours(0,0,0,0);
+    daysRemaining = Math.max(0, Math.round((endD - todayD) / 86400000));
+  }
+
+  /* ── Summary bar ── */
+  var roleVal = '—';
+  if(goals && goals.target_role){
+    roleVal = escHtml(goals.target_role);
+    if(goals.target_company) roleVal += ' at ' + escHtml(goals.target_company);
+  }
+
+  var html =
+    '<div class="rm-summary-bar">'+
+      '<div class="rm-sum-item">'+
+        '<div class="rm-sum-icon">🎯</div>'+
+        '<div><div class="rm-sum-val">'+roleVal+'</div><div class="rm-sum-lbl">Goal</div></div>'+
+      '</div>'+
+      '<div class="rm-sum-div"></div>'+
+      '<div class="rm-sum-item">'+
+        '<div class="rm-sum-icon">📅</div>'+
+        '<div><div class="rm-sum-val">Day '+plan.current_day+' of '+plan.total_days+'</div><div class="rm-sum-lbl">Progress</div></div>'+
+      '</div>'+
+      '<div class="rm-sum-div"></div>'+
+      '<div class="rm-sum-item">'+
+        '<div class="rm-sum-icon">⭐</div>'+
+        '<div><div class="rm-sum-val">'+plan.target_score+' / 10</div><div class="rm-sum-lbl">Target score</div></div>'+
+      '</div>'+
+      '<div class="rm-sum-div"></div>'+
+      '<div class="rm-sum-item">'+
+        '<div class="rm-sum-icon">⏳</div>'+
+        '<div><div class="rm-sum-val">'+daysRemaining+' days</div><div class="rm-sum-lbl">Remaining</div></div>'+
+      '</div>'+
+    '</div>';
+
+  /* ── Phase progress bar ── */
+  var phaseName = ((plan.phase || 'baseline').toUpperCase()) + ' PHASE';
+  html +=
+    '<div class="rm-phase-bar">'+
+      '<div class="rm-phase-name">'+escHtml(phaseName)+'</div>'+
+      '<div class="rm-pbar"><div class="rm-pbar-fill" style="width:'+pct+'%"></div></div>'+
+      '<div class="rm-pct">'+pct+'% complete</div>'+
+    '</div>';
+
+  /* ── Today callout ── */
+  var todaySessions = [];
+  weeks.forEach(function(w){
+    (w.days||[]).forEach(function(d){ if(d.is_today) todaySessions.push(d); });
+  });
+
+  if(todaySessions.length){
+    var todayDayN  = todaySessions[0].day_number;
+    var todayPhase = todaySessions[0].phase || '';
+    var phaseLabel = todayPhase.charAt(0).toUpperCase() + todayPhase.slice(1);
+    var sCards = todaySessions.map(function(d){
+      var tl = (d.session_type||'').replace(/_/g,' ');
+      return '<div class="today-session-card">'+
+        '<div class="tsc-topic">'+escHtml(d.topic)+'</div>'+
+        '<div class="tsc-meta">'+escHtml(tl)+' · '+d.questions_count+' questions</div>'+
+      '</div>';
+    }).join('');
+    html +=
+      '<div class="today-callout">'+
+        '<div class="today-callout-hdr">Today — Day '+todayDayN+' · '+escHtml(phaseLabel)+' Phase</div>'+
+        '<div class="today-sessions">'+sCards+'</div>'+
+        '<button class="today-start-btn" onclick="window.location.href=\'/practice\'">Start today\'s session →</button>'+
+      '</div>';
+  }
+
+  /* ── Week cards ── */
+  weeks.forEach(function(week, wkIdx){
+    var days         = week.days || [];
+    var allDone      = days.length > 0 && days.every(function(d){ return d.is_completed; });
+    var hasToday     = days.some(function(d){ return d.is_today; });
+    var completedCnt = days.filter(function(d){ return d.is_completed; }).length;
+    var shouldExpand = hasToday;
+
+    var badgeCls, badgeTxt;
+    if(allDone)       { badgeCls='badge-done';       badgeTxt='Done'; }
+    else if(hasToday) { badgeCls='badge-inprogress'; badgeTxt='In progress'; }
+    else              { badgeCls='badge-upcoming';   badgeTxt='Upcoming'; }
+
+    html +=
+      '<div class="week-card">'+
+        '<div class="week-card-hdr" onclick="toggleWeek('+wkIdx+')">'+
+          '<div class="wk-chip-wrap">'+
+            '<div class="wk-chip">W'+week.week_number+'</div>'+
+            (hasToday ? '<div class="wk-today-dot"></div>' : '')+
+          '</div>'+
+          '<div class="wk-info">'+
+            '<div class="wk-name">'+escHtml(week.phase.toUpperCase())+'</div>'+
+            '<div class="wk-desc">'+escHtml(week.phase_description||'')+'</div>'+
+          '</div>'+
+          '<div class="wk-right">'+
+            '<span class="wk-count">'+completedCnt+'/'+days.length+' sessions</span>'+
+            '<span class="wk-badge '+badgeCls+'">'+badgeTxt+'</span>'+
+          '</div>'+
+          '<div class="wk-chevron'+(shouldExpand?' open':'')+'" id="wkc-'+wkIdx+'">▾</div>'+
+        '</div>'+
+        '<div class="week-card-body" id="wkb-'+wkIdx+'" data-open="'+(shouldExpand?'1':'0')+'" data-expand="'+(shouldExpand?'1':'0')+'">'+
+          '<div class="week-card-body-inner">';
+
+    /* group sessions by day_number */
+    var dayMap = {}, dayOrder = [];
+    days.forEach(function(d){
+      if(!dayMap[d.day_number]){ dayMap[d.day_number]=[]; dayOrder.push(d.day_number); }
+      dayMap[d.day_number].push(d);
+    });
+
+    dayOrder.forEach(function(dayNum){
+      var sessions = dayMap[dayNum];
+      var dateStr  = formatDayDate(sessions[0].date);
+
+      var pillsHtml = sessions.map(function(d){
+        var pillCls = 'session-pill';
+        if(d.is_completed)  pillCls += ' is-completed';
+        else if(d.is_today) pillCls += ' is-today';
+
+        var bHtml = '';
+        if(d.is_today){
+          bHtml = '<span class="sp-badge sp-badge-today">Today</span>';
+        } else if(d.is_completed && d.score_achieved != null){
+          var sc    = parseFloat(d.score_achieved);
+          var scCls = sc>=7 ? 'sp-badge-score-high' : sc>=5 ? 'sp-badge-score-mid' : 'sp-badge-score-low';
+          bHtml = '<span class="sp-badge '+scCls+'">'+sc.toFixed(1)+'</span>';
+        }
+        var tl = (d.session_type||'').replace(/_/g,' ');
+        return '<div class="'+pillCls+'">'+bHtml+
+          '<div class="sp-topic">'+escHtml(d.topic)+'</div>'+
+          '<div class="sp-type">'+escHtml(tl)+'</div>'+
+        '</div>';
+      }).join('');
+
+      html +=
+        '<div class="day-row">'+
+          '<div class="day-date-lbl">'+dateStr+'</div>'+
+          '<div class="day-sessions">'+pillsHtml+'</div>'+
+        '</div>';
+    });
+
+    html += '</div></div></div>'; /* body-inner / body / week-card */
+  });
+
+  el.innerHTML = html;
+
+  /* expand current week after DOM is laid out */
+  requestAnimationFrame(function(){
+    document.querySelectorAll('.week-card-body[data-expand="1"]').forEach(function(body){
+      body.style.maxHeight = body.scrollHeight + 'px';
+      body.style.opacity   = '1';
+    });
+  });
+}
+
+function loadRoadmap(){
+  fetch('/plan/roadmap', {credentials:'include'})
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(data){
+      if(!data){
+        var el = document.getElementById('pg-roadmap');
+        if(el) el.innerHTML = '<div class="rm-error">Could not load roadmap.</div>';
+        return;
+      }
+      if(!data.has_plan){
+        renderRoadmap(data, null);
+        return;
+      }
+      fetch('/profile/goals', {credentials:'include'})
+        .then(function(r){ return r.ok ? r.json() : null; })
+        .then(function(goals){ renderRoadmap(data, goals); })
+        .catch(function(){ renderRoadmap(data, null); });
+    })
+    .catch(function(){
+      var el = document.getElementById('pg-roadmap');
+      if(el) el.innerHTML = '<div class="rm-error">Could not load roadmap.</div>';
+    });
+}
+
 fetch('/me', {credentials:'include'})
   .then(function(r){ if(!r.ok){ window.location.href='/'; return null; } return r.json(); })
   .then(function(user){
     if(!user) return;
     var av = document.getElementById('user-avatar');
     if(av) av.textContent = user.name.charAt(0).toUpperCase();
+
+    loadRoadmap();
 
     return fetch('/sessions', {credentials:'include'});
   })

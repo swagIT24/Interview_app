@@ -1,40 +1,35 @@
-import sqlite3
 import json
+import psycopg2
+import os
+from psycopg2.extras import DictCursor
+from dotenv import load_dotenv
 
-DB_NAME = "interview.db"
+load_dotenv()
+DATABASE_URL = os.getenv("DATABASE_URL")
+
 
 def get_connection():
-    conn = sqlite3.connect(
-        DB_NAME,
-        timeout=30,
-        check_same_thread=False,
-        isolation_level=None   # 🔥 ADD THIS
-    )
-    conn.row_factory = sqlite3.Row
+    conn = psycopg2.connect(DATABASE_URL, cursor_factory=DictCursor)
     return conn
+
 
 def init_db():
     conn = get_connection()
     cursor = conn.cursor()
 
-    cursor.execute("PRAGMA journal_mode=WAL;")
-
     # ================= USERS =================
 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-
-        name TEXT NOT NULL,
-
-        email TEXT UNIQUE NOT NULL,
-        hashed_password TEXT NOT NULL,
-
-        refresh_token TEXT,
-
-        profile_completed INTEGER DEFAULT 0,
-
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        id                   SERIAL PRIMARY KEY,
+        name                 TEXT NOT NULL,
+        email                TEXT UNIQUE NOT NULL,
+        hashed_password      TEXT NOT NULL,
+        refresh_token        TEXT,
+        profile_completed    INTEGER DEFAULT 0,
+        onboarding_completed INTEGER DEFAULT 0,
+        resume_text          TEXT,
+        created_at           TIMESTAMP DEFAULT NOW()
     )
     """)
 
@@ -42,26 +37,25 @@ def init_db():
 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS interview_profiles (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-
-        user_id INTEGER NOT NULL,
-
-        target_role TEXT NOT NULL,
-        experience_level REAL NOT NULL,
-
-        desired_goals TEXT NOT NULL DEFAULT '[]',
-
-        skills TEXT DEFAULT '[]',
-        strong_areas TEXT DEFAULT '[]',
-        weak_areas TEXT DEFAULT '[]',
-        areas_to_improve TEXT DEFAULT '[]',
-
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-        UNIQUE(user_id, target_role),
-
-        FOREIGN KEY (user_id) REFERENCES users(id)
+        id                SERIAL PRIMARY KEY,
+        user_id           INTEGER NOT NULL REFERENCES users(id),
+        target_role       TEXT NOT NULL,
+        experience_level  REAL NOT NULL DEFAULT 0,
+        desired_goals     TEXT NOT NULL DEFAULT '[]',
+        skills            TEXT DEFAULT '[]',
+        strong_areas      TEXT DEFAULT '[]',
+        weak_areas        TEXT DEFAULT '[]',
+        areas_to_improve  TEXT DEFAULT '[]',
+        target_company    TEXT DEFAULT '',
+        preparation_weeks INTEGER DEFAULT 4,
+        daily_hours       REAL DEFAULT 2,
+        preferred_time    TEXT DEFAULT 'evening',
+        goal_score        INTEGER DEFAULT 12,
+        confidence_levels TEXT DEFAULT '{}',
+        study_plan        TEXT DEFAULT '{}',
+        created_at        TIMESTAMP DEFAULT NOW(),
+        updated_at        TIMESTAMP DEFAULT NOW(),
+        UNIQUE(user_id, target_role)
     )
     """)
 
@@ -69,21 +63,15 @@ def init_db():
 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS interview_sessions (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-
-        user_id INTEGER,
-
-        candidate_name TEXT,
-        domain TEXT,
-
+        id                      SERIAL PRIMARY KEY,
+        user_id                 INTEGER REFERENCES users(id),
+        candidate_name          TEXT,
+        domain                  TEXT,
         current_question_number INTEGER DEFAULT 1,
-        max_questions INTEGER DEFAULT 20,
-
-        is_completed INTEGER DEFAULT 0,
-
-        asked_questions TEXT DEFAULT '[]',
-
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        max_questions           INTEGER DEFAULT 20,
+        is_completed            INTEGER DEFAULT 0,
+        asked_questions         TEXT DEFAULT '[]',
+        created_at              TIMESTAMP DEFAULT NOW()
     )
     """)
 
@@ -91,19 +79,14 @@ def init_db():
 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS interview_answers (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-
-        session_id INTEGER,
-
-        question TEXT,
-        answer TEXT,
-
-        score INTEGER,
-        feedback TEXT,
-
-        time_taken INTEGER,
-
-        FOREIGN KEY (session_id) REFERENCES interview_sessions(id)
+        id               SERIAL PRIMARY KEY,
+        session_id       INTEGER REFERENCES interview_sessions(id),
+        question         TEXT,
+        answer           TEXT,
+        score            INTEGER,
+        feedback         TEXT,
+        difficulty_level TEXT DEFAULT 'easy',
+        time_taken       INTEGER
     )
     """)
 
@@ -111,22 +94,14 @@ def init_db():
 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS job_applications (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-
-        user_id INTEGER NOT NULL,
-
-        company TEXT NOT NULL,
-        role TEXT NOT NULL,
-
-        status TEXT NOT NULL DEFAULT 'Applied',
-
-        notes TEXT,
-
+        id           SERIAL PRIMARY KEY,
+        user_id      INTEGER NOT NULL REFERENCES users(id),
+        company      TEXT NOT NULL,
+        role         TEXT NOT NULL,
+        status       TEXT NOT NULL DEFAULT 'Applied',
+        notes        TEXT,
         date_applied DATE,
-
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-        FOREIGN KEY (user_id) REFERENCES users(id)
+        created_at   TIMESTAMP DEFAULT NOW()
     )
     """)
 
@@ -140,11 +115,12 @@ def create_user(name: str, email: str, hashed_password: str):
 
     cursor.execute("""
         INSERT INTO users (name, email, hashed_password)
-        VALUES (?, ?, ?)
+        VALUES (%s, %s, %s)
+        RETURNING id
     """, (name, email, hashed_password))
 
+    user_id = cursor.fetchone()[0]
     conn.commit()
-    user_id = cursor.lastrowid
     conn.close()
 
     return user_id
@@ -157,7 +133,7 @@ def get_user_by_email(email: str):
     cursor.execute("""
         SELECT id, email, hashed_password
         FROM users
-        WHERE email = ?
+        WHERE email = %s
     """, (email,))
 
     user = cursor.fetchone()
@@ -172,12 +148,14 @@ def create_session(user_id: int, candidate_name: str, domain: str):
 
     try:
         cursor.execute("""
-        INSERT INTO interview_sessions (user_id, candidate_name, domain, asked_questions)
-        VALUES (?, ?, ?, ?)
+            INSERT INTO interview_sessions (user_id, candidate_name, domain, asked_questions)
+            VALUES (%s, %s, %s, %s)
+            RETURNING id
         """, (user_id, candidate_name, domain, "[]"))
 
+        session_id = cursor.fetchone()[0]
         conn.commit()
-        return cursor.lastrowid
+        return session_id
 
     finally:
         cursor.close()
@@ -185,23 +163,31 @@ def create_session(user_id: int, candidate_name: str, domain: str):
 
 
 def insert_answer(cursor, session_id: int, question: str, answer: str,
-                  score: int, feedback: str, time_taken: int):
+                  score: int, feedback: str, time_taken: int,
+                  score_breakdown: dict = None, weakest_dimension: str = None,
+                  model_answer_hint: str = None, analysis_text: str = None):
 
     cursor.execute("""
-    INSERT INTO interview_answers (session_id, question, answer, score, feedback, time_taken)
-    VALUES (?, ?, ?, ?, ?, ?)
-    """, (session_id, question, answer, score, feedback, time_taken))
+    INSERT INTO interview_answers
+        (session_id, question, answer, score, feedback, time_taken,
+         score_breakdown, weakest_dimension, model_answer_hint, analysis_text)
+    VALUES (%s, %s, %s, %s, %s, %s, %s::jsonb, %s, %s, %s)
+    """, (
+        session_id, question, answer, score, feedback, time_taken,
+        json.dumps(score_breakdown) if score_breakdown else None,
+        weakest_dimension,
+        model_answer_hint,
+        analysis_text,
+    ))
 
 
 def get_session_with_answer(session_id: int, user_id: int):
     conn = get_connection()
-    conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
-    # fetch session info with ownership check
     cursor.execute("""
         SELECT * FROM interview_sessions
-        WHERE id = ? AND user_id = ?
+        WHERE id = %s AND user_id = %s
     """, (session_id, user_id))
 
     session = cursor.fetchone()
@@ -210,11 +196,10 @@ def get_session_with_answer(session_id: int, user_id: int):
         conn.close()
         return None
 
-    # fetch answers
     cursor.execute("""
         SELECT question, answer, score, feedback, time_taken
         FROM interview_answers
-        WHERE session_id = ?
+        WHERE session_id = %s
         ORDER BY id ASC
     """, (session_id,))
 
@@ -231,71 +216,14 @@ def get_session_with_answer(session_id: int, user_id: int):
     return result
 
 
-def migrate_schema():
-    conn = get_connection()
-    cursor = conn.cursor()
-
-    cursor.execute("PRAGMA table_info(interview_sessions)")
-    columns = [col[1] for col in cursor.fetchall()]
-    try:
-        cursor.execute("ALTER TABLE interview_sessions ADD COLUMN current_question_number INTEGER DEFAULT 1")
-    except:
-        pass
-
-    try:
-        cursor.execute("ALTER TABLE interview_sessions ADD COLUMN max_questions INTEGER DEFAULT 20")
-    except:
-        pass
-
-    try:
-        cursor.execute("ALTER TABLE interview_sessions ADD COLUMN is_completed INTEGER DEFAULT 0")
-    except:
-        pass
-    
-    
-    try:
-        cursor.execute("ALTER TABLE interview_answers ADD COLUMN question_embedding TEXT")
-    except:
-        pass
-
-    try:
-        cursor.execute("ALTER TABLE interview_answers ADD COLUMN  difficulty_level TEXT DEFAULT 'easy'")
-    except:
-        pass
-
-    try:
-        cursor.execute("ALTER TABLE interview_sessions ADD COLUMN asked_questions TEXT DEFAULT '[]'")
-    except:
-        pass
-
-    try:
-        cursor.execute("ALTER TABLE users ADD COLUMN resume_text TEXT")
-    except:
-        pass
-
-    try:
-        cursor.execute("ALTER TABLE users ADD COLUMN onboarding_completed INTEGER DEFAULT 0")
-    except:
-        pass
-
-    if "user_id" not in columns:
-        try:
-            cursor.execute("ALTER TABLE interview_sessions ADD COLUMN user_id INTEGER")
-        except:
-            pass
-
-
-    conn.commit()
-    conn.close()
-
 def update_session_progress(session_id: int, user_id: int, new_question_number: int, is_completed: int):
     conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
         UPDATE interview_sessions
-        SET current_question_number = ?, is_completed = ?
-        WHERE id = ? AND user_id = ?
+        SET current_question_number = %s, is_completed = %s
+        WHERE id = %s AND user_id = %s
     """, (new_question_number, is_completed, session_id, user_id))
 
     conn.commit()
@@ -307,9 +235,9 @@ def get_session_state(user_id: int, session_id: int):
     cursor = conn.cursor()
 
     cursor.execute("""
-    SELECT current_question_number, difficulty_level, is_completed
-    FROM interview_sessions
-    WHERE id = ? AND user_id = ?
+        SELECT current_question_number, is_completed
+        FROM interview_sessions
+        WHERE id = %s AND user_id = %s
     """, (session_id, user_id))
 
     session = cursor.fetchone()
@@ -317,13 +245,14 @@ def get_session_state(user_id: int, session_id: int):
 
     return session
 
+
 def get_last_n_scores(cursor, session_id: int, n: int):
     cursor.execute("""
         SELECT score
         FROM interview_answers
-        WHERE session_id = ?
+        WHERE session_id = %s
         ORDER BY id DESC
-        LIMIT ?
+        LIMIT %s
     """, (session_id, n))
 
     rows = cursor.fetchall()

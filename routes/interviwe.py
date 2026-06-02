@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 from models.schemas import SubmitAnswerRequest
 from services.interview_logic import process_answer
 from models.schemas import SessionCreate
@@ -12,6 +12,7 @@ from services.tts_service import text_to_speech
 from fastapi import Body
 from concurrent.futures import ThreadPoolExecutor
 from fastapi.responses import StreamingResponse
+from services.limiter import limiter
 
 from pydantic import BaseModel
 
@@ -30,7 +31,8 @@ def tts(data: TTSRequest):
     return {"audio": audio_b64}
 
 @router.post("/submit-answer")
-def submit_answer(data: SubmitAnswerRequest, user_id: int = Depends(get_current_user)):
+@limiter.limit("20/minute")
+def submit_answer(request: Request, data: SubmitAnswerRequest, user_id: int = Depends(get_current_user)):
 
     conn = get_connection()
     cursor = conn.cursor()
@@ -38,7 +40,7 @@ def submit_answer(data: SubmitAnswerRequest, user_id: int = Depends(get_current_
     cursor.execute("""
         SELECT is_completed
         FROM interview_sessions
-        WHERE id = ? AND user_id = ?
+        WHERE id = %s AND user_id = %s
     """, (data.session_id, user_id))
 
     row = cursor.fetchone()
@@ -58,7 +60,7 @@ def submit_answer(data: SubmitAnswerRequest, user_id: int = Depends(get_current_
     cursor.execute("""
         SELECT domain, asked_questions
         FROM interview_sessions
-        WHERE id = ? AND user_id = ?
+        WHERE id = %s AND user_id = %s
     """, (data.session_id, user_id))
     row = cursor.fetchone()
     conn.close()
@@ -99,16 +101,23 @@ def submit_answer(data: SubmitAnswerRequest, user_id: int = Depends(get_current_
             cursor.execute("""
                 UPDATE interview_sessions
                 SET is_completed = 1
-                WHERE id = ? AND user_id = ?
+                WHERE id = %s AND user_id = %s
             """, (data.session_id, user_id))
             conn.commit()
             conn.close()
 
             return {
-                **evaluation,
+                "score":               evaluation.get("score"),
+                "feedback":            evaluation.get("feedback"),
+                "score_breakdown":     evaluation.get("score_breakdown"),
+                "strongest_dimension": evaluation.get("strongest_dimension"),
+                "weakest_dimension":   evaluation.get("weakest_dimension"),
+                "one_line_verdict":    evaluation.get("one_line_verdict"),
+                "missed_key_point":    evaluation.get("missed_key_point"),
+                "model_answer_hint":   evaluation.get("model_answer_hint"),
                 "next_question": None,
                 "audio": None,
-                "is_completed": True
+                "is_completed": True,
             }
 
         # ← get TTS result (likely already done by now)
@@ -122,15 +131,23 @@ def submit_answer(data: SubmitAnswerRequest, user_id: int = Depends(get_current_
     update_asked_questions(data.session_id, next_question)
 
     return {
-        **evaluation,
+        "score":               evaluation.get("score"),
+        "feedback":            evaluation.get("feedback"),
+        "score_breakdown":     evaluation.get("score_breakdown"),
+        "strongest_dimension": evaluation.get("strongest_dimension"),
+        "weakest_dimension":   evaluation.get("weakest_dimension"),
+        "one_line_verdict":    evaluation.get("one_line_verdict"),
+        "missed_key_point":    evaluation.get("missed_key_point"),
+        "model_answer_hint":   evaluation.get("model_answer_hint"),
         "next_question": next_question,
         "audio": audio_b64,
-        "is_completed": False
+        "is_completed": False,
     }
 
 
 @router.post("/start-session")
-def start_session(data: SessionCreate, user_id: int = Depends(get_current_user)):
+@limiter.limit("10/minute")
+def start_session(request: Request, data: SessionCreate, user_id: int = Depends(get_current_user)):
 
     session = start_interview(user_id, data.candidate_name, data.domain)
     session_id = session["session_id"]
@@ -141,7 +158,7 @@ def start_session(data: SessionCreate, user_id: int = Depends(get_current_user))
     cursor.execute("""
         SELECT domain, asked_questions
         FROM interview_sessions
-        WHERE id = ? AND user_id = ?
+        WHERE id = %s AND user_id = %s
     """, (session_id, user_id))
 
     row = cursor.fetchone()
@@ -165,7 +182,7 @@ def start_session(data: SessionCreate, user_id: int = Depends(get_current_user))
         cursor = conn.cursor()
         cursor.execute("""
             INSERT INTO interview_answers (session_id, question, answer, score, feedback, time_taken)
-            VALUES (?, ?, ?, ?, ?, ?)
+            VALUES (%s, %s, %s, %s, %s, %s)
         """, (session_id, first_question, "", 0, "", 0))
         conn.commit()
         conn.close()
@@ -199,7 +216,7 @@ def get_sessions(user_id: int = Depends(get_current_user)):
             COUNT(CASE WHEN a.answer != '' THEN 1 END) AS question_count
         FROM interview_sessions s
         LEFT JOIN interview_answers a ON a.session_id = s.id
-        WHERE s.user_id = ?
+        WHERE s.user_id = %s
         GROUP BY s.id
         ORDER BY s.created_at DESC
     """, (user_id,))
@@ -222,7 +239,7 @@ async def submit_answer_stream(data: SubmitAnswerRequest, user_id: int = Depends
     cursor = conn.cursor()
     cursor.execute("""
         SELECT is_completed FROM interview_sessions
-        WHERE id = ? AND user_id = ?
+        WHERE id = %s AND user_id = %s
     """, (data.session_id, user_id))
     row = cursor.fetchone()
     conn.close()
@@ -237,7 +254,7 @@ async def submit_answer_stream(data: SubmitAnswerRequest, user_id: int = Depends
     cursor = conn.cursor()
     cursor.execute("""
         SELECT domain, asked_questions FROM interview_sessions
-        WHERE id = ? AND user_id = ?
+        WHERE id = %s AND user_id = %s
     """, (data.session_id, user_id))
     row = cursor.fetchone()
     conn.close()

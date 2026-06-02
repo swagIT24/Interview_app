@@ -2,14 +2,17 @@ from fastapi import APIRouter, HTTPException, Response, Request, Depends
 from models.auth_schemas import RegisterRequest, LoginRequest, TokenResponse
 from services.auth_service import hash_password, verify_password, create_access_token
 from database.connections import create_user, get_user_by_email
-from services.auth_service import create_refresh_token, decode_access_token
+from services.auth_service import create_refresh_token, decode_access_token, verify_refresh_token
 from database.connections import get_connection
 from services.auth_service import get_current_user
+from services.limiter import limiter
+
 router = APIRouter()
 
 
 @router.post("/register")
-def register(data: RegisterRequest):
+@limiter.limit("3/minute")
+def register(request: Request, data: RegisterRequest):
 
     existing_user = get_user_by_email(data.email)
     if existing_user:
@@ -22,7 +25,8 @@ def register(data: RegisterRequest):
 
 
 @router.post("/login")
-def login(data: LoginRequest, response: Response):
+@limiter.limit("5/minute")
+def login(request: Request, data: LoginRequest, response: Response):
 
     user = get_user_by_email(data.email)
 
@@ -36,17 +40,21 @@ def login(data: LoginRequest, response: Response):
 
     # ✅ create tokens
     access_token = create_access_token({"sub": str(user_id)})
-    refresh_token = create_refresh_token()
+    refresh_token = create_refresh_token(user_id)
 
-    # ✅ save refresh token in DB
+    # ✅ save refresh token in DB and fetch profile_completed
     conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
         UPDATE users
-        SET refresh_token = ?
-        WHERE id = ?
+        SET refresh_token = %s
+        WHERE id = %s
     """, (refresh_token, user_id))
+
+    cursor.execute("SELECT profile_completed FROM users WHERE id = %s", (user_id,))
+    row = cursor.fetchone()
+    profile_completed = bool(row[0]) if row and row[0] else False
 
     conn.commit()
     conn.close()
@@ -59,12 +67,12 @@ def login(data: LoginRequest, response: Response):
         secure=False
     )
 
-    # ✅ RETURN refresh token (THIS WAS MISSING)
     return {
         "message": "Login successful",
         "user_id": user_id,
         "email": email,
-        "refresh_token": refresh_token
+        "refresh_token": refresh_token,
+        "profile_completed": profile_completed
     }
 
 @router.post("/logout")
@@ -84,20 +92,21 @@ async def refresh_token(request: Request, response: Response):
     if not refresh_token:
         raise HTTPException(status_code=401, detail="No refresh token provided")
 
+    # Verify JWT signature and expiry before touching the DB
+    user_id = verify_refresh_token(refresh_token)
+
     conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT id FROM users WHERE refresh_token = ?
-    """, (refresh_token,))
+        SELECT id FROM users WHERE refresh_token = %s AND id = %s
+    """, (refresh_token, user_id))
 
     row = cursor.fetchone()
     conn.close()
 
     if not row:
         raise HTTPException(status_code=401, detail="Invalid refresh token")
-
-    user_id = row[0]
 
     new_access_token = create_access_token({"sub": str(user_id)})
 
@@ -124,7 +133,7 @@ def get_me(request: Request):
 
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT id, name, email, onboarding_completed FROM users WHERE id = ?", (user_id,))
+    cursor.execute("SELECT id, name, email, onboarding_completed, profile_completed FROM users WHERE id = %s", (user_id,))
     row = cursor.fetchone()
     conn.close()
 
@@ -135,7 +144,8 @@ def get_me(request: Request):
         "id": row[0],
         "name": row[1],
         "email": row[2],
-        "onboarding_completed": row[3] 
+        "onboarding_completed": row[3],
+        "profile_completed": bool(row[4]) if row[4] else False
     }
 
 
@@ -144,8 +154,28 @@ def complete_onboarding(user_id: int = Depends(get_current_user)):
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("""
-        UPDATE users SET onboarding_completed = 1 WHERE id = ?
+        UPDATE users SET onboarding_completed = 1 WHERE id = %s
     """, (user_id,))
     conn.commit()
     conn.close()
     return {"message": "Onboarding complete"}
+
+
+@router.get("/profile-status")
+def profile_status(user_id: int = Depends(get_current_user)):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT profile_completed FROM users WHERE id = %s", (user_id,))
+    row = cursor.fetchone()
+    conn.close()
+    return {"profile_completed": bool(row[0]) if row and row[0] else False}
+
+
+@router.post("/complete-profile")
+def complete_profile(user_id: int = Depends(get_current_user)):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE users SET profile_completed = 1 WHERE id = %s", (user_id,))
+    conn.commit()
+    conn.close()
+    return {"message": "Profile complete"}

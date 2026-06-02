@@ -1,108 +1,136 @@
+import json
+import logging
 from services.llm_service import client
 
+logger = logging.getLogger(__name__)
 
-def generate_question(domain, asked_questions=None, resume_text=None):
 
+def _extract_resume_signals(resume_text: str) -> str:
+    """Summarise a resume into one sentence via LLM — avoids dumping raw text into every prompt."""
+    try:
+        resp = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{
+                "role": "user",
+                "content": (
+                    "Extract in one sentence: years of experience, key technologies used, "
+                    f"most notable project. Resume:\n{resume_text[:2000]}"
+                ),
+            }],
+            temperature=0.1,
+            max_tokens=80,
+        )
+        return resp.choices[0].message.content.strip()
+    except Exception as e:
+        logger.warning(f"_extract_resume_signals failed: {e}")
+        return ""
+
+
+def _adaptive_difficulty(session_history: list) -> tuple[str, str]:
+    """Return (difficulty_label, interviewer_instruction) based on recent scores."""
+    scores = [s for s in (session_history or []) if isinstance(s, (int, float))]
+    if not scores:
+        return "intermediate", "Test understanding, not memorisation"
+    avg = sum(scores) / len(scores)
+    if avg >= 7.5:
+        return "advanced",     "Push harder — edge cases, failure modes, tradeoffs"
+    if avg <= 4.5:
+        return "beginner",     "Step back to fundamentals"
+    return     "intermediate", "Test understanding, not memorisation"
+
+
+def generate_question(
+    domain=None,
+    asked_questions=None,
+    resume_text=None,
+    profile=None,
+    session_history=None,
+    topic=None,
+) -> dict:
+    """
+    Generate one interview question.
+
+    Backward-compatible call: generate_question(domain, asked_questions, resume_text)
+    Enhanced call:            generate_question(domain, session_history=[...], profile={...})
+
+    Returns a dict:
+    {
+        "question":                    str,
+        "difficulty":                  str,
+        "what_a_good_answer_covers":   [str, str, str],
+        "follow_up_if_answer_is_shallow": str,
+    }
+    """
     if asked_questions is None:
         asked_questions = []
 
-    resume_context = ""
+    effective_domain = topic or domain or "Software Engineering"
+    difficulty, difficulty_instruction = _adaptive_difficulty(session_history)
+
+    # Resume: extract signals, don't dump raw text
+    resume_signal = ""
     if resume_text:
-        resume_context = f"""
-Candidate Resume:
-{resume_text[:1000]}
+        resume_signal = _extract_resume_signals(resume_text)
 
-Generate a question relevant to their background and experience.
-"""
+    # Profile context
+    profile_lines = []
+    if profile and isinstance(profile, dict):
+        if profile.get("target_role"):
+            profile_lines.append(f"Target role: {profile['target_role']}")
+        if profile.get("weak_areas"):
+            profile_lines.append(f"Weak areas to probe: {profile['weak_areas']}")
+    profile_context = "\n".join(profile_lines)
 
-    # ← prompt is outside if block — always defined
-    prompt = f"""
-You are an expert technical interviewer.
-
-Generate ONE interview question.
-
-Domain: {domain}
-{resume_context}
-
-Previously asked questions:
-{asked_questions}
-
-Rules:
-- Ask only ONE question
-- Do not repeat previous questions
-- No explanations
-- No numbering
-- No answers
-- Keep it realistic and concise
-"""
-
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[
-            {"role": "user", "content": prompt}
-        ],
-        temperature=0.7
+    already_asked = (
+        "\n".join(f"- {q}" for q in asked_questions)
+        if asked_questions else "None yet"
     )
 
-    return response.choices[0].message.content.strip()
+    system_prompt = f"""You are a senior interviewer at a top tech company running a {difficulty}-level interview.
 
-# def generate_question(domain, previous_questions=None):
+Difficulty: {difficulty.upper()} — {difficulty_instruction}
 
-#     if previous_questions is None:
-#         previous_questions = []
-#     print("PREVIOUS QUESTIONS:", previous_questions)
-#     prompt = f"""
-# You are a professional technical interviewer conducting a real interview.
+Candidate background: {resume_signal or 'Not provided'}
+{profile_context}
 
-# Your task is to generate EXACTLY ONE interview question.
+Generate ONE interview question that:
+- Is strictly about: {effective_domain}
+- Has NOT been asked before (see already-asked list below)
+- Matches {difficulty} difficulty exactly
+- References the candidate's background where naturally relevant (e.g. "You've used X — how would you...")
+- Can be answered verbally in 2-4 minutes
+- Tests real understanding, not trivia or memorisation
 
-# INTERVIEW CONTEXT:
-# - Domain: {domain}
+Already asked:
+{already_asked}
 
-# PREVIOUSLY ASKED QUESTIONS:
-# {previous_questions}
+Return ONLY valid JSON, nothing else:
+{{
+  "question": "the full question text",
+  "difficulty": "{difficulty}",
+  "what_a_good_answer_covers": ["key point 1", "key point 2", "key point 3"],
+  "follow_up_if_answer_is_shallow": "a sharper follow-up question"
+}}"""
 
-# STRICT RULES:
-# 1. Generate ONLY ONE question.
-# 2. Do NOT repeat or closely resemble any previous question.
-# 3. Avoid asking about the same concept/subtopic again.
-# 4. Question must match the difficulty level.
-# 5. Keep the question realistic and interview-quality.
-# 6. No explanations.
-# 7. No answers.
-# 8. No numbering.
-# 9. No greetings or extra text.
-# 10. Return ONLY the raw question text.
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": system_prompt}],
+            temperature=0.7,
+            response_format={"type": "json_object"},
+        )
+        result = json.loads(response.choices[0].message.content)
+        result.setdefault("difficulty", difficulty)
+        result.setdefault("what_a_good_answer_covers", [])
+        result.setdefault("follow_up_if_answer_is_shallow", "")
+        return result
 
-# QUESTION QUALITY RULES:
-# - The question should test understanding, not trivia.
-# - Prefer practical and conceptual interview questions.
-# - Keep question concise and clear.
-# - Avoid overly broad questions.
-# - Avoid duplicate phrasing patterns.
-
-# EXAMPLE BAD OUTPUT:
-# "1. What is Python?"
-# "Here is your question:"
-# "Explain Python in detail."
-
-# EXAMPLE GOOD OUTPUT:
-# "What is the difference between a list and tuple in Python?"
-# """
-
-#     response = client.chat.completions.create(
-#         model="gpt-4o-mini",
-#         messages=[
-#             {"role": "user", "content": prompt}
-#         ],
-#         temperature=0.7
-#     )
-
-#     question = response.choices[0].message.content.strip()
-
-#     question = question.replace("\\n", "\n")
-#     question = question.replace("```python", "")
-#     question = question.replace("```", "")
-#     question = question.replace('"', "")
-
-#     return question.strip()
+    except Exception as e:
+        logger.error(f"generate_question failed: {e}")
+        fallback = f"Can you explain a key concept in {effective_domain} and describe a real-world scenario where you applied it?"
+        return {
+            "question": fallback,
+            "difficulty": difficulty,
+            "what_a_good_answer_covers": [],
+            "follow_up_if_answer_is_shallow": "Can you walk me through a specific example?",
+        }

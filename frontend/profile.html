@@ -3,62 +3,96 @@
 <head>
 <title>Profile — CareerQuest</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif;}
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Inter',Arial,sans-serif;}
 html{font-size:16px;}
 body{background:#111118;color:#fff;min-height:100vh;display:flex;flex-direction:column;}
 
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;border-bottom:0.5px solid rgba(255,255,255,0.07);}
-.logo{display:flex;align-items:center;gap:8px;}
-.lm{width:28px;height:28px;background:#6366f1;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;}
-.ln{font-size:15px;font-weight:600;color:#fff;}
-.pills{display:flex;gap:2px;background:rgba(255,255,255,0.05);border-radius:10px;padding:3px;}
-.pill{padding:7px 16px;border-radius:8px;font-size:13px;color:rgba(255,255,255,0.4);cursor:pointer;border:none;background:none;transition:all .2s;}
-.pill:hover{color:rgba(255,255,255,0.7);}
-.pill.active{background:#1e1e2e;color:#fff;}
-.av{width:32px;height:32px;border-radius:50%;background:#4f46e5;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:13px 28px;border-bottom:1px solid rgba(255,255,255,0.05);}
+.logo{display:flex;align-items:center;gap:9px;}
+.lm{width:30px;height:30px;background:#6366f1;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;}
+.ln{font-size:15px;font-weight:700;color:#fff;letter-spacing:-0.01em;}
+.pills{display:flex;gap:2px;background:rgba(255,255,255,0.04);border-radius:10px;padding:3px;}
+.pill{padding:7px 15px;border-radius:8px;font-size:13px;color:rgba(255,255,255,0.35);cursor:pointer;border:none;background:none;transition:all .18s;font-weight:500;}
+.pill:hover{color:rgba(255,255,255,0.65);}
+.pill.active{background:#1e1e2e;color:#fff;box-shadow:0 1px 4px rgba(0,0,0,0.3);}
+.av{width:32px;height:32px;border-radius:50%;background:#4f46e5;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;}
 
-.body{flex:1;padding:22px 28px;max-width:600px;}
+.body{flex:1;padding:22px 28px;}
+.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.profile-col{display:flex;flex-direction:column;}
+#pf-goals{flex:1;margin-bottom:0;}
+@media(max-width:768px){.profile-grid{grid-template-columns:1fr;}#pf-goals{flex:none;margin-bottom:14px;}}
 
-.ft{opacity:0;transform:translateY(-30px);transition:opacity 0.4s ease,transform 0.4s ease;}
-.fl{opacity:0;transform:translateX(-40px);transition:opacity 0.4s ease,transform 0.4s ease;}
-.fr{opacity:0;transform:translateX(40px);transition:opacity 0.4s ease,transform 0.4s ease;}
-.fb{opacity:0;transform:translateY(30px);transition:opacity 0.4s ease,transform 0.4s ease;}
+/* ── Animations ── */
+.ft{opacity:0;transform:translateY(-36px);transition:opacity 0.42s ease,transform 0.42s ease;}
+.fl{opacity:0;transform:translateX(-52px);transition:opacity 0.42s ease,transform 0.42s ease;}
+.fr{opacity:0;transform:translateX(52px);transition:opacity 0.42s ease,transform 0.42s ease;}
+.fb{opacity:0;transform:translateY(36px);transition:opacity 0.42s ease,transform 0.42s ease;}
 .in{opacity:1!important;transform:translate(0,0)!important;}
 
+/* ── Page header ── */
 .page-header{margin-bottom:24px;}
-.page-title{font-size:28px;font-weight:800;color:#fff;}
+.page-title{font-size:32px;font-weight:700;color:#fff;letter-spacing:-0.02em;}
 .page-title span{color:#a78bfa;}
-.page-sub{font-size:13px;color:rgba(255,255,255,0.35);margin-top:3px;}
+.page-sub{font-size:13px;color:rgba(255,255,255,0.3);margin-top:4px;}
 
-.card{background:#1a1a26;border-radius:12px;padding:20px 22px;margin-bottom:14px;}
-.ctitle{font-size:11px;font-weight:600;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:16px;}
+/* ── Cards ── */
+.card{background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:22px 24px;margin-bottom:14px;}
+.ctitle{font-size:11px;font-weight:600;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:18px;}
 
-.avatar-row{display:flex;align-items:center;gap:16px;margin-bottom:20px;}
-.big-av{width:56px;height:56px;border-radius:14px;background:#4f46e5;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff;flex-shrink:0;}
-.av-info{display:flex;flex-direction:column;gap:3px;}
-.av-name{font-size:18px;font-weight:700;color:#fff;}
+/* Avatar row */
+.avatar-row{display:flex;align-items:center;gap:16px;margin-bottom:22px;}
+.big-av{width:60px;height:60px;border-radius:16px;background:linear-gradient(135deg,#4f46e5,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:#fff;flex-shrink:0;letter-spacing:-0.01em;}
+.av-info{display:flex;flex-direction:column;gap:4px;}
+.av-name{font-size:19px;font-weight:700;color:#fff;letter-spacing:-0.01em;}
 .av-email{font-size:13px;color:rgba(255,255,255,0.35);}
 
-.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+/* Info grid */
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
 .info-field{}
-.info-lbl{font-size:11px;color:rgba(255,255,255,0.3);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em;}
+.info-lbl{font-size:11px;color:rgba(255,255,255,0.28);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;}
 .info-val{font-size:14px;color:#fff;font-weight:500;}
 
-.resume-row{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+/* Resume row */
+.resume-row{display:flex;align-items:center;justify-content:space-between;gap:14px;}
 .resume-status{display:flex;align-items:center;gap:10px;}
-.resume-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
-.resume-dot.ok{background:#34d399;}
+.resume-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.resume-dot.ok{background:#10b981;}
 .resume-dot.warn{background:#f59e0b;}
-.resume-txt{font-size:13px;color:rgba(255,255,255,0.5);}
-.upload-btn{padding:8px 16px;background:#4f46e5;border:none;border-radius:8px;color:#fff;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;transition:background .2s;}
+.resume-txt{font-size:13px;color:rgba(255,255,255,0.45);}
+.upload-btn{padding:9px 18px;background:#4f46e5;border:none;border-radius:9px;color:#fff;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:background .18s;letter-spacing:0.01em;}
 .upload-btn:hover{background:#4338ca;}
 
-.divider{height:0.5px;background:rgba(255,255,255,0.05);margin:14px 0;}
+/* Divider */
+.divider{height:1px;background:rgba(255,255,255,0.05);margin:16px 0;}
 
-.danger-zone{}
-.logout-btn{padding:10px 20px;background:rgba(248,113,113,0.08);border:0.5px solid rgba(248,113,113,0.2);border-radius:8px;color:#f87171;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;}
+/* Danger */
+.logout-btn{padding:10px 22px;background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.18);border-radius:9px;color:#f87171;font-size:13px;font-weight:500;cursor:pointer;transition:all .18s;}
 .logout-btn:hover{background:rgba(248,113,113,0.16);}
-.logout-desc{font-size:12px;color:rgba(255,255,255,0.25);margin-top:8px;}
+.logout-desc{font-size:12px;color:rgba(255,255,255,0.22);margin-top:9px;}
+
+/* ── Preparation Goals ── */
+.goal-field{margin-bottom:16px;}
+.goal-row-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.goal-inp{width:100%;padding:10px 13px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:9px;color:#fff;font-size:13px;outline:none;transition:border-color .18s;}
+.goal-inp:focus{border-color:rgba(99,102,241,0.5);}
+.goal-inp::placeholder{color:rgba(255,255,255,0.2);}
+.goal-sel{width:100%;padding:10px 13px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:9px;color:#fff;font-size:13px;outline:none;cursor:pointer;-webkit-appearance:none;appearance:none;}
+.goal-sel option{background:#1a1a2e;color:#fff;}
+.chips-wrap{display:flex;flex-wrap:wrap;gap:7px;min-height:28px;margin-bottom:8px;}
+.g-chip{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;background:rgba(124,58,237,0.15);border:1px solid rgba(124,58,237,0.3);border-radius:20px;font-size:12px;color:#a78bfa;font-weight:500;}
+.g-chip-x{cursor:pointer;font-size:15px;line-height:1;color:rgba(167,139,250,0.6);transition:color .15s;}
+.g-chip-x:hover{color:#f87171;}
+.chip-add-row{display:flex;gap:8px;}
+.chip-inp{flex:1;padding:8px 12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:#fff;font-size:12px;outline:none;transition:border-color .18s;}
+.chip-inp:focus{border-color:rgba(99,102,241,0.4);}
+.chip-inp::placeholder{color:rgba(255,255,255,0.2);}
+.chip-add-btn{padding:8px 14px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.2);border-radius:8px;color:#818cf8;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:background .15s;}
+.chip-add-btn:hover{background:rgba(99,102,241,0.28);}
+.goal-slider{width:100%;accent-color:#6366f1;cursor:pointer;margin-top:8px;}
+.save-goals-btn{padding:10px 22px;background:#6366f1;border:none;border-radius:9px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;transition:background .18s;letter-spacing:0.01em;}
+.save-goals-btn:hover{background:#4f46e5;}
+.save-goals-btn:disabled{opacity:0.5;cursor:not-allowed;}
 </style>
 </head>
 <body>
@@ -85,55 +119,118 @@ body{background:#111118;color:#fff;min-height:100vh;display:flex;flex-direction:
     <div class="page-sub">Manage your account and resume.</div>
   </div>
 
-  <!-- Personal info -->
-  <div class="card fl" id="pf-personal">
-    <div class="ctitle">Personal</div>
-    <div class="avatar-row">
-      <div class="big-av" id="big-avatar">?</div>
-      <div class="av-info">
-        <div class="av-name" id="profile-name">—</div>
-        <div class="av-email" id="profile-email">—</div>
-      </div>
-    </div>
-    <div class="info-grid">
-      <div class="info-field">
-        <div class="info-lbl">Full name</div>
-        <div class="info-val" id="info-name">—</div>
-      </div>
-      <div class="info-field">
-        <div class="info-lbl">Email</div>
-        <div class="info-val" id="info-email">—</div>
-      </div>
-      <div class="info-field">
-        <div class="info-lbl">Member since</div>
-        <div class="info-val" id="info-joined">—</div>
-      </div>
-      <div class="info-field">
-        <div class="info-lbl">Onboarding</div>
-        <div class="info-val" id="info-onboarding">—</div>
-      </div>
-    </div>
-  </div>
+  <div class="profile-grid">
 
-  <!-- Resume -->
-  <div class="card fr" id="pf-resume">
-    <div class="ctitle">Resume</div>
-    <div class="resume-row">
-      <div class="resume-status">
-        <div class="resume-dot warn" id="resume-dot"></div>
-        <div class="resume-txt" id="resume-txt">Not uploaded yet — upload to get personalised questions</div>
-      </div>
-      <button class="upload-btn" id="upload-btn" onclick="uploadResume()">Upload PDF</button>
-    </div>
-  </div>
+    <!-- Left column: Personal, Resume, Account -->
+    <div class="profile-col">
 
-  <!-- Account -->
-  <div class="card fb" id="pf-account">
-    <div class="ctitle">Account</div>
-    <div class="danger-zone">
-      <button class="logout-btn" onclick="logout()">Log out</button>
-      <div class="logout-desc">You will be redirected to the login page.</div>
+      <div class="card fl" id="pf-personal">
+        <div class="ctitle">Personal</div>
+        <div class="avatar-row">
+          <div class="big-av" id="big-avatar">?</div>
+          <div class="av-info">
+            <div class="av-name" id="profile-name">—</div>
+            <div class="av-email" id="profile-email">—</div>
+          </div>
+        </div>
+        <div class="info-grid">
+          <div class="info-field">
+            <div class="info-lbl">Full name</div>
+            <div class="info-val" id="info-name">—</div>
+          </div>
+          <div class="info-field">
+            <div class="info-lbl">Email</div>
+            <div class="info-val" id="info-email">—</div>
+          </div>
+          <div class="info-field">
+            <div class="info-lbl">Member since</div>
+            <div class="info-val" id="info-joined">—</div>
+          </div>
+          <div class="info-field">
+            <div class="info-lbl">Onboarding</div>
+            <div class="info-val" id="info-onboarding">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card fr" id="pf-resume">
+        <div class="ctitle">Resume</div>
+        <div class="resume-row">
+          <div class="resume-status">
+            <div class="resume-dot warn" id="resume-dot"></div>
+            <div class="resume-txt" id="resume-txt">Not uploaded yet — upload to get personalised questions</div>
+          </div>
+          <button class="upload-btn" id="upload-btn" onclick="uploadResume()">Upload PDF</button>
+        </div>
+      </div>
+
+      <div class="card fb" id="pf-account">
+        <div class="ctitle">Account</div>
+        <button class="logout-btn" onclick="logout()">Log out</button>
+        <div class="logout-desc">You will be redirected to the login page.</div>
+      </div>
+
     </div>
+
+    <!-- Right column: Preparation Goals (full height) -->
+    <div class="profile-col">
+
+      <div class="card fl" id="pf-goals">
+        <div class="ctitle">Preparation Goals</div>
+
+        <div class="goal-field">
+          <div class="info-lbl">Target Role</div>
+          <input class="goal-inp" id="g-role" type="text" placeholder="e.g. Software Engineer">
+        </div>
+
+        <div class="goal-field">
+          <div class="info-lbl">Target Company</div>
+          <input class="goal-inp" id="g-company" type="text" placeholder="e.g. Google (optional)">
+        </div>
+
+        <div class="goal-field">
+          <div class="info-lbl">Topics / Skills</div>
+          <div class="chips-wrap" id="g-chips"></div>
+          <div class="chip-add-row">
+            <input class="chip-inp" id="chip-inp" type="text" placeholder="Add a topic and press Enter…">
+            <button class="chip-add-btn" onclick="addChip()">+ Add</button>
+          </div>
+        </div>
+
+        <div class="goal-row-2 goal-field">
+          <div>
+            <div class="info-lbl">Preparation Weeks</div>
+            <select class="goal-sel" id="g-weeks"></select>
+          </div>
+          <div>
+            <div class="info-lbl">Daily Hours</div>
+            <select class="goal-sel" id="g-hours"></select>
+          </div>
+        </div>
+
+        <div class="goal-field">
+          <div class="info-lbl">Goal Score: <span id="g-score-lbl">8</span> / 10</div>
+          <input class="goal-slider" id="g-score" type="range" min="5" max="10" value="8"
+                 oninput="document.getElementById('g-score-lbl').textContent=this.value">
+        </div>
+
+        <div class="goal-field">
+          <div class="info-lbl">Preferred Practice Time</div>
+          <select class="goal-sel" id="g-time">
+            <option value="morning">Morning</option>
+            <option value="afternoon">Afternoon</option>
+            <option value="evening">Evening</option>
+          </select>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:14px;margin-top:4px;">
+          <button class="save-goals-btn" id="save-goals-btn" onclick="saveGoals()">Save changes</button>
+          <span id="goals-status" style="font-size:12px;"></span>
+        </div>
+      </div>
+
+    </div>
+
   </div>
 
 </div>
@@ -143,7 +240,8 @@ var anims = [
   {id:'pf-header',  delay:0},
   {id:'pf-personal',delay:100},
   {id:'pf-resume',  delay:200},
-  {id:'pf-account', delay:300}
+  {id:'pf-goals',   delay:300},
+  {id:'pf-account', delay:400}
 ];
 
 setTimeout(function(){
@@ -154,6 +252,114 @@ setTimeout(function(){
     }, a.delay);
   });
 }, 80);
+
+// ── Select builders ──────────────────────────────────────────────────────────
+(function buildSelects(){
+  var wk = document.getElementById('g-weeks');
+  for(var i = 1; i <= 12; i++){
+    var o = document.createElement('option');
+    o.value = i; o.textContent = i + (i === 1 ? ' week' : ' weeks');
+    wk.appendChild(o);
+  }
+  var hr = document.getElementById('g-hours');
+  for(var j = 1; j <= 8; j++){
+    var p = document.createElement('option');
+    p.value = j; p.textContent = j + (j === 1 ? ' hour' : ' hours');
+    hr.appendChild(p);
+  }
+})();
+
+// ── Chip management ───────────────────────────────────────────────────────────
+var _chips = [];
+
+function renderChips(){
+  var wrap = document.getElementById('g-chips');
+  wrap.innerHTML = _chips.map(function(t, i){
+    return '<span class="g-chip">' + escStr(t) +
+           '<span class="g-chip-x" onclick="removeChip(' + i + ')">×</span></span>';
+  }).join('');
+}
+
+function addChip(){
+  var inp = document.getElementById('chip-inp');
+  var val = (inp.value || '').trim();
+  if(!val || _chips.indexOf(val) !== -1){ inp.value = ''; return; }
+  _chips.push(val);
+  inp.value = '';
+  renderChips();
+}
+
+function removeChip(i){
+  _chips.splice(i, 1);
+  renderChips();
+}
+
+function escStr(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+document.getElementById('chip-inp').addEventListener('keydown', function(e){
+  if(e.key === 'Enter'){ e.preventDefault(); addChip(); }
+});
+
+// ── Goal data load / save ─────────────────────────────────────────────────────
+function loadGoals(){
+  fetch('/profile/goals', {credentials:'include'})
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(d){
+      if(!d || !Object.keys(d).length) return;
+      if(d.target_role)    document.getElementById('g-role').value    = d.target_role;
+      if(d.target_company) document.getElementById('g-company').value = d.target_company;
+      if(Array.isArray(d.skills) && d.skills.length){
+        _chips = d.skills.slice(); renderChips();
+      }
+      if(d.preparation_weeks) document.getElementById('g-weeks').value = d.preparation_weeks;
+      if(d.daily_hours)       document.getElementById('g-hours').value = d.daily_hours;
+      if(d.goal_score){
+        document.getElementById('g-score').value = d.goal_score;
+        document.getElementById('g-score-lbl').textContent = d.goal_score;
+      }
+      if(d.preferred_time) document.getElementById('g-time').value = d.preferred_time;
+    })
+    .catch(function(){});
+}
+
+async function saveGoals(){
+  var btn    = document.getElementById('save-goals-btn');
+  var status = document.getElementById('goals-status');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  status.textContent = '';
+  try {
+    var r = await fetch('/profile/goals', {
+      method: 'PUT',
+      credentials: 'include',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        target_role:       (document.getElementById('g-role').value.trim() || 'General'),
+        target_company:    document.getElementById('g-company').value.trim(),
+        skills:            _chips,
+        preparation_weeks: parseInt(document.getElementById('g-weeks').value)  || 4,
+        daily_hours:       parseFloat(document.getElementById('g-hours').value) || 2,
+        goal_score:        parseInt(document.getElementById('g-score').value)   || 8,
+        preferred_time:    document.getElementById('g-time').value,
+      })
+    });
+    if(r.ok){
+      status.textContent = '✓ Saved';
+      status.style.color = '#34d399';
+      setTimeout(function(){ status.textContent = ''; }, 3000);
+    } else {
+      var err = await r.json().catch(function(){ return {}; });
+      status.textContent = err.detail || 'Save failed';
+      status.style.color = '#f87171';
+    }
+  } catch(e){
+    status.textContent = 'Save failed';
+    status.style.color = '#f87171';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Save changes';
+  }
+}
 
 fetch('/me', {credentials:'include'})
   .then(function(r){ if(!r.ok){ window.location.href='/'; return null; } return r.json(); })
@@ -170,6 +376,7 @@ fetch('/me', {credentials:'include'})
     document.getElementById('info-onboarding').textContent = user.onboarding_completed ? 'Complete' : 'Pending';
 
     checkResume();
+    loadGoals();
   })
   .catch(function(){ window.location.href='/'; });
 

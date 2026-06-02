@@ -9,7 +9,7 @@ router = APIRouter()
 def resume_status(user_id: int = Depends(get_current_user)):
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT resume_text FROM users WHERE id = ?", (user_id,))
+    cursor.execute("SELECT resume_text FROM users WHERE id = %s", (user_id,))
     row = cursor.fetchone()
     conn.close()
     has_resume = bool(row and row[0])
@@ -39,8 +39,8 @@ async def upload_resume(request: Request, file: UploadFile = File(...)):
 
     cursor.execute("""
     UPDATE users
-    SET resume_text = ?
-    WHERE id = ?
+    SET resume_text = %s
+    WHERE id = %s
     """, (text, user_id))
 
     conn.commit()
