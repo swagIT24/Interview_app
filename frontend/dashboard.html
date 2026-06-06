@@ -1,270 +1,805 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>CareerQuest — Dashboard</title>
-<style>
-*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Inter',Arial,sans-serif;}
-html{font-size:16px;}
-body{background:#111118;color:#fff;min-height:100vh;display:flex;flex-direction:column;}
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CareerQuest — Dashboard</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* ── Topbar ─────────────────────────────────────────────────── */
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:13px 28px;border-bottom:1px solid rgba(255,255,255,0.05);}
-.logo{display:flex;align-items:center;gap:9px;}
-.lm{width:30px;height:30px;background:#6366f1;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;}
-.ln{font-size:15px;font-weight:700;color:#fff;letter-spacing:-0.01em;}
-.pills{display:flex;gap:2px;background:rgba(255,255,255,0.04);border-radius:10px;padding:3px;}
-.pill{padding:7px 15px;border-radius:8px;font-size:13px;color:rgba(255,255,255,0.35);cursor:pointer;border:none;background:none;transition:all .18s;font-weight:500;}
-.pill:hover{color:rgba(255,255,255,0.65);}
-.pill.active{background:#1e1e2e;color:#fff;box-shadow:0 1px 4px rgba(0,0,0,0.3);}
-.ib{width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;}
-.av{width:32px;height:32px;border-radius:50%;background:#4f46e5;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;}
+    :root {
+      --primary:        #6366f1;
+      --primary-dark:   #4f46e5;
+      --primary-light:  #e0e7ff;
+      --text:           #111827;
+      --muted:          #6b7280;
+      --border:         #e5e7eb;
+      --bg:             #f5f7ff;
+      --card:           #ffffff;
+      --green:          #16a34a;
+      --green-bg:       #dcfce7;
+      --amber:          #d97706;
+      --amber-bg:       #fef3c7;
+      --red:            #dc2626;
+      --red-bg:         #fee2e2;
+      --sidebar-w:      240px;
+      --sidebar-icon-w: 68px;
+    }
 
-/* ── Layout ─────────────────────────────────────────────────── */
-.body{flex:1;padding:22px 28px;overflow:hidden;}
-.page{display:none;}.page.active{display:block;}
+    html { font-size: 16px; }
 
-/* ── Animations ─────────────────────────────────────────────── */
-.ft{opacity:0;transform:translateY(-36px);transition:opacity 0.42s ease,transform 0.42s ease;}
-.fl{opacity:0;transform:translateX(-52px);transition:opacity 0.42s ease,transform 0.42s ease;}
-.fr{opacity:0;transform:translateX(52px);transition:opacity 0.42s ease,transform 0.42s ease;}
-.fb{opacity:0;transform:translateY(36px);transition:opacity 0.42s ease,transform 0.42s ease;}
-.in{opacity:1!important;transform:translate(0,0)!important;}
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+    }
 
-/* ── Welcome ─────────────────────────────────────────────────── */
-.welcome{margin-bottom:20px;}
-.wname{font-size:32px;font-weight:700;color:#fff;letter-spacing:-0.02em;}
-.wname span{color:#a78bfa;}
-.wsub{font-size:13px;color:rgba(255,255,255,0.3);margin-top:4px;}
+    /* ════════════════════════════════════════════
+       SIDEBAR
+    ════════════════════════════════════════════ */
+    .sidebar {
+      width: var(--sidebar-w);
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      flex-shrink: 0;
+      background: var(--card);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: width 0.25s ease;
+      z-index: 100;
+    }
 
-/* ── Top row: bars + big numbers ──────────────────────────────── */
-.top-row{display:grid;grid-template-columns:3fr 2fr;gap:12px;margin-bottom:14px;}
+    .sidebar.collapsed { width: var(--sidebar-icon-w); }
 
-/* Progress bars (2x2 grid) */
-.pbars-grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:10px;}
-.pb{background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px 22px;}
-.pb-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:11px;}
-.pb-lbl{font-size:11px;font-weight:600;color:rgba(255,255,255,0.3);letter-spacing:0.06em;text-transform:uppercase;}
-.pb-pct{font-size:11px;font-weight:700;color:rgba(255,255,255,0.45);}
-.pb-track{height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;margin-bottom:9px;}
-.pb-fill{height:5px;border-radius:3px;width:0%;transition:width 1s ease;}
-.f1{background:linear-gradient(90deg,#7c3aed,#a78bfa);}
-.f2{background:linear-gradient(90deg,#f59e0b,#fbbf24);}
-.f3{background:linear-gradient(90deg,#10b981,#34d399);}
-.f4{background:linear-gradient(90deg,#ec4899,#f472b6);}
-.pb-val{font-size:22px;font-weight:800;color:#fff;}
+    /* Header */
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 16px;
+      height: 64px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      cursor: pointer;
+      user-select: none;
+      overflow: hidden;
+    }
 
-/* Big numbers */
-.big-nums{display:flex;align-items:center;justify-content:space-around;background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:22px 28px;}
-.bn{display:flex;flex-direction:column;align-items:center;text-align:center;flex:1;padding:0 8px;}
-.bn-divider{width:1px;height:60px;background:rgba(255,255,255,0.08);flex-shrink:0;}
-.bn-badge{display:inline-block;font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;margin-bottom:12px;letter-spacing:0.04em;}
-.badge-up{background:rgba(16,185,129,0.15);color:#10b981;}
-.badge-neutral{background:rgba(99,102,241,0.15);color:#818cf8;}
-.badge-best{background:rgba(245,158,11,0.15);color:#f59e0b;}
-.bn-val{font-size:52px;font-weight:800;color:#fff;line-height:1;letter-spacing:-0.04em;margin-bottom:8px;}
-.bn-lbl{font-size:11px;font-weight:500;color:rgba(255,255,255,0.3);}
+    .sidebar-header:hover .brand-icon { background: var(--primary-dark); }
 
-/* ── Middle row ──────────────────────────────────────────────── */
-.mid{display:grid;grid-template-columns:200px 1fr;gap:12px;margin-bottom:12px;}
-.card{background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px 22px;}
-.ctitle{font-size:11px;font-weight:600;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:13px;}
+    .brand-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--primary);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      flex-shrink: 0;
+      transition: background 0.15s;
+    }
 
-/* Journey map */
-.jlist{display:flex;flex-direction:column;gap:6px;}
-.ji{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:8px;background:rgba(255,255,255,0.02);}
-.ji.cur{background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.18);}
-.jdot{width:7px;height:7px;border-radius:50%;min-width:7px;}
-.jn{font-size:12px;color:#fff;flex:1;}
-.jn.lk{color:rgba(255,255,255,0.2);}.jn.gl{color:#34d399;}
-.jbg{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:500;white-space:nowrap;}
-.bg1{background:rgba(99,102,241,0.13);color:#818cf8;}
-.bg2{background:rgba(245,158,11,0.13);color:#f59e0b;}
-.bg3{background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.2);}
-.bg4{background:rgba(52,211,153,0.1);color:#34d399;}
+    .brand-name {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.3px;
+      white-space: nowrap;
+      overflow: hidden;
+      max-width: 140px;
+      transition: opacity 0.2s ease, max-width 0.25s ease;
+    }
 
-/* Prep mode cards */
-.prep-wrap{background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px 22px;display:flex;flex-direction:column;}
-.prep-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px 16px;cursor:pointer;position:relative;transition:transform .18s,border-color .18s,background .18s;flex:1;}
-.prep-card:hover{transform:translateY(-2px);border-color:rgba(255,255,255,0.2);background:rgba(255,255,255,0.07);}
-.prep-card.selected{border-color:#6366f1;background:rgba(99,102,241,0.1);}
-.prep-tag{position:absolute;top:12px;right:12px;font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;letter-spacing:0.04em;}
-.prep-icon{font-size:20px;margin-bottom:8px;}
-.prep-title{font-size:13px;font-weight:600;color:#fff;margin-bottom:4px;}
-.prep-desc{font-size:11px;color:rgba(255,255,255,0.45);line-height:1.55;padding-right:50px;}
+    .brand-name em { font-style: normal; color: var(--primary); }
 
-/* ── Bottom row ──────────────────────────────────────────────── */
-.bot{display:grid;grid-template-columns:1fr 190px 190px;gap:12px;}
+    .sidebar.collapsed .brand-name { opacity: 0; max-width: 0; }
 
-/* Sessions list */
-.srow{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.04);}
-.srow:last-child{border-bottom:none;}
-.sdot{width:7px;height:7px;border-radius:50%;margin-right:8px;min-width:7px;}
-.sn{font-size:12px;color:#fff;font-weight:500;}
-.sd{font-size:10px;color:rgba(255,255,255,0.22);}
-.ss{font-size:12px;font-weight:700;}
-.sh{color:#34d399;}.sm{color:#f59e0b;}.sl{color:#f87171;}
+    /* Nav */
+    .sidebar-nav {
+      flex: 1;
+      padding: 10px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
 
-/* Streak */
-.stk-num{font-size:42px;font-weight:800;color:#fbbf24;letter-spacing:-0.03em;line-height:1;margin-bottom:4px;}
-.stk-sub{font-size:11px;color:rgba(255,255,255,0.25);margin-bottom:14px;}
-.days{display:flex;gap:4px;flex-wrap:wrap;}
-.day{width:25px;height:25px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;}
-.don{background:rgba(99,102,241,0.25);color:#818cf8;border:1px solid rgba(99,102,241,0.3);}
-.doff{background:rgba(255,255,255,0.03);color:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.04);}
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 10px 11px;
+      border-radius: 9px;
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 0.875rem;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      transition: background 0.15s, color 0.15s;
+    }
 
-/* CTA card */
-.go-card{display:flex;flex-direction:column;}
-.go-txt{font-size:12px;color:rgba(255,255,255,0.35);line-height:1.75;flex:1;margin-bottom:14px;}
-.go-btn{padding:12px;background:#f59e0b;border:none;border-radius:9px;color:#1a0f00;font-size:13px;font-weight:700;cursor:pointer;width:100%;letter-spacing:0.01em;transition:background .15s;}
-.go-btn:hover{background:#d97706;}
+    .nav-link:hover { background: var(--bg); color: var(--text); }
 
-/* ── Progress page ───────────────────────────────────────────── */
-.pg-card{background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px 22px;margin-bottom:12px;}
-.pr-lbl{font-size:12px;color:rgba(255,255,255,0.3);margin-bottom:7px;}
-.pr-inp{width:100%;padding:12px 14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:#fff;font-size:13px;outline:none;margin-bottom:12px;}
-.pr-inp:focus{border-color:rgba(99,102,241,0.45);}
-.pr-inp::placeholder{color:rgba(255,255,255,0.18);}
-.pr-res{display:flex;align-items:center;gap:8px;padding:10px 12px;background:rgba(52,211,153,0.06);border:1px solid rgba(52,211,153,0.13);border-radius:8px;margin-bottom:14px;}
-.pr-res-txt{font-size:12px;color:rgba(255,255,255,0.35);flex:1;}
-.pr-res-a{font-size:11px;color:#818cf8;cursor:pointer;}
-.pr-btn{width:100%;padding:13px;background:#f59e0b;border:none;border-radius:9px;color:#1a0f00;font-size:14px;font-weight:700;cursor:pointer;}
-.pr-btn:hover{background:#d97706;}
-.pg-stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
-.pg-stat{background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:18px;}
-.pg-stat-val{font-size:32px;font-weight:800;color:#fff;letter-spacing:-0.02em;margin-bottom:3px;}
-.pg-stat-lbl{font-size:11px;color:rgba(255,255,255,0.28);}
-.pg-stat-trend{font-size:11px;color:#34d399;margin-top:3px;}
+    .nav-link.active { background: var(--primary-light); color: var(--primary); font-weight: 600; }
 
-/* ── Profile page ────────────────────────────────────────────── */
-.prof-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-.pfl{font-size:11px;color:rgba(255,255,255,0.28);margin-bottom:5px;}
-.pfv{font-size:14px;color:#fff;font-weight:500;}
+    .sidebar.collapsed .nav-link { justify-content: center; }
 
-input{font-family:inherit;}
-</style>
+    .nav-icon {
+      flex-shrink: 0;
+      width: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-label {
+      white-space: nowrap;
+      overflow: hidden;
+      max-width: 160px;
+      transition: opacity 0.2s ease, max-width 0.25s ease;
+    }
+
+    .sidebar.collapsed .nav-label { opacity: 0; max-width: 0; }
+
+    /* Footer */
+    .sidebar-footer {
+      border-top: 1px solid var(--border);
+      padding: 12px 10px 14px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .user-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 9px;
+      overflow: hidden;
+    }
+
+    .user-av {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #fff;
+      font-size: 0.8rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .user-text {
+      overflow: hidden;
+      min-width: 0;
+      max-width: 160px;
+      transition: opacity 0.2s ease, max-width 0.25s ease;
+    }
+
+    .sidebar.collapsed .user-text { opacity: 0; max-width: 0; }
+
+    .user-name-text {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .user-email-text {
+      font-size: 0.72rem;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .logout-btn {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      width: 100%;
+      padding: 9px 11px;
+      border-radius: 9px;
+      border: none;
+      background: none;
+      color: var(--muted);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+      white-space: nowrap;
+      overflow: hidden;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .logout-btn:hover { background: var(--red-bg); color: var(--red); }
+
+    .sidebar.collapsed .logout-btn { justify-content: center; }
+
+    .logout-label {
+      white-space: nowrap;
+      overflow: hidden;
+      max-width: 160px;
+      transition: opacity 0.2s ease, max-width 0.25s ease;
+    }
+
+    .sidebar.collapsed .logout-label { opacity: 0; max-width: 0; }
+
+    /* ════════════════════════════════════════════
+       MAIN
+    ════════════════════════════════════════════ */
+    .main {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Topbar */
+    .topbar {
+      height: 64px;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 0 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .topbar-left { display: flex; align-items: center; gap: 12px; }
+
+    /* Mobile-only toggle (hidden on desktop) */
+    .mobile-toggle {
+      display: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 7px;
+      border: 1px solid var(--border);
+      background: none;
+      cursor: pointer;
+      color: var(--muted);
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .mobile-toggle:hover { background: var(--bg); color: var(--text); }
+
+    .topbar-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .topbar-right { display: flex; align-items: center; gap: 10px; }
+
+    .topbar-av {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #fff;
+      font-size: 0.85rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .practice-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 18px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      text-decoration: none;
+      transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+    }
+
+    .practice-btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(99,102,241,0.3);
+    }
+
+    /* Content */
+    .content {
+      flex: 1;
+      padding: 30px 32px;
+      overflow-y: auto;
+    }
+
+    /* ════════════════════════════════════════════
+       ANIMATIONS
+    ════════════════════════════════════════════ */
+    .ft { opacity: 0; transform: translateY(-20px); transition: opacity 0.4s ease, transform 0.4s ease; }
+    .fl { opacity: 0; transform: translateX(-28px); transition: opacity 0.4s ease, transform 0.4s ease; }
+    .fr { opacity: 0; transform: translateX(28px);  transition: opacity 0.4s ease, transform 0.4s ease; }
+    .fb { opacity: 0; transform: translateY(20px);  transition: opacity 0.4s ease, transform 0.4s ease; }
+    .in { opacity: 1 !important; transform: translate(0,0) !important; }
+
+    /* ════════════════════════════════════════════
+       WELCOME
+    ════════════════════════════════════════════ */
+    .welcome { margin-bottom: 24px; }
+
+    .welcome h1 {
+      font-size: 1.75rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .welcome h1 span { color: var(--primary); }
+
+    .welcome p { font-size: 0.9rem; color: var(--muted); }
+
+    /* ════════════════════════════════════════════
+       HERO STATS CARD
+    ════════════════════════════════════════════ */
+    .hero-card {
+      background: linear-gradient(135deg, #6366f1 0%, #7c3aed 60%, #8b5cf6 100%);
+      border-radius: 18px;
+      padding: 20px 24px;
+      display: flex;
+      align-items: stretch;
+      gap: 14px;
+      margin-bottom: 24px;
+      box-shadow: 0 10px 40px rgba(99, 102, 241, 0.28);
+    }
+
+    .stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      flex: 1;
+      padding: 0 8px;
+      min-width: 0;
+    }
+
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1;
+      letter-spacing: -0.04em;
+      margin-bottom: 6px;
+    }
+
+    .stat-label {
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: rgba(255,255,255,0.65);
+      white-space: nowrap;
+    }
+
+    .stat-divider {
+      width: 1px;
+      height: 48px;
+      background: rgba(255,255,255,0.25);
+      flex-shrink: 0;
+      margin: 0 4px;
+    }
+
+    .stat-group {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      flex: 1;
+      background: rgba(255,255,255,0.12);
+      border-radius: 14px;
+      padding: 18px 20px;
+      gap: 0;
+    }
+
+    /* ════════════════════════════════════════════
+       BOTTOM GRID
+    ════════════════════════════════════════════ */
+    .bottom-grid {
+      display: grid;
+      grid-template-columns: 1fr 260px;
+      gap: 20px;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 22px 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    }
+
+    .card-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      margin-bottom: 16px;
+    }
+
+    /* Sessions */
+    .srow {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .srow:last-child { border-bottom: none; }
+
+    .srow-left { display: flex; align-items: center; gap: 10px; }
+
+    .sdot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .sn { font-size: 0.875rem; font-weight: 500; color: var(--text); }
+    .sd { font-size: 0.72rem; color: var(--muted); margin-top: 1px; }
+
+    .ss {
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 3px 11px;
+      border-radius: 100px;
+      white-space: nowrap;
+    }
+
+    .sh { background: var(--green-bg); color: var(--green); }
+    .sm { background: var(--amber-bg); color: var(--amber); }
+    .sl { background: var(--red-bg);   color: var(--red);   }
+
+    .no-sessions { font-size: 0.875rem; color: var(--muted); padding: 8px 0; }
+
+    /* Streak */
+    .stk-num {
+      font-size: 3rem;
+      font-weight: 800;
+      color: #f59e0b;
+      line-height: 1;
+      letter-spacing: -0.04em;
+      margin-bottom: 4px;
+    }
+
+    .stk-sub { font-size: 0.8rem; color: var(--muted); margin-bottom: 20px; }
+
+    .days { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    .day {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: 700;
+    }
+
+    .don { background: var(--primary-light); color: var(--primary); border: 1px solid #c7d2fe; }
+    .doff { background: var(--bg); color: var(--muted); border: 1px solid var(--border); }
+
+    /* Mobile overlay */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.35);
+      z-index: 99;
+    }
+
+    /* ════════════════════════════════════════════
+       RESPONSIVE
+    ════════════════════════════════════════════ */
+    @media (max-width: 1100px) {
+      .hero-card { padding: 22px 20px; }
+      .stat-value { font-size: 2rem; }
+    }
+
+    @media (max-width: 900px) {
+      .bottom-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ════════════════════════════════════════════
+       DARK MODE
+    ════════════════════════════════════════════ */
+    body.dark {
+      --text:      #f3f4f6;
+      --muted:     #9ca3af;
+      --border:    #374151;
+      --bg:        #111827;
+      --card:      #1f2937;
+      --green-bg:  rgba(22,163,74,0.18);
+      --amber-bg:  rgba(217,119,6,0.18);
+      --red-bg:    rgba(220,38,38,0.18);
+      --primary-light: rgba(99,102,241,0.2);
+    }
+
+    body.dark .don { border-color: rgba(99,102,241,0.4); }
+
+    /* iOS-style theme toggle */
+    .theme-toggle {
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .toggle-track {
+      display: block;
+      width: 48px;
+      height: 26px;
+      border-radius: 100px;
+      background: #d1d5db;
+      position: relative;
+      transition: background 0.3s ease;
+    }
+
+    body.dark .toggle-track { background: var(--primary); }
+
+    .toggle-thumb {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      line-height: 1;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.22);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: none;
+    }
+
+    body.dark .toggle-thumb { transform: translateX(22px); }
+
+    .toggle-thumb .icon-moon { display: block; }
+    .toggle-thumb .icon-sun  { display: none; }
+    body.dark .toggle-thumb .icon-moon { display: none; }
+    body.dark .toggle-thumb .icon-sun  { display: block; }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        height: 100vh;
+        top: 0;
+        left: 0;
+        transform: translateX(-100%);
+        width: var(--sidebar-w) !important;
+        box-shadow: 4px 0 24px rgba(0,0,0,0.10);
+        transition: transform 0.25s ease;
+      }
+
+      .sidebar.mobile-open {
+        transform: translateX(0);
+      }
+
+      .sidebar-overlay { display: block; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+      .sidebar-overlay.visible { opacity: 1; pointer-events: auto; }
+
+      .mobile-toggle { display: flex; }
+
+      .content { padding: 20px 20px; }
+
+      .hero-card {
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 16px;
+      }
+
+      .stat-group { flex: 0 0 100%; }
+    }
+  </style>
 </head>
 <body>
 
-<div class="topbar">
-  <div class="logo">
-    <div class="lm">🧠</div>
-    <span class="ln">CareerQuest</span>
-  </div>
-  <div class="pills">
-    <button class="pill active">Overview</button>
-    <button class="pill" onclick="window.location.href='/practice'">Practice</button>
-    <button class="pill" onclick="window.location.href='/progress'">Progress</button>
-    <button class="pill" onclick="window.location.href='/jobs-tracker'">Jobs</button>
-    <button class="pill" onclick="window.location.href='/profile'">Profile</button>
-  </div>
-  <div style="display:flex;align-items:center;gap:10px;">
-    <div class="ib">🔔</div>
-    <div class="av" id="user-avatar">?</div>
-  </div>
-</div>
+<!-- Mobile overlay -->
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
 
-<div class="body">
+<!-- ── Sidebar ── -->
+<aside class="sidebar" id="sidebar">
 
-  <!-- HOME PAGE -->
-  <div class="page active" id="pg-home">
-    <div class="ft welcome" id="h-welcome">
-      <div class="wname">Welcome back, <span id="user-name">there</span></div>
-      <div class="wsub">Here's your preparation overview — let's keep moving.</div>
+  <div class="sidebar-header" id="sidebar-toggle" title="Toggle sidebar">
+    <div class="brand-icon">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96-.46 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/>
+        <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96-.46 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"/>
+      </svg>
+    </div>
+    <span class="brand-name">Career<em>Quest</em></span>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a href="/dashboard" class="nav-link active">
+      <span class="nav-icon">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect width="7" height="9" x="3"  y="3"  rx="1"/>
+          <rect width="7" height="5" x="14" y="3"  rx="1"/>
+          <rect width="7" height="9" x="14" y="12" rx="1"/>
+          <rect width="7" height="5" x="3"  y="16" rx="1"/>
+        </svg>
+      </span>
+      <span class="nav-label">Overview</span>
+    </a>
+    <a href="/practice" class="nav-link">
+      <span class="nav-icon">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+      </span>
+      <span class="nav-label">Practice</span>
+    </a>
+    <a href="/progress" class="nav-link">
+      <span class="nav-icon">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+        </svg>
+      </span>
+      <span class="nav-label">Progress</span>
+    </a>
+    <a href="/jobs-tracker" class="nav-link">
+      <span class="nav-icon">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect width="20" height="14" x="2" y="7" rx="2"/>
+          <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+        </svg>
+      </span>
+      <span class="nav-label">Jobs</span>
+    </a>
+    <a href="/profile" class="nav-link">
+      <span class="nav-icon">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </span>
+      <span class="nav-label">Profile</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="user-row">
+      <div class="user-av" id="user-avatar">?</div>
+      <div class="user-text">
+        <div class="user-name-text" id="sidebar-user-name">Loading…</div>
+        <div class="user-email-text" id="sidebar-user-email">—</div>
+      </div>
+    </div>
+    <button class="logout-btn" onclick="logout()">
+      <span class="nav-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+      </span>
+      <span class="logout-label">Log Out</span>
+    </button>
+  </div>
+
+</aside>
+
+<!-- ── Main ── -->
+<div class="main">
+
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="mobile-toggle" id="mobile-toggle" title="Open menu">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="6"  x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+      <span class="topbar-title">Overview</span>
+    </div>
+    <div class="topbar-right">
+      <a href="/practice" class="practice-btn">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="5 3 19 12 5 21 5 3"/>
+        </svg>
+        Start Practice
+      </a>
+      <button class="theme-toggle" id="theme-toggle" title="Toggle theme" aria-label="Toggle dark mode">
+        <span class="toggle-track">
+          <span class="toggle-thumb">
+            <span class="icon-moon">🌙</span>
+            <span class="icon-sun">☀️</span>
+          </span>
+        </span>
+      </button>
+      <div class="topbar-av" id="topbar-avatar">?</div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- Welcome -->
+    <div class="welcome ft" id="h-welcome">
+      <h1>Welcome back, <span id="user-name">there</span></h1>
+      <p>Here's your preparation overview — let's keep moving.</p>
     </div>
 
-    <div style="margin-bottom:14px;">
-      <div class="big-nums fr" id="h-bignums">
-        <div class="bn">
-          <div class="bn-val" id="v1">0</div>
-          <div class="bn-lbl">Sessions done</div>
-          <div style="display:flex;gap:28px;justify-content:center;margin-top:10px;">
-            <div style="text-align:center;">
-              <div class="bn-val" style="color:#34d399;" id="v-completed">0</div>
-              <div class="bn-lbl">Completed</div>
-            </div>
-            <div style="text-align:center;">
-              <div class="bn-val" style="color:#f59e0b;" id="v-incomplete">0</div>
-              <div class="bn-lbl">Incomplete</div>
-            </div>
-          </div>
+    <!-- Hero stats card -->
+    <div class="hero-card fr" id="h-bignums">
+      <div class="stat-group">
+        <div class="stat">
+          <div class="stat-value" id="v1">0</div>
+          <div class="stat-label">Sessions</div>
         </div>
-        <div class="bn-divider"></div>
-        <div class="bn">
-          <div class="bn-val" id="v2">0</div>
-          <div class="bn-lbl" id="lbl-avgscore">Avg score / 10</div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <div class="stat-value" id="v-completed">0</div>
+          <div class="stat-label">Completed</div>
         </div>
-        <div class="bn-divider"></div>
-        <div class="bn">
-          <div class="bn-val" id="v3">0</div>
-          <div class="bn-lbl" id="lbl-bestscore">Best score / 10</div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <div class="stat-value" id="v-incomplete">0</div>
+          <div class="stat-label">Incomplete</div>
+        </div>
+      </div>
+      <div class="stat-group">
+        <div class="stat">
+          <div class="stat-value" id="v2">0</div>
+          <div class="stat-label">Avg Score / 10</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <div class="stat-value" id="v3">0</div>
+          <div class="stat-label">Best Score / 10</div>
         </div>
       </div>
     </div>
 
-    <!-- Middle row: journey + plan -->
-    <div class="mid">
-      <div class="card fl" id="h-journey">
-        <div class="ctitle">Your journey</div>
-        <div class="jlist">
-          <div class="ji"><div class="jdot" style="background:#6366f1;"></div><div class="jn">Beginner zone</div><span class="jbg bg1">Done</span></div>
-          <div class="ji"><div class="jdot" style="background:#6366f1;"></div><div class="jn">Skill builder</div><span class="jbg bg1">Done</span></div>
-          <div class="ji cur"><div class="jdot" style="background:#f59e0b;"></div><div class="jn">Expert territory</div><span class="jbg bg2">Now</span></div>
-          <div class="ji"><div class="jdot" style="background:rgba(255,255,255,0.1);"></div><div class="jn lk">Mock interview</div><span class="jbg bg3">Locked</span></div>
-          <div class="ji"><div class="jdot" style="background:#34d399;"></div><div class="jn gl">Dream job</div><span class="jbg bg4">Goal</span></div>
-        </div>
-      </div>
+    <!-- Sessions + Streak -->
+    <div class="bottom-grid">
 
-      <div style="display:flex;flex-direction:column;gap:12px;">
-        <div class="prep-wrap fr" id="h-focus" style="flex:1;">
-          <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px;">
-            <span style="font-size:14px;">🗺️</span>
-            <span style="font-size:13px;font-weight:600;color:#fff;">How do you want to prepare?</span>
-          </div>
-          <div style="font-size:11px;color:rgba(255,255,255,0.3);margin-bottom:14px;">Choose your preparation style</div>
-          <div style="display:flex;flex-direction:column;gap:8px;flex:1;">
-            <div class="prep-card selected" id="prep-guided" onclick="selectPrep('guided')">
-              <span class="prep-tag" style="background:rgba(16,185,129,0.15);color:#10b981;">Recommended</span>
-              <div class="prep-icon">🎯</div>
-              <div class="prep-title">Guided Path</div>
-              <div class="prep-desc">Science-based plan built around your goal and deadline.</div>
-            </div>
-            <div class="prep-card" id="prep-custom" onclick="selectPrep('custom')">
-              <span class="prep-tag" style="background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.35);">Self-directed</span>
-              <div class="prep-icon">⚙️</div>
-              <div class="prep-title">Custom Plan</div>
-              <div class="prep-desc">You decide what to practice and when.</div>
-            </div>
-          </div>
-        </div>
-        <div class="card fr" id="h-mini-stats" style="display:flex;align-items:center;justify-content:space-around;">
-          <div style="text-align:center;">
-            <div style="font-size:28px;font-weight:800;color:#fff;line-height:1;letter-spacing:-0.03em;" id="ms-sessions">0</div>
-            <div style="font-size:11px;font-weight:500;color:rgba(255,255,255,0.3);margin-top:5px;">Sessions done</div>
-          </div>
-          <div style="width:1px;height:40px;background:rgba(255,255,255,0.08);"></div>
-          <div style="text-align:center;">
-            <div style="font-size:28px;font-weight:800;color:#fff;line-height:1;letter-spacing:-0.03em;" id="ms-avg">0</div>
-            <div style="font-size:11px;font-weight:500;color:rgba(255,255,255,0.3);margin-top:5px;">Avg score / 10</div>
-          </div>
-          <div style="width:1px;height:40px;background:rgba(255,255,255,0.08);"></div>
-          <div style="text-align:center;">
-            <div style="font-size:28px;font-weight:800;color:#fff;line-height:1;letter-spacing:-0.03em;" id="ms-best">0</div>
-            <div style="font-size:11px;font-weight:500;color:rgba(255,255,255,0.3);margin-top:5px;">Best score / 10</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Bottom row: sessions + streak + CTA -->
-    <div class="bot">
       <div class="card fl" id="h-sessions">
-        <div class="ctitle">Recent sessions</div>
+        <div class="card-title">Recent Sessions</div>
         <div id="sessions-list">
-          <div style="font-size:12px;color:rgba(255,255,255,0.25);padding:12px 0;">No sessions yet — start your first one!</div>
+          <div class="no-sessions">No sessions yet — start your first one!</div>
         </div>
       </div>
+
       <div class="card fb" id="h-streak">
-        <div class="ctitle">Streak</div>
+        <div class="card-title">Streak</div>
         <div class="stk-num" id="snum">0</div>
         <div class="stk-sub">days in a row</div>
         <div class="days">
@@ -277,360 +812,250 @@ input{font-family:inherit;}
           <div class="day doff" id="d-sun">S</div>
         </div>
       </div>
-      <div class="card fr go-card" id="h-cta">
-        <div class="ctitle">Ready?</div>
-        <div class="go-txt">Every session moves you forward. Your dream role is closer than you think.</div>
-        <button class="go-btn" onclick="go('practice',document.querySelectorAll('.pill')[1])">Start session now</button>
-      </div>
+
     </div>
   </div>
+</div>
 
-
-  <!-- PROGRESS PAGE -->
-  <div class="page" id="pg-progress">
-    <div class="ft" id="pg-title" style="margin-bottom:20px;">
-      <div style="font-size:22px;font-weight:700;color:#fff;letter-spacing:-0.01em;margin-bottom:4px;">Progress</div>
-      <div style="font-size:13px;color:rgba(255,255,255,0.3);">Your growth over time</div>
-    </div>
-    <div class="pg-stat-grid">
-      <div class="pg-stat ft" id="pg-s1"><div class="pg-stat-val" id="pg-sessions">0</div><div class="pg-stat-lbl">Sessions done</div><div class="pg-stat-trend">Keep going</div></div>
-      <div class="pg-stat ft" id="pg-s2"><div class="pg-stat-val" id="pg-avg">0</div><div class="pg-stat-lbl">Avg score / 15</div><div class="pg-stat-trend">Improving</div></div>
-      <div class="pg-stat ft" id="pg-s3"><div class="pg-stat-val" id="pg-best">0</div><div class="pg-stat-lbl">Best score</div><div style="font-size:11px;color:rgba(255,255,255,0.25);margin-top:3px;">Personal best</div></div>
-      <div class="pg-stat ft" id="pg-s4"><div class="pg-stat-val" style="color:#fbbf24;">5</div><div class="pg-stat-lbl">Day streak</div><div style="font-size:11px;color:rgba(255,255,255,0.25);margin-top:3px;">days</div></div>
-    </div>
-    <div class="pg-card fb" id="pg-history">
-      <div class="ctitle">Session history</div>
-      <div id="history-list">
-        <div style="font-size:12px;color:rgba(255,255,255,0.25);padding:12px 0;">No sessions yet.</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- PROFILE PAGE -->
-  <div class="page" id="pg-profile">
-    <div class="ft" id="pf-title" style="margin-bottom:20px;">
-      <div style="font-size:22px;font-weight:700;color:#fff;letter-spacing:-0.01em;margin-bottom:4px;">Profile</div>
-      <div style="font-size:13px;color:rgba(255,255,255,0.3);">Your career information</div>
-    </div>
-    <div class="pg-card fl" id="pf-personal" style="max-width:480px;">
-      <div class="ctitle">Personal</div>
-      <div class="prof-row">
-        <div><div class="pfl">Name</div><div class="pfv" id="profile-name">—</div></div>
-        <div><div class="pfl">Email</div><div class="pfv" id="profile-email">—</div></div>
-      </div>
-    </div>
-    <div class="pg-card fr" id="pf-resume" style="max-width:480px;">
-      <div class="ctitle">Resume</div>
-      <div style="display:flex;align-items:center;justify-content:space-between;">
-        <div style="font-size:13px;color:rgba(255,255,255,0.4);" id="resume-profile-status">Not uploaded yet</div>
-        <button onclick="uploadResume()" style="padding:7px 14px;background:#4f46e5;border:none;border-radius:7px;color:#fff;font-size:12px;font-weight:500;cursor:pointer;">Upload Resume</button>
-      </div>
-    </div>
-    <div class="pg-card fb" id="pf-logout" style="max-width:480px;">
-      <div class="ctitle">Account</div>
-      <button onclick="logout()" style="padding:9px 18px;background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.18);border-radius:8px;color:#f87171;font-size:13px;cursor:pointer;">Log out</button>
-    </div>
-  </div>
-
+<!--
+  Hidden stubs — the JS below still references these IDs from old in-page
+  pages (progress, profile) and mini-stat duplicates. Keeping them here
+  ensures fetch callbacks never throw on getElementById().
+-->
+<div style="display:none" aria-hidden="true">
+  <span id="ms-sessions"></span>
+  <span id="ms-avg"></span>
+  <span id="ms-best"></span>
+  <input id="name"/>
+  <input id="domain"/>
+  <span id="profile-name"></span>
+  <span id="profile-email"></span>
+  <span id="resume-status-txt"></span>
+  <span id="resume-profile-status"></span>
+  <div id="prep-guided"></div>
+  <div id="prep-custom"></div>
 </div>
 
 <script src="/frontend/script.js"></script>
 <script>
 var currentUser = null;
-var pages={
-  home:{
-    anims:[
-      {id:'h-welcome',delay:0},
-      {id:'h-pb1',delay:80},
-      {id:'h-pb2',delay:130},
-      {id:'h-pb3',delay:180},
-      {id:'h-pb4',delay:230},
-      {id:'h-bignums',delay:280},
-      {id:'h-journey',delay:360},
-      {id:'h-focus',delay:380},
-      {id:'h-mini-stats',delay:440},
-      {id:'h-sessions',delay:500},
-      {id:'h-streak',delay:540},
-      {id:'h-cta',delay:500}
+
+/* ── Animation system ── */
+var pages = {
+  home: {
+    anims: [
+      {id:'h-welcome',  delay:0},
+      {id:'h-bignums',  delay:120},
+      {id:'h-sessions', delay:240},
+      {id:'h-streak',   delay:310}
     ],
-    onIn: function(){
-  ['v1','v2','v3','v4','snum'].forEach(function(id){
-    var el=document.getElementById(id);
-    if(el) el.innerText='0';
-  });
+    onIn: function() {
+      ['v1','v2','v3','snum'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.innerText = '0';
+      });
+      setTimeout(function() {
+        fetch('/sessions', {credentials:'include'})
+          .then(function(r) { return r.json(); })
+          .then(function(sessions) {
+            if (!sessions || sessions.length === 0) return;
+            var total     = sessions.length;
+            var completed = sessions.filter(function(s) { return s.is_completed == 1; }).length;
+            var incomplete= sessions.filter(function(s) { return s.is_completed == 0; }).length;
+            var avg  = sessions.reduce(function(sum,s) { return sum+(s.avg_score||0); }, 0) / total;
+            var best = Math.max.apply(null, sessions.map(function(s) { return s.avg_score||0; }));
 
-  setTimeout(function(){
-    fetch('/sessions', {credentials:'include'})
-      .then(function(r){ return r.json(); })
-      .then(function(sessions){
-        if(!sessions || sessions.length === 0) return;
+            cu('v1', total, 900, false);
+            document.getElementById('v-completed').innerText  = completed;
+            document.getElementById('v-incomplete').innerText = incomplete;
+            cu('v2', avg,  900, true);
+            cu('v3', best, 900, true);
 
-        var totalSessions = sessions.length;
-        var completed = sessions.filter(function(s){ return s.is_completed == 1; }).length;
-        var incomplete = sessions.filter(function(s){ return s.is_completed == 0; }).length;
-        var incomplete = sessions.filter(function(s){ return s.is_completed == 0; }).length;
-        var avg = sessions.reduce(function(sum,s){ return sum+(s.avg_score||0); },0) / sessions.length;
-        var best = Math.max.apply(null, sessions.map(function(s){ return s.avg_score||0; }));
-
-        cu('v1', totalSessions, 900, false);
-        document.getElementById('v-completed').innerText = completed;
-        document.getElementById('v-incomplete').innerText = incomplete;
-        cu('v2', avg, 900, true);
-        cu('v3', best, 900, true);
-        document.getElementById('ms-sessions').innerText = totalSessions;
-        document.getElementById('ms-avg').innerText = avg.toFixed(1);
-        document.getElementById('ms-best').innerText = best.toFixed(1);
-
-        // Recent sessions list
-        var list = document.getElementById('sessions-list');
-        if(list){
-          list.innerHTML = '';
-          sessions.slice(0,5).forEach(function(s){
-            var score = s.avg_score || 0;
-            var colorClass = score>=7?'sh':score>=5?'sm':'sl';
-            var dotColor = score>=7?'#34d399':score>=5?'#f59e0b':'#f87171';
-            var date = new Date(s.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric'});
-            list.innerHTML += '<div class="srow"><div style="display:flex;align-items:center;"><div class="sdot" style="background:'+dotColor+'"></div><div><div class="sn">'+s.domain+'</div><div class="sd">'+date+'</div></div></div><div class="ss '+colorClass+'">'+score.toFixed(1)+'</div></div>';
+            renderSessions(sessions);
           });
-        }
-
-      });
-  }, 300);
-}
-  },
-  practice:{
-    anims:[
-      {id:'pr-title',delay:0},
-      {id:'pr-card',delay:120},
-      {id:'pr-tip',delay:200}
-    ]
-  },
-  progress:{
-    anims:[
-      {id:'pg-title',delay:0},
-      {id:'pg-s1',delay:100},
-      {id:'pg-s2',delay:160},
-      {id:'pg-s3',delay:220},
-      {id:'pg-s4',delay:280},
-      {id:'pg-history',delay:380}
-    ]
-  },
-  profile:{
-    anims:[
-      {id:'pf-title',delay:0},
-      {id:'pf-personal',delay:120},
-      {id:'pf-resume',delay:200},
-      {id:'pf-logout',delay:300}
-    ]
+      }, 300);
+    }
   }
 };
 
-function resetAll(){
-  Object.keys(pages).forEach(function(pg){
-    pages[pg].anims.forEach(function(a){
-      var el=document.getElementById(a.id);
-      if(el) el.classList.remove('in');
-    });
+function renderSessions(sessions) {
+  var list = document.getElementById('sessions-list');
+  if (!list) return;
+  list.innerHTML = '';
+  sessions.slice(0, 5).forEach(function(s) {
+    var score = s.avg_score || 0;
+    var cls   = score >= 7 ? 'sh' : score >= 5 ? 'sm' : 'sl';
+    var dot   = score >= 7 ? '#16a34a' : score >= 5 ? '#d97706' : '#dc2626';
+    var date  = new Date(s.created_at).toLocaleDateString('en-US', {month:'short', day:'numeric'});
+    list.innerHTML +=
+      '<div class="srow">' +
+        '<div class="srow-left">' +
+          '<div class="sdot" style="background:' + dot + '"></div>' +
+          '<div><div class="sn">' + s.domain + '</div><div class="sd">' + date + '</div></div>' +
+        '</div>' +
+        '<span class="ss ' + cls + '">' + score.toFixed(1) + '</span>' +
+      '</div>';
   });
 }
 
-function runPage(name){
-  var pg=pages[name];
-  if(!pg) return;
-  pg.anims.forEach(function(a){
-    setTimeout(function(){
-      var el=document.getElementById(a.id);
-      if(el) el.classList.add('in');
-    },a.delay);
+function resetAll() {
+  pages.home.anims.forEach(function(a) {
+    var el = document.getElementById(a.id);
+    if (el) el.classList.remove('in');
   });
-  if(pg.onIn) pg.onIn();
 }
 
-async function selectPrep(type){
-  document.getElementById('prep-guided').classList.toggle('selected', type === 'guided');
-  document.getElementById('prep-custom').classList.toggle('selected', type === 'custom');
-
-  if(type !== 'guided') return;
-
-  // Use cached user; fall back to a single /me call if not yet populated
-  var user = currentUser;
-  if(!user){
-    var meRes = await fetch('/me', {credentials:'include'}).catch(function(){ return null; });
-    if(!meRes || !meRes.ok) return;
-    user = await meRes.json().catch(function(){ return null; });
-    if(!user) return;
-    currentUser = user;
-  }
-
-  if(!user.profile_completed){
-    window.location.href = '/goal-setting';
-    return;
-  }
-
-  var card = document.getElementById('prep-guided');
-  var savedHTML = card.innerHTML;
-  card.style.pointerEvents = 'none';
-  card.innerHTML =
-    '<div class="prep-icon">⏳</div>' +
-    '<div class="prep-title">Generating your plan…</div>' +
-    '<div class="prep-desc">This will only take a moment.</div>';
-
-  try{
-    var r = await fetch('/plan/generate', {method:'POST', credentials:'include'});
-    if(r.ok){
-      window.location.href = '/progress';
-    } else {
-      throw new Error('non-2xx');
-    }
-  } catch(e){
-    card.innerHTML = savedHTML;
-    card.style.pointerEvents = '';
-    var errEl = document.createElement('div');
-    errEl.style.cssText = 'font-size:11px;color:#f87171;margin-top:6px;padding:0 4px;';
-    errEl.textContent = 'Could not generate plan. Please try again.';
-    card.after(errEl);
-    setTimeout(function(){ if(errEl.parentNode) errEl.parentNode.removeChild(errEl); }, 4000);
-  }
+function runPage(name) {
+  var pg = pages[name];
+  if (!pg) return;
+  pg.anims.forEach(function(a) {
+    setTimeout(function() {
+      var el = document.getElementById(a.id);
+      if (el) el.classList.add('in');
+    }, a.delay);
+  });
+  if (pg.onIn) pg.onIn();
 }
 
-function go(name,el){
-  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
-  document.querySelectorAll('.pill').forEach(function(p){p.classList.remove('active');});
+function go(name, el) {
   resetAll();
-  var pg=document.getElementById('pg-'+name);
-  if(pg) pg.classList.add('active');
-  if(el) el.classList.add('active');
-  setTimeout(function(){ runPage(name); },30);
+  setTimeout(function() { runPage(name); }, 30);
 }
 
-function cu(id,target,dur,dec,sfx){
-  var el=document.getElementById(id);
-  if(!el) return;
-  var s=0,step=target/(dur/16);
-  var t=setInterval(function(){
-    s+=step; if(s>=target){s=target;clearInterval(t);}
-    el.innerText=(dec?s.toFixed(1):Math.floor(s))+(sfx||'');
-  },16);
+function cu(id, target, dur, dec, sfx) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  var s = 0, step = target / (dur / 16);
+  var t = setInterval(function() {
+    s += step;
+    if (s >= target) { s = target; clearInterval(t); }
+    el.innerText = (dec ? s.toFixed(1) : Math.floor(s)) + (sfx || '');
+  }, 16);
 }
 
-function ab(id,pct,dur){
-  var el=document.getElementById(id);
-  if(!el) return;
-  var s=0,step=pct/(dur/16);
-  var t=setInterval(function(){
-    s+=step; if(s>=pct){s=pct;clearInterval(t);}
-    el.style.width=Math.floor(s)+'%';
-  },16);
+function ab(id, pct, dur) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  var s = 0, step = pct / (dur / 16);
+  var t = setInterval(function() {
+    s += step;
+    if (s >= pct) { s = pct; clearInterval(t); }
+    el.style.width = Math.floor(s) + '%';
+  }, 16);
 }
 
-window.startInterview = async function(){
-  var name=document.getElementById('name').value;
-  var domain=document.getElementById('domain').value;
-  if(!domain.trim()){ alert('Please enter a topic'); return; }
-  var response=await fetch('/start-session',{
-    method:'POST',
-    credentials:'include',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({candidate_name:name,domain:domain})
+function selectPrep(type) {
+  var g = document.getElementById('prep-guided');
+  var c = document.getElementById('prep-custom');
+  if (g) g.classList.toggle('selected', type === 'guided');
+  if (c) c.classList.toggle('selected', type === 'custom');
+}
+
+window.startInterview = async function() {
+  var name   = (document.getElementById('name')   || {}).value || '';
+  var domain = (document.getElementById('domain') || {}).value || '';
+  if (!domain.trim()) { alert('Please enter a topic'); return; }
+  var response = await fetch('/start-session', {
+    method: 'POST',
+    credentials: 'include',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({candidate_name: name, domain: domain})
   });
-  var data=await response.json();
-  sessionStorage.setItem('session_id',data.session_id);
-  sessionStorage.setItem('current_question',data.current_question);
-  sessionStorage.setItem('current_audio',data.audio);
-  window.location.href='/frontend/interview.html';
+  var data = await response.json();
+  sessionStorage.setItem('session_id',       data.session_id);
+  sessionStorage.setItem('current_question', data.current_question);
+  sessionStorage.setItem('current_audio',    data.audio);
+  window.location.href = '/frontend/interview.html';
 };
 
-fetch('/me',{credentials:'include'})
-.then(function(response){
-  if(!response.ok){ window.location.href='/'; return; }
-  return response.json();
-})
-.then(function(user){
-  if(!user) return;
-  currentUser = user;
+/* ── Theme toggle ── */
+(function() {
+  if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark');
+})();
 
-  var userName=document.getElementById('user-name');
-  if(userName) userName.textContent=user.name;
+document.getElementById('theme-toggle').addEventListener('click', function() {
+  var isDark = document.body.classList.toggle('dark');
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+});
 
-  var avatar=document.getElementById('user-avatar');
-  if(avatar) avatar.textContent=user.name.charAt(0).toUpperCase();
+/* ── Sidebar toggle (desktop) ── */
+document.getElementById('sidebar-toggle').addEventListener('click', function() {
+  document.getElementById('sidebar').classList.toggle('collapsed');
+});
 
-  var hiddenName=document.getElementById('name');
-  if(hiddenName) hiddenName.value=user.name;
+/* ── Sidebar toggle (mobile) ── */
+var overlay = document.getElementById('sidebar-overlay');
+document.getElementById('mobile-toggle').addEventListener('click', function() {
+  document.getElementById('sidebar').classList.add('mobile-open');
+  overlay.classList.add('visible');
+});
+overlay.addEventListener('click', function() {
+  document.getElementById('sidebar').classList.remove('mobile-open');
+  overlay.classList.remove('visible');
+});
 
-  var profileName=document.getElementById('profile-name');
-  if(profileName) profileName.textContent=user.name;
+/* ── fetch /me ── */
+fetch('/me', {credentials:'include'})
+  .then(function(r) {
+    if (!r.ok) { window.location.href = '/'; return; }
+    return r.json();
+  })
+  .then(function(user) {
+    if (!user) return;
+    currentUser = user;
 
-  var profileEmail=document.getElementById('profile-email');
-  if(profileEmail) profileEmail.textContent=user.email;
+    var initial = user.name.charAt(0).toUpperCase();
 
-  var resumeTxt=document.getElementById('resume-status-txt');
-  var resumeProfile=document.getElementById('resume-profile-status');
+    var el;
+    el = document.getElementById('user-name');         if (el) el.textContent = user.name;
+    el = document.getElementById('user-avatar');       if (el) el.textContent = initial;
+    el = document.getElementById('topbar-avatar');     if (el) el.textContent = initial;
+    el = document.getElementById('sidebar-user-name'); if (el) el.textContent = user.name;
+    el = document.getElementById('sidebar-user-email');if (el) el.textContent = user.email;
+    el = document.getElementById('name');              if (el) el.value = user.name;
+    el = document.getElementById('profile-name');      if (el) el.textContent = user.name;
+    el = document.getElementById('profile-email');     if (el) el.textContent = user.email;
 
-  if(user.resume_text){
-    if(resumeTxt) resumeTxt.textContent='Resume uploaded — questions tailored to you';
-    if(resumeProfile){ resumeProfile.textContent='Resume uploaded'; resumeProfile.style.color='#34d399'; }
-  } else {
-    if(resumeTxt) resumeTxt.textContent='No resume — upload for personalized questions';
-    if(resumeProfile) resumeProfile.textContent='Not uploaded yet';
-  }
-})
-.catch(function(error){ console.log('User loading failed:',error); });
+    var resumeTxt     = document.getElementById('resume-status-txt');
+    var resumeProfile = document.getElementById('resume-profile-status');
 
-setTimeout(function(){ runPage('home'); },150);
-
-fetch('/sessions', {credentials:'include'})
-  .then(function(r){ return r.json(); })
-  .then(function(sessions){
-
-    // if no sessions, stop here
-    if(!sessions || sessions.length === 0) return;
-
-    // Step 1 — Total sessions
-    var totalSessions = sessions.length;
-
-    // Step 2 — Avg score
-    var avg = sessions.reduce(function(sum, s){ 
-      return sum + (s.avg_score || 0); 
-    }, 0) / sessions.length;
-
-    // Step 3 — Best score
-    var best = Math.max.apply(null, sessions.map(function(s){ 
-      return s.avg_score || 0; 
-    }));
-
-    // Step 4 — Put in HTML (big numbers + mini stats)
-    document.getElementById('v1').innerText = totalSessions;
-    document.getElementById('v2').innerText = avg.toFixed(1);
-    document.getElementById('v3').innerText = best.toFixed(1);
-    document.getElementById('ms-sessions').innerText = totalSessions;
-    document.getElementById('ms-avg').innerText = avg.toFixed(1);
-    document.getElementById('ms-best').innerText = best.toFixed(1);
-
-    // Step 5 — Recent sessions list
-    var list = document.getElementById('sessions-list');
-    if(list){
-      list.innerHTML = '';
-      sessions.slice(0, 5).forEach(function(s){
-        var score = s.avg_score || 0;
-        var colorClass = score >= 10 ? 'sh' : score >= 7 ? 'sm' : 'sl';
-        var dotColor = score >= 10 ? '#34d399' : score >= 7 ? '#f59e0b' : '#f87171';
-        var date = new Date(s.created_at).toLocaleDateString('en-US', {month:'short', day:'numeric'});
-        list.innerHTML += `
-          <div class="srow">
-            <div style="display:flex;align-items:center;">
-              <div class="sdot" style="background:${dotColor}"></div>
-              <div>
-                <div class="sn">${s.domain}</div>
-                <div class="sd">${date}</div>
-              </div>
-            </div>
-            <div class="ss ${colorClass}">${score.toFixed(1)}</div>
-          </div>`;
-      });
+    if (user.resume_text) {
+      if (resumeTxt)     resumeTxt.textContent = 'Resume uploaded — questions tailored to you';
+      if (resumeProfile) { resumeProfile.textContent = 'Resume uploaded'; resumeProfile.style.color = '#16a34a'; }
+    } else {
+      if (resumeTxt)     resumeTxt.textContent = 'No resume — upload for personalized questions';
+      if (resumeProfile) resumeProfile.textContent = 'Not uploaded yet';
     }
+  })
+  .catch(function(err) { console.log('User loading failed:', err); });
 
+/* ── fetch /sessions ── */
+fetch('/sessions', {credentials:'include'})
+  .then(function(r) { return r.json(); })
+  .then(function(sessions) {
+    if (!sessions || sessions.length === 0) return;
+
+    var total = sessions.length;
+    var completed  = sessions.filter(function(s) { return s.is_completed == 1; }).length;
+    var incomplete = sessions.filter(function(s) { return s.is_completed == 0; }).length;
+    var avg  = sessions.reduce(function(sum,s) { return sum+(s.avg_score||0); }, 0) / total;
+    var best = Math.max.apply(null, sessions.map(function(s) { return s.avg_score||0; }));
+
+    var set = function(id, val) { var el = document.getElementById(id); if (el) el.innerText = val; };
+    set('v1',         total);
+    set('v-completed', completed);
+    set('v-incomplete',incomplete);
+    set('v2',          avg.toFixed(1));
+    set('v3',          best.toFixed(1));
+    set('ms-sessions', total);
+    set('ms-avg',      avg.toFixed(1));
+    set('ms-best',     best.toFixed(1));
+
+    renderSessions(sessions);
   });
+
+/* ── Boot ── */
+setTimeout(function() { runPage('home'); }, 150);
 </script>
 </body>
 </html>
