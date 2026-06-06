@@ -76,6 +76,14 @@ app.mount("/frontend", StaticFiles(directory="frontend"), name="frontend")
 def serve_home():
     return FileResponse("frontend/index.html")
 
+@app.get("/landing")
+def serve_landing():
+    return FileResponse("frontend/landing.html")
+
+@app.get("/register")
+def serve_register():
+    return FileResponse("frontend/register.html")
+
 @app.get("/dashboard")
 def serve_dashboard():
     return FileResponse("frontend/dashboard.html")
