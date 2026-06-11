@@ -97,7 +97,7 @@ Generate ONE interview question that:
 - Is strictly about: {effective_domain}
 - Has NOT been asked before (see already-asked list below)
 - Matches {difficulty} difficulty exactly
-- References the candidate's background where naturally relevant (e.g. "You've used X — how would you...")
+- {"References the candidate's background where naturally relevant (e.g. 'You've used X — how would you...')" if resume_text else "Does NOT reference any candidate background — ask a pure topic-based question with no mention of any personal experience or background"}
 - Can be answered verbally in 2-4 minutes
 - Tests real understanding, not trivia or memorisation
 
