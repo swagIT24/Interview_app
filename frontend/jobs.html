@@ -6,7 +6,7 @@
 *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Inter',Arial,sans-serif;}
 html{font-size:16px;}
 :root{--primary:#6366f1;--primary-dark:#4f46e5;--primary-light:rgba(99,102,241,0.18);--text:#ffffff;--muted:rgba(255,255,255,0.4);--border:rgba(255,255,255,0.08);--bg:#111118;--card:#1a1a2e;--red:#f87171;--red-bg:rgba(248,113,113,0.08);--sidebar-w:240px;--sidebar-icon-w:68px;}
-body.light-mode{--primary-light:#e0e7ff;--text:#111827;--muted:#6b7280;--border:#e5e7eb;--bg:#f5f7ff;--card:#ffffff;--red:#dc2626;--red-bg:#fee2e2;}
+body:not(.dark){--primary-light:#e0e7ff;--text:#1a1d2e;--muted:#6b7280;--border:rgba(0,0,0,0.08);--bg:#f0f2f8;--bg-secondary:#e8eaf2;--card:#ffffff;--red:#dc2626;--red-bg:#fee2e2;}
 body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;}
 .sidebar{width:var(--sidebar-w);height:100vh;position:sticky;top:0;flex-shrink:0;background:var(--card);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;transition:width 0.25s ease;z-index:100;}
 .sidebar.collapsed{width:var(--sidebar-icon-w);}
@@ -46,13 +46,13 @@ body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;}
 .topbar-av{width:34px;height:34px;border-radius:50%;background:var(--primary);color:#fff;font-size:0.85rem;font-weight:700;display:flex;align-items:center;justify-content:center;}
 .theme-toggle{background:none;border:none;padding:0;cursor:pointer;flex-shrink:0;display:flex;align-items:center;}
 .toggle-track{display:block;width:48px;height:26px;border-radius:100px;background:var(--primary);position:relative;transition:background 0.3s ease;}
-body.light-mode .toggle-track{background:#d1d5db;}
+body:not(.dark) .toggle-track{background:#d1d5db;}
 .toggle-thumb{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;line-height:1;box-shadow:0 1px 4px rgba(0,0,0,0.22);transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);pointer-events:none;transform:translateX(22px);}
-body.light-mode .toggle-thumb{transform:translateX(0);}
+body:not(.dark) .toggle-thumb{transform:translateX(0);}
 .toggle-thumb .icon-moon{display:none;}
 .toggle-thumb .icon-sun{display:block;}
-body.light-mode .toggle-thumb .icon-moon{display:block;}
-body.light-mode .toggle-thumb .icon-sun{display:none;}
+body:not(.dark) .toggle-thumb .icon-moon{display:block;}
+body:not(.dark) .toggle-thumb .icon-sun{display:none;}
 .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:99;}
 .body{flex:1;padding:22px 28px;overflow-y:auto;}
 @media(max-width:768px){.sidebar{position:fixed;height:100vh;top:0;left:0;transform:translateX(-100%);width:var(--sidebar-w)!important;box-shadow:4px 0 24px rgba(0,0,0,0.10);transition:transform 0.25s ease;}.sidebar.mobile-open{transform:translateX(0);}.sidebar-overlay{display:block;opacity:0;pointer-events:none;transition:opacity 0.25s;}.sidebar-overlay.visible{opacity:1;pointer-events:auto;}.mobile-toggle{display:flex;}.body{padding:16px 18px;}}
@@ -178,45 +178,45 @@ body.light-mode .toggle-thumb .icon-sun{display:none;}
 .warn-txt{font-size:12px;color:rgba(248,113,113,0.85);line-height:1.5;}
 
 /* ── Light mode ── */
-body.light-mode{background:#f5f7ff;color:#111827;}
-body.light-mode .topbar{background:#fff;border-bottom:1px solid #e5e7eb;}
-body.light-mode .ln{color:#111827;}
-body.light-mode .pills{background:#f3f4f6;}
-body.light-mode .pill{color:#6b7280;}
-body.light-mode .pill:hover{color:#111827;}
-body.light-mode .pill.active{background:#fff;color:#111827;box-shadow:0 1px 4px rgba(0,0,0,0.10);}
-body.light-mode .page-title{color:#111827;}
-body.light-mode .page-sub{color:#6b7280;}
-body.light-mode .stat-card,
-body.light-mode .job-card{background:#fff;border-color:#e5e7eb;color:#111827;}
-body.light-mode .job-card:hover{border-color:rgba(124,58,237,0.35);}
-body.light-mode .stat-lbl{color:#6b7280;}
-body.light-mode .stat-pct,
-body.light-mode .stat-sub{color:#9ca3af;}
-body.light-mode .stat-track{background:#f3f4f6;}
-body.light-mode .job-company{color:#111827;}
-body.light-mode .job-role,
-body.light-mode .job-meta{color:#6b7280;}
-body.light-mode .job-notes{color:#6b7280;border-left-color:#e5e7eb;}
-body.light-mode .job-status-select{background:#f9fafb;border-color:#e5e7eb;color:#374151;}
-body.light-mode .job-status-select option{background:#fff;}
-body.light-mode .empty-txt{color:#9ca3af;}
-body.light-mode .modal{background:#fff;border-color:#e5e7eb;}
-body.light-mode .modal-title{color:#111827;}
-body.light-mode .field-lbl{color:#6b7280;}
-body.light-mode .inp{background:#f9fafb;border-color:#e5e7eb;color:#111827;}
-body.light-mode .inp::placeholder{color:#9ca3af;}
-body.light-mode .inp option{background:#fff;color:#111827;}
-body.light-mode .inp:focus{border-color:#6366f1;}
-body.light-mode .modal-cancel{background:#f3f4f6;border-color:#e5e7eb;color:#6b7280;}
-body.light-mode .modal-cancel:hover{background:#e5e7eb;color:#374151;}
-body.light-mode .modal-close{color:#9ca3af;}
-body.light-mode .modal-close:hover{color:#111827;}
-body.light-mode .tailor-job-label span{color:#6b7280;}
-body.light-mode .results{border-top-color:#e5e7eb;}
-body.light-mode .score-lbl{color:#6b7280;}
-body.light-mode .score-sub{color:#9ca3af;}
-body.light-mode .kw-title{color:#6b7280;}
+body:not(.dark){background:#f0f2f8;color:#1a1d2e;}
+body:not(.dark) .topbar{background:#ffffff;border-bottom:1px solid rgba(0,0,0,0.08);}
+body:not(.dark) .ln{color:#1a1d2e;}
+body:not(.dark) .pills{background:#f3f4f6;}
+body:not(.dark) .pill{color:#6b7280;}
+body:not(.dark) .pill:hover{color:#1a1d2e;}
+body:not(.dark) .pill.active{background:#fff;color:#1a1d2e;box-shadow:0 1px 4px rgba(0,0,0,0.10);}
+body:not(.dark) .page-title{color:#1a1d2e;}
+body:not(.dark) .page-sub{color:#6b7280;}
+body:not(.dark) .stat-card,
+body:not(.dark) .job-card{background:#fff;border-color:rgba(0,0,0,0.08);color:#1a1d2e;}
+body:not(.dark) .job-card:hover{border-color:rgba(124,58,237,0.35);}
+body:not(.dark) .stat-lbl{color:#6b7280;}
+body:not(.dark) .stat-pct,
+body:not(.dark) .stat-sub{color:#9ca3af;}
+body:not(.dark) .stat-track{background:#f3f4f6;}
+body:not(.dark) .job-company{color:#1a1d2e;}
+body:not(.dark) .job-role,
+body:not(.dark) .job-meta{color:#6b7280;}
+body:not(.dark) .job-notes{color:#6b7280;border-left-color:#e5e7eb;}
+body:not(.dark) .job-status-select{background:#f9fafb;border-color:rgba(0,0,0,0.08);color:#374151;}
+body:not(.dark) .job-status-select option{background:#fff;}
+body:not(.dark) .empty-txt{color:#9ca3af;}
+body:not(.dark) .modal{background:#fff;border-color:rgba(0,0,0,0.08);}
+body:not(.dark) .modal-title{color:#1a1d2e;}
+body:not(.dark) .field-lbl{color:#6b7280;}
+body:not(.dark) .inp{background:#f9fafb;border-color:rgba(0,0,0,0.08);color:#1a1d2e;}
+body:not(.dark) .inp::placeholder{color:#9ca3af;}
+body:not(.dark) .inp option{background:#fff;color:#1a1d2e;}
+body:not(.dark) .inp:focus{border-color:#6366f1;}
+body:not(.dark) .modal-cancel{background:#f3f4f6;border-color:rgba(0,0,0,0.08);color:#6b7280;}
+body:not(.dark) .modal-cancel:hover{background:#e5e7eb;color:#374151;}
+body:not(.dark) .modal-close{color:#9ca3af;}
+body:not(.dark) .modal-close:hover{color:#1a1d2e;}
+body:not(.dark) .tailor-job-label span{color:#6b7280;}
+body:not(.dark) .results{border-top-color:#e5e7eb;}
+body:not(.dark) .score-lbl{color:#6b7280;}
+body:not(.dark) .score-sub{color:#9ca3af;}
+body:not(.dark) .kw-title{color:#6b7280;}
 </style>
 </head>
 <body>
@@ -388,7 +388,7 @@ body.light-mode .kw-title{color:#6b7280;}
 </div><!-- /main -->
 
 <script>
-if(localStorage.getItem('theme') === 'light') document.body.classList.add('light-mode');
+if(localStorage.getItem('theme') === 'dark') document.body.classList.add('dark');
 
 // Sidebar toggle
 document.getElementById('sidebar-toggle').addEventListener('click', function() {
@@ -406,8 +406,8 @@ _sbOverlay.addEventListener('click', function() {
 });
 // Theme toggle
 document.getElementById('theme-toggle').addEventListener('click', function() {
-  var isLight = document.body.classList.toggle('light-mode');
-  localStorage.setItem('theme', isLight ? 'light' : 'dark');
+  var isDark = document.body.classList.toggle('dark');
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
 });
 
 function logout(){ fetch('/logout',{method:'POST',credentials:'include'}).catch(function(){}); window.location.href='/'; }

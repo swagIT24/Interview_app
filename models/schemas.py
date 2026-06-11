@@ -8,3 +8,4 @@ class SubmitAnswerRequest(BaseModel):
 class SessionCreate(BaseModel):
     candidate_name: str = Field(..., min_length=1, max_length=100)
     domain: str = Field(..., min_length=1, max_length=200)
+    use_resume: bool = True

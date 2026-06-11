@@ -39,6 +39,26 @@ def _adaptive_difficulty(session_history: list) -> tuple[str, str]:
     return     "intermediate", "Test understanding, not memorisation"
 
 
+_INJECTION_PATTERNS = [
+    "ignore", "system prompt", "previous instructions", "you are now"
+]
+
+
+def sanitize_topic(topic: str) -> str:
+    topic = topic.strip()
+    # Remove anything containing JSON-like braces
+    if "{" in topic or "}" in topic:
+        topic = ""
+    # Remove prompt injection patterns (case-insensitive)
+    lower = topic.lower()
+    for pattern in _INJECTION_PATTERNS:
+        if pattern in lower:
+            topic = ""
+            break
+    topic = topic[:50]
+    return topic or "Software Engineering"
+
+
 def generate_question(
     domain=None,
     asked_questions=None,
@@ -64,7 +84,7 @@ def generate_question(
     if asked_questions is None:
         asked_questions = []
 
-    effective_domain = topic or domain or "Software Engineering"
+    effective_domain = sanitize_topic(topic or domain or "Software Engineering")
     difficulty, difficulty_instruction = _adaptive_difficulty(session_history)
 
     # Resume: extract signals, don't dump raw text
@@ -97,7 +117,7 @@ Generate ONE interview question that:
 - Is strictly about: {effective_domain}
 - Has NOT been asked before (see already-asked list below)
 - Matches {difficulty} difficulty exactly
-- References the candidate's background where naturally relevant (e.g. "You've used X — how would you...")
+- {"References the candidate's background where naturally relevant (e.g. 'You've used X — how would you...')" if resume_text else "Does NOT reference any candidate background — ask a pure topic-based question with no mention of any personal experience or background"}
 - Can be answered verbally in 2-4 minutes
 - Tests real understanding, not trivia or memorisation
 

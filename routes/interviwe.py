@@ -169,8 +169,8 @@ def start_session(request: Request, data: SessionCreate, user_id: int = Depends(
 
     domain, asked = row
     asked_questions = json.loads(asked) if asked else []
-
-    question_data = get_next_question(domain, asked_questions,user_id)
+    print("use_resume:", data.use_resume)
+    question_data = get_next_question(domain, asked_questions, user_id if data.use_resume else None)
 
     if question_data:
         first_question = question_data["question"]["question"]
