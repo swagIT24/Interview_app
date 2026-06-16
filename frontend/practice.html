@@ -194,6 +194,28 @@ input,textarea,select{font-family:inherit;}
 .btn-restart{padding:11px 24px;background:#6366f1;border:none;border-radius:9px;color:#fff;font-size:14px;font-weight:600;cursor:pointer;transition:background .15s;}
 .btn-restart:hover{background:#4f46e5;}
 
+/* ── Upgrade modal ── */
+.upgrade-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px;animation:upgradeFadeIn 0.15s ease;}
+@keyframes upgradeFadeIn{from{opacity:0;}to{opacity:1;}}
+.upgrade-modal-card{background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:34px 28px 28px;max-width:380px;width:100%;position:relative;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,0.5);}
+.upgrade-modal-close{position:absolute;top:14px;right:14px;width:28px;height:28px;border-radius:8px;background:none;border:none;color:rgba(255,255,255,0.4);font-size:16px;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center;transition:background .15s,color .15s;}
+.upgrade-modal-close:hover{background:rgba(255,255,255,0.08);color:#fff;}
+.upgrade-modal-icon{font-size:38px;margin-bottom:14px;}
+.upgrade-modal-title{font-size:18px;font-weight:700;color:#fff;margin-bottom:10px;letter-spacing:-0.01em;}
+.upgrade-modal-msg{font-size:13.5px;color:rgba(255,255,255,0.5);line-height:1.7;margin-bottom:24px;}
+.upgrade-modal-actions{display:flex;flex-direction:column;gap:10px;}
+.upgrade-modal-btn-primary{display:block;width:100%;padding:13px;background:#f59e0b;border:none;border-radius:10px;color:#1a0f00;font-size:14px;font-weight:700;cursor:pointer;text-decoration:none;letter-spacing:0.01em;transition:background .15s;}
+.upgrade-modal-btn-primary:hover{background:#d97706;}
+.upgrade-modal-btn-ghost{width:100%;padding:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:10px;color:rgba(255,255,255,0.5);font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;}
+.upgrade-modal-btn-ghost:hover{background:rgba(255,255,255,0.09);color:rgba(255,255,255,0.75);}
+body:not(.dark) .upgrade-modal-card{background:#fff;border-color:rgba(0,0,0,0.08);}
+body:not(.dark) .upgrade-modal-title{color:#1a1d2e;}
+body:not(.dark) .upgrade-modal-msg{color:#6b7280;}
+body:not(.dark) .upgrade-modal-close{color:#9ca3af;}
+body:not(.dark) .upgrade-modal-close:hover{background:#f3f4f6;color:#1a1d2e;}
+body:not(.dark) .upgrade-modal-btn-ghost{background:#f3f4f6;border-color:rgba(0,0,0,0.08);color:#6b7280;}
+body:not(.dark) .upgrade-modal-btn-ghost:hover{background:#e5e7eb;color:#1a1d2e;}
+
 /* ── Light mode ── */
 body:not(.dark){background:#f0f2f8;color:#1a1d2e;}
 body:not(.dark) .topbar{background:#ffffff;border-bottom:1px solid rgba(0,0,0,0.08);}
@@ -434,6 +456,37 @@ document.getElementById('theme-toggle').addEventListener('click', function() {
 
 function logout(){ fetch('/logout',{method:'POST',credentials:'include'}).catch(function(){}); window.location.href='/'; }
 
+// ===== Upgrade modal (shown when a free-tier limit is reached) =====
+function showUpgradeModal(){
+  closeUpgradeModal();
+
+  var overlay = document.createElement('div');
+  overlay.className = 'upgrade-modal-overlay';
+  overlay.id = 'upgrade-modal-overlay';
+  overlay.innerHTML =
+    '<div class="upgrade-modal-card">' +
+      '<button class="upgrade-modal-close" aria-label="Close" onclick="closeUpgradeModal()">✕</button>' +
+      '<div class="upgrade-modal-icon">🔒</div>' +
+      '<div class="upgrade-modal-title">You\'ve Reached Your Free Limit</div>' +
+      '<div class="upgrade-modal-msg">Upgrade to Opunto Pro to unlock unlimited practice sessions and roleplay exchanges.</div>' +
+      '<div class="upgrade-modal-actions">' +
+        '<a href="#" class="upgrade-modal-btn-primary">Upgrade to Pro</a>' +
+        '<button class="upgrade-modal-btn-ghost" onclick="closeUpgradeModal()">Maybe Later</button>' +
+      '</div>' +
+    '</div>';
+
+  overlay.addEventListener('click', function(e){
+    if(e.target === overlay) closeUpgradeModal();
+  });
+
+  document.body.appendChild(overlay);
+}
+
+function closeUpgradeModal(){
+  var overlay = document.getElementById('upgrade-modal-overlay');
+  if(overlay) overlay.remove();
+}
+
 var sessionId = null;
 var currentQuestion = null;
 var currentAudioB64 = null;
@@ -492,6 +545,17 @@ async function startSession(){
   var name = document.getElementById('name').value;
   if(!domain){ alert('Please enter a topic'); return; }
 
+  try{
+    var limitsRes = await fetch('/users/me/limits', {credentials: 'include'});
+    if(limitsRes.ok){
+      var limits = await limitsRes.json();
+      if(limits.practice_count >= 5){
+        showUpgradeModal();
+        return;
+      }
+    }
+  }catch(e){ /* if the limits check fails, fall through and let the server enforce it */ }
+
   domainName = domain;
   var btn = document.getElementById('start-btn');
   btn.textContent = 'Loading...';
@@ -533,6 +597,11 @@ async function submitAnswer(){
   var feedbackCard = document.getElementById('feedback-card');
   feedbackCard.innerHTML = '<div style="color:rgba(255,255,255,0.35);font-size:14px;padding:8px 0;">Evaluating...</div>';
   feedbackCard.style.display = 'block';
+  // Make sure the card is actually visible the very first time it's shown — it
+  // starts as display:none + opacity:0 (.fb class), and only becomes opaque once
+  // the 'in' class is added. Add it here too (not just in renderEvaluation) so the
+  // "Evaluating..." state — and anything that follows — is never silently invisible.
+  feedbackCard.classList.add('in');
 
   var response = await fetch('/submit-answer', {
     method: 'POST',
@@ -570,6 +639,11 @@ async function submitAnswer(){
   }
 
   var data = await response.json();
+  console.log('good_answer_example:', data.good_answer_example);
+  if (data.error === 'limit_reached') {
+    showUpgradeModal();
+    return;
+  }
   renderEvaluation(data);
 
   if(data.next_question){
@@ -640,14 +714,19 @@ function uploadResume(){
 // ===== EVALUATION RENDER =====
 
 function renderEvaluation(data){
+  // Defensive: a malformed/partial response (e.g. missing keys on a particular
+  // code path) should still render something rather than silently doing nothing.
+  data = data || {};
+  console.log('renderEvaluation good_answer_example:', data.good_answer_example);
   if(data.weakest_dimension) weakestDimensions.push(data.weakest_dimension);
   if(typeof data.score === 'number') sessionScores.push(data.score);
 
   var dims = ['correctness','depth','clarity','examples','completeness'];
   var breakdown = data.score_breakdown || {};
   var weakest = data.weakest_dimension || '';
+  var score = typeof data.score === 'number' ? data.score : 0;
 
-  var scoreClass = data.score >= 8 ? 'score-high' : data.score >= 5 ? 'score-mid' : 'score-low';
+  var scoreClass = score >= 8 ? 'score-high' : score >= 5 ? 'score-mid' : 'score-low';
 
   var barsHTML = dims.map(function(dim, i){
     var val = breakdown[dim] !== undefined ? breakdown[dim] : 0;
@@ -665,13 +744,13 @@ function renderEvaluation(data){
     ? '<div class="eval-section-lbl">What you skipped</div><div class="eval-card missed">' + data.missed_key_point + '</div>'
     : '';
 
-  var hintHTML = data.model_answer_hint
-    ? '<div class="eval-section-lbl">What 10/10 looks like</div><div class="eval-card model-answer">&#9733; ' + data.model_answer_hint + '</div>'
+  var hintHTML = data.good_answer_example
+    ? '<div class="eval-section-lbl">WHAT A GOOD ANSWER LOOKS LIKE</div><div class="eval-card model-answer">&#9733; ' + data.good_answer_example + '</div>'
     : '';
 
   var html =
     '<div class="eval-score-header">' +
-      '<div class="eval-score-number ' + scoreClass + '">' + data.score + '/10</div>' +
+      '<div class="eval-score-number ' + scoreClass + '">' + score + '/10</div>' +
       '<div class="eval-verdict">' + (data.one_line_verdict || '') + '</div>' +
     '</div>' +
     '<div class="dim-rows">' + barsHTML + '</div>' +
@@ -807,10 +886,21 @@ function rpSetState(state, label){
   if(mic) mic.style.display = (state === 'listening') ? 'flex' : 'none';
 }
 
-function startRoleplay(){
+async function startRoleplay(){
   var scenario = document.getElementById('scenario').value.trim();
   var domain   = document.getElementById('domain').value.trim();
   if(!scenario){ alert('Please enter a roleplay scenario first'); return; }
+
+  try{
+    var limitsRes = await fetch('/users/me/limits', {credentials: 'include'});
+    if(limitsRes.ok){
+      var limits = await limitsRes.json();
+      if(limits.roleplay_count >= 5){
+        showUpgradeModal();
+        return;
+      }
+    }
+  }catch(e){ /* if the limits check fails, fall through and let the server enforce it */ }
 
   document.getElementById('empty-state').style.display = 'none';
   document.getElementById('session-area').classList.remove('active');
@@ -843,6 +933,11 @@ function startRoleplay(){
     if(data.type === 'processing')  rpOnProcessing();
     if(data.type === 'feedback')    rpShowFeedback(data.score, data.feedback);
     if(data.type === 'error')       rpSetState('error', 'Error: ' + data.message);
+    if(data.type === 'limit_reached'){
+      showUpgradeModal();
+      rpSetState('done', 'Free limit reached');
+      endRoleplay();
+    }
   };
 
   rp.ws.onclose = function(){
@@ -1022,6 +1117,17 @@ window.addEventListener('load', function(){
 
   recordBtn.addEventListener('click', async function(){
     if(!mediaRecorder || mediaRecorder.state === 'inactive'){
+      try{
+        var limitsRes = await fetch('/users/me/limits', {credentials: 'include'});
+        if(limitsRes.ok){
+          var limits = await limitsRes.json();
+          if(limits.practice_count >= 5){
+            showUpgradeModal();
+            return;
+          }
+        }
+      }catch(e){ /* if the limits check fails, fall through and let the server enforce it */ }
+
       questionAtRecordingStart = currentQuestion;
       stream = await navigator.mediaDevices.getUserMedia({audio: true});
       mediaRecorder = new MediaRecorder(stream);
@@ -1036,8 +1142,17 @@ window.addEventListener('load', function(){
         fetch('/voice/upload?session_id=' + sessionId, {method:'POST', body: formData})
           .then(function(r){ return r.json(); })
           .then(function(data){
+            if(data.error === 'limit_reached'){
+              showUpgradeModal();
+              recordStatus.textContent = 'Ready';
+              return;
+            }
             answerBox.value = data.transcript;
             if(data.evaluation){
+              if (data.evaluation && data.evaluation.error === 'limit_reached') {
+                showUpgradeModal();
+                return;
+              }
               renderEvaluation(data.evaluation);
               if(data.next_question){
                 nextQuestionData = {next_question: data.next_question, audio: data.audio};

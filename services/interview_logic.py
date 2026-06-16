@@ -30,7 +30,7 @@ def _difficulty_from_scores(scores: list) -> str:
     return "intermediate"
 
 
-def process_answer(answer: str, session_id: int, question_text: str):
+def process_answer(answer: str, session_id: int, question_text: str, user_id:int = None, is_resubmit: bool = False):
     if not answer or answer.strip() == "":
         return {
             "score": 0,
@@ -57,6 +57,12 @@ def process_answer(answer: str, session_id: int, question_text: str):
         if is_completed:
             return {"error": "Interview already completed"}
 
+        is_admin = False
+        if user_id:
+            cursor.execute("SELECT is_admin FROM users WHERE id = %s", (user_id,))
+            user_row = cursor.fetchone()
+            is_admin = bool(user_row["is_admin"]) if user_row else False
+
         # Adaptive difficulty from recent history
         recent_scores = get_last_n_scores(cursor, session_id, ADAPTIVE_WINDOW)
         difficulty = _difficulty_from_scores(recent_scores)
@@ -80,11 +86,34 @@ def process_answer(answer: str, session_id: int, question_text: str):
                 "scores": {}, "total": 5,
                 "strongest_dimension": "clarity", "weakest_dimension": "depth",
                 "one_line_verdict": "Could not evaluate.", "missed_key_point": None,
-                "model_answer_hint": "", "analysis_text": "",
+                "good_answer_example": "", "analysis_text": "",
             }
             feedback = f"Score: 5/10. Focus on {score_result.get('weakest_dimension', 'depth')}."
 
-        # 3. Persist — including rubric columns and analysis text
+        # 3. Persist
+        if is_resubmit:
+            cursor.execute("""
+                UPDATE interview_answers
+                SET answer = %s, score = %s, feedback = %s
+                WHERE session_id = %s AND question = %s
+            """, (answer, score_result["total"], feedback, session_id, question_text))
+            if user_id and not is_admin:  # ADD THIS
+                cursor.execute("UPDATE users SET practice_count = practice_count + 1 WHERE id = %s", (user_id,))
+    
+            conn.commit()
+            return {
+                "score":               score_result["total"],
+                "feedback":            feedback,
+                "score_breakdown":     score_result.get("scores"),
+                "strongest_dimension": score_result.get("strongest_dimension"),
+                "weakest_dimension":   score_result.get("weakest_dimension"),
+                "one_line_verdict":    score_result.get("one_line_verdict"),
+                "missed_key_point":    score_result.get("missed_key_point"),
+                "good_answer_example":  score_result.get("good_answer_example"),
+                "current_question_number": current_q,
+                "is_completed": False,
+            }
+
         insert_answer(
             cursor,
             session_id,
@@ -95,7 +124,7 @@ def process_answer(answer: str, session_id: int, question_text: str):
             time_taken=30,
             score_breakdown=score_result.get("scores"),
             weakest_dimension=score_result.get("weakest_dimension"),
-            model_answer_hint=score_result.get("model_answer_hint"),
+            model_answer_hint=score_result.get("good_answer_example"),
             analysis_text=score_result.get("analysis_text"),
         )
 
@@ -104,11 +133,23 @@ def process_answer(answer: str, session_id: int, question_text: str):
             SET current_question_number = current_question_number + 1
             WHERE id = %s
         """, (session_id,))
+        conn.commit()
 
         cursor.execute("""
-            SELECT current_question_number FROM interview_sessions WHERE id = %s
+            SELECT current_question_number, max_questions FROM interview_sessions WHERE id = %s
         """, (session_id,))
-        new_q = cursor.fetchone()[0]
+        row = cursor.fetchone()
+        new_q, max_q = row[0], row[1]
+        now_complete = new_q >= max_q
+        if now_complete:
+            cursor.execute("""
+                UPDATE interview_sessions SET is_completed = 1 WHERE id = %s
+            """, (session_id,))
+
+        if user_id and not is_admin:
+            cursor.execute("""
+                UPDATE users SET practice_count = practice_count + 1 WHERE id = %s
+            """, (user_id,))
 
         conn.commit()
 
@@ -120,9 +161,9 @@ def process_answer(answer: str, session_id: int, question_text: str):
             "weakest_dimension":   score_result.get("weakest_dimension"),
             "one_line_verdict":    score_result.get("one_line_verdict"),
             "missed_key_point":    score_result.get("missed_key_point"),
-            "model_answer_hint":   score_result.get("model_answer_hint"),
+            "good_answer_example":  score_result.get("good_answer_example"),
             "current_question_number": new_q,
-            "is_completed": False,
+            "is_completed": now_complete,
         }
 
     except Exception as e:

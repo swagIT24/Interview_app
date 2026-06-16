@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Request, UploadFile, File, Form
+from fastapi import APIRouter, Request, UploadFile, File, Form, Depends
 from services.interview_logic import process_answer
 from services.interview_logic import get_next_question, update_asked_questions
 from services.speech_service import speech_to_text
 from services.tts_service import text_to_speech
 from database.connections import get_connection
 from services.limiter import limiter
+from services.auth_service import get_current_user
 import json
 
 router = APIRouter()
@@ -15,9 +16,26 @@ async def upload_audio(
     request: Request,
     session_id: int,
     file: UploadFile = File(...),
-    question_text: str = Form(...)
+    question_text: str = Form(...),
+    user_id: int = Depends(get_current_user)
 ):
     try:
+        # 0. Check practice limit before doing any (paid) transcription work
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT practice_count, is_admin FROM users WHERE id = %s", (user_id,))
+        user_row = cursor.fetchone()
+        conn.close()
+
+        is_admin = bool(user_row["is_admin"]) if user_row else False
+        practice_count = user_row["practice_count"] if user_row else 0
+
+        if not is_admin and practice_count >= 5:
+            return {
+                "error": "limit_reached",
+                "message": "You have used all 5 free practice sessions. Please upgrade to continue.",
+            }
+
         # 1. Transcribe audio
         audio_bytes = await file.read()
         text = speech_to_text(
@@ -44,7 +62,7 @@ async def upload_audio(
         asked_questions = json.loads(row[1]) if row[1] else []
 
         # 3. Evaluate answer
-        evaluation = process_answer(text, session_id, question_text)
+        evaluation = process_answer(text, session_id, question_text, user_id)
 
         if "error" in evaluation:
             return {"error": evaluation["error"]}

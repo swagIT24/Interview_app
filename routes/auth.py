@@ -149,6 +149,23 @@ def get_me(request: Request):
     }
 
 
+@router.get("/users/me/limits")
+def get_user_limits(user_id: int = Depends(get_current_user)):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT roleplay_count, practice_count FROM users WHERE id = %s", (user_id,))
+    row = cursor.fetchone()
+    conn.close()
+
+    if not row:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return {
+        "roleplay_count": row["roleplay_count"] or 0,
+        "practice_count": row["practice_count"] or 0,
+    }
+
+
 @router.post("/complete-onboarding")
 def complete_onboarding(user_id: int = Depends(get_current_user)):
     conn = get_connection()

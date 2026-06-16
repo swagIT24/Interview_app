@@ -18,6 +18,11 @@ router = APIRouter()
 _executor = ThreadPoolExecutor()
 
 
+def _sync_evaluate_answer(question, transcript):
+    """Helper to run async evaluate_answer in a thread pool."""
+    return asyncio.run(evaluate_answer(question, transcript))
+
+
 # ── Scenario / character helpers ──────────────────────────────────────────────
 
 _FEMALE_KEYWORDS = {
@@ -258,6 +263,24 @@ async def roleplay_ws(
     async def process_speech(audio_wav: bytes):
         """Handle a completed speech turn (roleplay or interview mode)."""
         nonlocal current_question
+
+        # ── Roleplay usage limit check ──────────────────────────────────────
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT roleplay_count, is_admin FROM users WHERE id = %s", (user_id,))
+        user_row = cursor.fetchone()
+        conn.close()
+
+        roleplay_count = user_row["roleplay_count"] if user_row else 0
+        is_admin = user_row["is_admin"] if user_row else 0
+
+        if not is_admin and roleplay_count >= 5:
+            await send({
+                "type": "limit_reached",
+                "message": "You have used all 5 free roleplay exchanges. Please upgrade to continue.",
+            })
+            return
+
         if is_scenario:
             # ── Roleplay: Whisper → streaming GPT → per-sentence TTS ─────────
             t0 = time.time()
@@ -325,7 +348,7 @@ async def roleplay_ws(
 
             print(f"[ROLEPLAY TIMING] GPT start (eval+gen parallel): {time.time()-t0:.2f}s")
             eval_task = loop.run_in_executor(
-                _executor, evaluate_answer, current_question, transcript
+                _executor, _sync_evaluate_answer, current_question, transcript
             )
 
             try:
@@ -364,6 +387,13 @@ async def roleplay_ws(
             current_question = next_q
             await send({"type": "question", "text": next_q, "audio": audio_b64})
             print(f"[ROLEPLAY TIMING] audio sent to browser: {time.time()-t0:.2f}s")
+
+        # ── Increment usage count after successful processing ────────────────
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("UPDATE users SET roleplay_count = roleplay_count + 1 WHERE id = %s", (user_id,))
+        conn.commit()
+        conn.close()
 
     try:
         # ── Opening message ───────────────────────────────────────────────────
