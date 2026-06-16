@@ -37,6 +37,7 @@ ONE KEY THING MISSING:
 - If nothing is missing, say "none"
 
 Be direct. Do not soften criticism. Do not say "great answer."
+If the answer is genuinely strong and complete, acknowledge it honestly. Do not invent weaknesses that are not there. A strong answer deserves a strong score.
 """
 
 # ── Call 2: score based on the analysis (JSON, temp=0.1) ─────────────────────
@@ -85,6 +86,7 @@ SCORING RULES — these are absolute:
 - If the analysis says "one key thing missing" is not "none" → missed_key_point is not null
 - Total = sum of all 5 dimensions (max 10)
 - 10/10 is only possible if the analysis found zero weaknesses
+- good_answer_example is REQUIRED and must never be null or empty.
 
 Return ONLY valid JSON, nothing else:
 {
@@ -100,7 +102,7 @@ Return ONLY valid JSON, nothing else:
   "weakest_dimension": "<dimension name or null if all 2/2>",
   "one_line_verdict": "<max 12 words describing this answer>",
   "missed_key_point": "<what they skipped, or null if nothing missing>",
-  "model_answer_hint": "<what a 10/10 answer would include, 1-2 sentences>"
+  "good_answer_example": "<REQUIRED — write a complete 3-4 sentence ideal answer to this question covering definition, explanation, real example, and tradeoffs. Never return null for this field.>"
 }
 """
 
@@ -108,18 +110,15 @@ Return ONLY valid JSON, nothing else:
 
 _FEEDBACK_SYSTEM = """You are a direct, no-nonsense senior engineering coach reviewing a candidate's interview answer.
 
-Write 3-5 sentences of flowing prose — NO bullet points, NO headers.
-Order strictly:
-1. What they got right (be specific, name the exact thing)
-2. The core gap (what was actually missing, name the concept)
-3. What a 10/10 answer adds (pull from model_answer_hint)
-4. One actionable thing to practise this week
+Write EXACTLY 2 sentences. No more. No exceptions.
+Sentence 1: What they got right + the core gap in one sentence.
+Sentence 2: One specific thing to practice this week.
 
 Hard rules:
 - NEVER open with "Great answer!", "Well done!", or any generic praise
 - ALWAYS name the specific concept or technique that was missed
-- Reference their weakest dimension by name
-- Tone: honest coach who wants them to succeed, not a cheerleader"""
+- Tone: honest coach who wants them to succeed, not a cheerleader
+- 2 sentences maximum — if you write more you have failed the task"""
 
 
 async def evaluate_answer(question: str, answer: str, difficulty: str = "intermediate") -> dict:
@@ -188,7 +187,9 @@ async def evaluate_answer(question: str, answer: str, difficulty: str = "interme
     result.setdefault("weakest_dimension",   min(scores, key=scores.get) if scores else "depth")
     result.setdefault("one_line_verdict",    "Answer needs more depth and specifics.")
     result.setdefault("missed_key_point",    None)
-    result.setdefault("model_answer_hint",   "Include specific examples and discuss tradeoffs.")
+    result["good_answer_example"] = result.get("good_answer_example") or result.get("model_answer_hint") or ""
+    if not result.get("good_answer_example"):
+        result["good_answer_example"] = f"A strong answer would cover: {result.get('missed_key_point', '')}. Focus on definition, real examples, and tradeoffs."
 
     # When every dimension is 2/2 there is no meaningful "weakest"
     all_max = scores and all(v == 2 for v in scores.values())
@@ -211,7 +212,7 @@ async def generate_feedback(question: str, answer: str, score_result: dict,
     """
     weakest = score_result.get("weakest_dimension", "depth")
     missed  = score_result.get("missed_key_point") or "not identified"
-    hint    = score_result.get("model_answer_hint", "")
+    hint    = score_result.get("good_answer_example", "")
     total   = score_result.get("total", 0)
 
     analysis_section = (

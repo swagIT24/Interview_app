@@ -68,7 +68,7 @@ def init_db():
         candidate_name          TEXT,
         domain                  TEXT,
         current_question_number INTEGER DEFAULT 1,
-        max_questions           INTEGER DEFAULT 20,
+        max_questions           INTEGER DEFAULT 10,
         is_completed            INTEGER DEFAULT 0,
         asked_questions         TEXT DEFAULT '[]',
         created_at              TIMESTAMP DEFAULT NOW()
@@ -103,6 +103,71 @@ def init_db():
         date_applied DATE,
         created_at   TIMESTAMP DEFAULT NOW()
     )
+    """)
+
+    # ================= STUDY PLANS =================
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS study_plans (
+        id             SERIAL PRIMARY KEY,
+        user_id        INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        plan_type      TEXT DEFAULT 'guided',
+        status         TEXT DEFAULT 'active',
+        start_date     DATE,
+        end_date       DATE,
+        target_score   INTEGER,
+        total_days     INTEGER,
+        total_sessions INTEGER,
+        created_at     TIMESTAMP DEFAULT NOW()
+    )
+    """)
+
+    # ================= STUDY PLAN DAYS =================
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS study_plan_days (
+        id               SERIAL PRIMARY KEY,
+        plan_id          INTEGER NOT NULL REFERENCES study_plans(id) ON DELETE CASCADE,
+        user_id          INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        day_number       INTEGER,
+        date             DATE,
+        phase            TEXT,
+        topic            TEXT,
+        difficulty       TEXT,
+        session_type     TEXT,
+        questions_count  INTEGER DEFAULT 5,
+        is_completed     BOOLEAN DEFAULT FALSE,
+        score_achieved   INTEGER,
+        next_review_date DATE,
+        created_at       TIMESTAMP DEFAULT NOW()
+    )
+    """)
+
+    # ================= SCHEMA PATCHES (safe on existing DBs) =================
+
+    cursor.execute("""
+        ALTER TABLE users
+        ADD COLUMN IF NOT EXISTS practice_count INTEGER DEFAULT 0
+    """)
+
+    cursor.execute("""
+        ALTER TABLE users
+        ADD COLUMN IF NOT EXISTS roleplay_count INTEGER DEFAULT 0
+    """)
+
+    cursor.execute("""
+        ALTER TABLE users
+        ADD COLUMN IF NOT EXISTS is_admin INTEGER DEFAULT 0
+    """)
+
+    cursor.execute("""
+        ALTER TABLE interview_profiles
+        ADD COLUMN IF NOT EXISTS plan_type VARCHAR(50)
+    """)
+
+    cursor.execute("""
+        ALTER TABLE interview_profiles
+        ADD COLUMN IF NOT EXISTS plan_generated_at TIMESTAMP
     """)
 
     conn.commit()
