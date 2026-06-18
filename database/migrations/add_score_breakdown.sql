@@ -1,5 +1,5 @@
 -- Migration: add rubric score columns to interview_answers
--- Run once against the careerquest database
+-- Run once against the opunto database
 
 ALTER TABLE interview_answers
     ADD COLUMN IF NOT EXISTS score_breakdown     JSONB,

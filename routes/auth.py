@@ -1,13 +1,45 @@
 from fastapi import APIRouter, HTTPException, Response, Request, Depends
-from models.auth_schemas import RegisterRequest, LoginRequest, TokenResponse
+from models.auth_schemas import RegisterRequest, LoginRequest, TokenResponse, VerifyOtpRegisterRequest
 from services.auth_service import hash_password, verify_password, create_access_token
 from database.connections import create_user, get_user_by_email
 from services.auth_service import create_refresh_token, decode_access_token, verify_refresh_token
 from database.connections import get_connection
 from services.auth_service import get_current_user
 from services.limiter import limiter
+from services.email_service import create_otp_record, send_otp_email, verify_otp
 
 router = APIRouter()
+
+
+@router.post("/verify-otp-register")
+@limiter.limit("5/minute")
+def verify_otp_register(request: Request, data: VerifyOtpRegisterRequest):
+    is_valid, message = verify_otp(data.email, data.otp)
+
+    if not is_valid:
+        raise HTTPException(status_code=400, detail=message)
+
+    existing_user = get_user_by_email(data.email)
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Email already registered")
+
+    hashed_pw = hash_password(data.password)
+    user_id = create_user(data.name, data.email, hashed_pw)
+
+    return {"message": "User registered successfully", "user_id": user_id}
+
+
+@router.post("/register-request-otp")
+@limiter.limit("3/minute")
+def register_request_otp(request: Request, data: RegisterRequest):
+    existing_user = get_user_by_email(data.email)
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Email already registered")
+
+    otp = create_otp_record(data.email)
+    send_otp_email(data.email, otp)
+
+    return {"message": "OTP sent to your email"}
 
 
 @router.post("/register")
@@ -161,8 +193,8 @@ def get_user_limits(user_id: int = Depends(get_current_user)):
         raise HTTPException(status_code=404, detail="User not found")
 
     return {
-        "roleplay_count": row["roleplay_count"] or 0,
-        "practice_count": row["practice_count"] or 0,
+        "roleplay_count": row[0] or 0,
+        "practice_count": row[1] or 0,
     }
 
 
