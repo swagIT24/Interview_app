@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Create Account — CareerQuest</title>
+  <title>Create Account — Opunto</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -240,7 +240,7 @@
           <polyline points="22 4 12 14.01 9 11.01"/>
         </svg>
       </div>
-      Career<span>Quest</span>
+      Op<span>unto</span>
     </a>
   </nav>
 
@@ -272,7 +272,12 @@
         <input id="register-password" type="password" placeholder="Min. 8 characters" autocomplete="new-password" />
       </div>
 
-      <button class="btn-submit" type="button" onclick="register()">Create Account</button>
+      <div class="field" id="otp-field" style="display:none">
+        <label for="register-otp">Verification Code</label>
+        <input id="register-otp" type="text" placeholder="6-digit code from your email" maxlength="6" autocomplete="one-time-code" />
+      </div>
+
+      <button class="btn-submit" id="register-btn" type="button" onclick="register()">Create Account</button>
 
       <div id="register-message"></div>
 
@@ -283,22 +288,9 @@
     </div>
   </main>
 
-  <footer>© 2026 CareerQuest</footer>
+  <footer>© 2026 Opunto</footer>
 
   <script src="/frontend/script.js"></script>
-  <script>
-    // Highlight register-message green on success
-    const _origRegister = register;
-    register = async function () {
-      await _origRegister();
-      const msg = document.getElementById("register-message");
-      if (msg && msg.innerText === "Registered successfully!") {
-        msg.classList.add("success");
-      } else {
-        msg.classList.remove("success");
-      }
-    };
-  </script>
 
 </body>
 </html>

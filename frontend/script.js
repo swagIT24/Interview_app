@@ -246,35 +246,70 @@ async function submitAnswer() {
 }
 /* ================= REGISTER ================= */
 
+let _registerStep = 1;
+let _registerData = {};
+
 async function register() {
-    console.log("REGISTER FUNCTION RUNNING")
-    
-    const name = document.getElementById("register-name").value;
-    const email = document.getElementById("register-email").value;
-    const password = document.getElementById("register-password").value;
+    const msg = document.getElementById("register-message");
+    msg.classList.remove("success");
 
-    console.log(name)
+    if (_registerStep === 1) {
+        const name = document.getElementById("register-name").value.trim();
+        const email = document.getElementById("register-email").value.trim();
+        const password = document.getElementById("register-password").value;
 
-    const response = await fetch("/register", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({name, email, password })
-    });
+        if (!name || !email || !password) {
+            msg.innerText = "Please fill in all fields.";
+            return;
+        }
 
-    const data = await response.json();
+        const response = await fetch("/register-request-otp", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, email, password })
+        });
 
-    if (response.ok) {
+        const data = await response.json();
 
-        document.getElementById("register-message").innerText =
-            "Registered successfully!";
+        if (response.ok) {
+            _registerData = { name, email, password };
+            _registerStep = 2;
+
+            document.getElementById("otp-field").style.display = "block";
+            document.getElementById("register-name").disabled = true;
+            document.getElementById("register-email").disabled = true;
+            document.getElementById("register-password").disabled = true;
+            document.getElementById("register-btn").innerText = "Verify & Create Account";
+
+            msg.classList.add("success");
+            msg.innerText = "OTP sent to your email. Check your inbox.";
+        } else {
+            msg.innerText = data.detail || "Failed to send OTP.";
+        }
 
     } else {
+        const otp = document.getElementById("register-otp").value.trim();
 
-        document.getElementById("register-message").innerText =
-            data.detail || "Registration failed";
+        if (!otp) {
+            msg.innerText = "Please enter the OTP.";
+            return;
+        }
 
+        const response = await fetch("/verify-otp-register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ..._registerData, otp })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            msg.classList.add("success");
+            msg.innerText = "Registered successfully!";
+            setTimeout(() => { window.location.href = "/"; }, 1500);
+        } else {
+            msg.innerText = data.detail || "Registration failed.";
+        }
     }
 }
 
