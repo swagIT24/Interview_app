@@ -25,7 +25,7 @@ def generate_otp():
 def create_otp_record(email):
     otp = generate_otp()
     conn = get_connection()
-    cursor =conn.cursor()
+    cursor = conn.cursor()
     cursor.execute("""
         INSERT INTO otp_verifications (email, otp_code)
         VALUES (%s,%s)
