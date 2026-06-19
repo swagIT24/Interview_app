@@ -1,5 +1,4 @@
-import smtplib
-from email.mime.text import MIMEText
+import resend
 import os
 from dotenv import load_dotenv
 import random
@@ -8,22 +7,15 @@ from datetime import datetime, timedelta
 
 load_dotenv()
 
-GMAIL_EMAIL = os.getenv("GMAIL_EMAIL")
-GMAIL_APP_PASSWORD = os.getenv("GMAIL_APP_PASSWORD")
+resend.api_key = os.getenv("RESEND_API_KEY")
 
 def send_otp_email(to_email, otp):
-    subject = "Your Opunto Verification Code"
-    body = f"Your OTP for Opunto registration is: {otp}\n\nThis code expires in 10 minutes."
-    
-    msg = MIMEText(body)
-    msg["Subject"] = subject
-    msg["From"] = GMAIL_EMAIL
-    msg["To"] = to_email
-    
-    with smtplib.SMTP("smtp.gmail.com", 587) as server:
-        server.starttls()
-        server.login(GMAIL_EMAIL, GMAIL_APP_PASSWORD)
-        server.send_message(msg)
+    resend.Emails.send({
+        "from": "Opunto <onboarding@resend.dev>",
+        "to": to_email,
+        "subject": "Your Opunto Verification Code",
+        "html": f"<p>Your OTP for Opunto registration is: <strong>{otp}</strong></p><p>This code expires in 5 minutes.</p>"
+    })
 
 
 def generate_otp():

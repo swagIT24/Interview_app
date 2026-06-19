@@ -45,6 +45,7 @@ python-dotenv==1.2.1
 python-jose==3.5.0
 python-multipart==0.0.20
 regex==2026.1.15
+resend
 rsa==4.9.1
 scikit-learn==1.6.1
 scipy==1.13.1
