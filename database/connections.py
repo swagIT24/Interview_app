@@ -143,6 +143,18 @@ def init_db():
     )
     """)
 
+    # ================= OTP VERIFICATIONS =================
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS otp_verifications (
+        id         SERIAL PRIMARY KEY,
+        email      TEXT NOT NULL,
+        otp_code   VARCHAR(6) NOT NULL,
+        created_at TIMESTAMP DEFAULT NOW(),
+        verified   INTEGER DEFAULT 0
+    )
+    """)
+
     # ================= SCHEMA PATCHES (safe on existing DBs) =================
 
     cursor.execute("""
