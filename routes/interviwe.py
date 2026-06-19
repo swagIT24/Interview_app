@@ -175,7 +175,7 @@ def submit_answer(request: Request, data: SubmitAnswerRequest, user_id: int = De
             print("TTS FAILED:", e)
             audio_b64 = None
 
-    update_asked_questions(data.session_id, next_question)
+    update_asked_questions(data.session_id, next_question, user_id)
 
     return {
         "score":               evaluation.get("score"),
@@ -223,7 +223,7 @@ def start_session(request: Request, data: SessionCreate, user_id: int = Depends(
         first_question = question_data["question"]["question"]
         question_id = question_data["question"]["id"]
 
-        update_asked_questions(session_id, question_id)
+        update_asked_questions(session_id, question_id, user_id)
         # NOTE: no placeholder row is inserted into interview_answers here anymore.
         # The real row is created by process_answer()/insert_answer() once the user
         # actually submits an answer. Pre-inserting an empty-answer row used to make
@@ -336,7 +336,7 @@ async def submit_answer_stream(data: SubmitAnswerRequest, user_id: int = Depends
         # After feedback, send next question and audio
         if question_data:
             next_question = question_data["question"]["question"]
-            update_asked_questions(data.session_id, next_question)
+            update_asked_questions(data.session_id, next_question, user_id)
 
             try:
                 audio_b64 = text_to_speech(next_question)

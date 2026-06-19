@@ -238,20 +238,20 @@ def _get_active_session_id(cursor, user_id: int):
     return row[0] if row else 0
 
 
-def update_asked_questions(session_id, question_id):
+def update_asked_questions(session_id, question_id, user_id):
     conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT asked_questions FROM interview_sessions WHERE id = %s
-    """, (session_id,))
+        SELECT asked_questions FROM interview_sessions WHERE id = %s AND user_id = %s
+    """, (session_id, user_id))
     row = cursor.fetchone()
     asked = json.loads(row[0]) if row and row[0] else []
     asked.append(question_id)
 
     cursor.execute("""
-        UPDATE interview_sessions SET asked_questions = %s WHERE id = %s
-    """, (json.dumps(asked), session_id))
+        UPDATE interview_sessions SET asked_questions = %s WHERE id = %s AND user_id = %s
+    """, (json.dumps(asked), session_id, user_id))
 
     conn.commit()
     conn.close()
