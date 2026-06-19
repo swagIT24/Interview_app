@@ -918,7 +918,8 @@ async function startRoleplay(){
     rpSetState('error', 'Microphone access denied');
   });
 
-  var wsUrl = 'ws://127.0.0.1:8000/ws/roleplay?domain=' + encodeURIComponent(domain || 'General') + '&scenario=' + encodeURIComponent(scenario);
+  var wsProto = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+  var wsUrl = wsProto + window.location.host + '/ws/roleplay?domain=' + encodeURIComponent(domain || 'General') + '&scenario=' + encodeURIComponent(scenario);
   rp.ws = new WebSocket(wsUrl);
 
   rp.ws.onopen = function(){
