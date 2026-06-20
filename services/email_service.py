@@ -1,4 +1,5 @@
-import resend
+import sib_api_v3_sdk
+from sib_api_v3_sdk.rest import ApiException
 import os
 from dotenv import load_dotenv
 import random
@@ -7,15 +8,22 @@ from datetime import datetime, timedelta
 
 load_dotenv()
 
-resend.api_key = os.getenv("RESEND_API_KEY")
+configuration = sib_api_v3_sdk.Configuration()
+configuration.api_key['api-key'] = os.getenv("BREVO_API_KEY")
 
 def send_otp_email(to_email, otp):
-    resend.Emails.send({
-        "from": "Opunto <onboarding@resend.dev>",
-        "to": to_email,
-        "subject": "Your Opunto Verification Code",
-        "html": f"<p>Your OTP for Opunto registration is: <strong>{otp}</strong></p><p>This code expires in 5 minutes.</p>"
-    })
+    api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
+    send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+        to=[{"email": to_email}],
+        sender={"name": "Opunto", "email": "opuntoai@gmail.com"},
+        subject="Your Opunto Verification Code",
+        html_content=f"<p>Your OTP for Opunto registration is: <strong>{otp}</strong></p><p>This code expires in 5 minutes.</p>"
+    )
+    try:
+        api_instance.send_transac_email(send_smtp_email)
+    except ApiException as e:
+        print(f"Brevo API error: {e}")
+        raise
 
 
 def generate_otp():
