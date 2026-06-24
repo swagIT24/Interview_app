@@ -15,11 +15,13 @@ class JobCreate(BaseModel):
     status: str = "Applied"
     notes: Optional[str] = None
     date_applied: Optional[str] = None
+    link: Optional[str] = None
 
 
 class JobUpdate(BaseModel):
     status: Optional[str] = None
     notes: Optional[str] = None
+    link: Optional[str] = None
 
 class TailorRequest(BaseModel):
     job_description: str
@@ -31,10 +33,10 @@ def add_job(data: JobCreate, user_id: int = Depends(get_current_user)):
     cursor = conn.cursor()
 
     cursor.execute("""
-        INSERT INTO job_applications (user_id, company, role, status, notes, date_applied)
-        VALUES (%s, %s, %s, %s, %s, %s)
+        INSERT INTO job_applications (user_id, company, role, status, notes, date_applied, link)
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
         RETURNING id
-    """, (user_id, data.company, data.role, data.status, data.notes, data.date_applied))
+    """, (user_id, data.company, data.role, data.status, data.notes, data.date_applied, data.link))
 
     job_id = cursor.fetchone()[0]
     conn.commit()
@@ -49,7 +51,7 @@ def get_jobs(user_id: int = Depends(get_current_user)):
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT id, company, role, status, notes, date_applied, created_at
+        SELECT id, company, role, status, notes, date_applied, link, created_at
         FROM job_applications
         WHERE user_id = %s
         ORDER BY created_at DESC
@@ -83,6 +85,11 @@ def update_job(job_id: int, data: JobUpdate, user_id: int = Depends(get_current_
         cursor.execute("""
             UPDATE job_applications SET notes = %s WHERE id = %s AND user_id = %s
         """, (data.notes, job_id, user_id))
+
+    if data.link is not None:
+        cursor.execute("""
+            UPDATE job_applications SET link = %s WHERE id = %s AND user_id = %s
+        """, (data.link, job_id, user_id))
 
     conn.commit()
     conn.close()
