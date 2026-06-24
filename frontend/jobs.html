@@ -102,6 +102,8 @@ body:not(.dark) .toggle-thumb .icon-sun{display:none;}
 .badge-interview{background:rgba(59,130,246,0.15);color:#60a5fa;}
 .badge-offer{background:rgba(16,185,129,0.12);color:#10b981;}
 .badge-rejected{background:rgba(248,113,113,0.1);color:#f87171;}
+.badge-wishlist{background:rgba(20,184,166,0.15);color:#2dd4bf;}
+
 
 .job-meta{font-size:11px;color:rgba(255,255,255,0.22);}
 .job-notes{font-size:12px;color:rgba(255,255,255,0.38);line-height:1.6;border-left:2px solid rgba(255,255,255,0.07);padding-left:10px;min-height:18px;}
@@ -326,6 +328,7 @@ body:not(.dark) .kw-title{color:#6b7280;}
         <option value="Interview">Interview</option>
         <option value="Offer">Offer</option>
         <option value="Rejected">Rejected</option>
+        <option value="Wishtlist">Wishlist</option>
       </select>
     </div>
     <div class="field-wrap">
@@ -333,8 +336,12 @@ body:not(.dark) .kw-title{color:#6b7280;}
       <input class="inp" id="f-date" type="date" />
     </div>
     <div class="field-wrap">
+      <div class="field-lbl">Job Link</div>
+      <input class="inp" id="f-link" placeholder="https://..." />
+    </div>
+    <div class="field-wrap">
       <div class="field-lbl">Notes</div>
-      <textarea class="inp" id="f-notes" rows="3" placeholder="Referral, job link, key contacts…" style="resize:vertical;"></textarea>
+      <textarea class="inp" id="f-notes" rows="3" placeholder="Referral, key contacts…" style="resize:vertical;"></textarea>
     </div>
 
     <div class="modal-actions">
@@ -419,7 +426,8 @@ var BADGE = {
   'Shortlisted': 'badge-shortlisted',
   'Interview':   'badge-interview',
   'Offer':       'badge-offer',
-  'Rejected':    'badge-rejected'
+  'Rejected':    'badge-rejected',
+  'Wishlist':    'badge-wishlist'
 };
 
 function badgeClass(status){ return BADGE[status] || 'badge-applied'; }
@@ -487,7 +495,10 @@ function renderJobs(jobs){
     card.id = 'jcard-'+job.id;
 
     var dateStr = job.date_applied ? '<span>📅 '+formatDate(job.date_applied)+'</span>' : '';
-    var notes   = job.notes ? job.notes : '<span style="opacity:0.3;font-style:italic;">No notes</span>';
+    var linkStr = job.link
+      ? '<a href="'+escHtml(job.link)+'" target="_blank" rel="noopener" style="font-size:11px;color:#818cf8;text-decoration:none;">🔗 View Job</a>'
+        +'<span onclick="editLink('+job.id+',\''+escAttr(job.link||'')+'\',this)" style="font-size:11px;color:rgba(255,255,255,0.25);cursor:pointer;margin-left:4px;" title="Edit link">✏️</span>'
+      : '<span onclick="editLink('+job.id+',\'\',this)" style="font-size:11px;color:rgba(255,255,255,0.25);cursor:pointer;" title="Add job link">＋ Add link</span>';
 
     card.innerHTML =
       '<div class="job-top">'+
@@ -497,10 +508,10 @@ function renderJobs(jobs){
         '</div>'+
         '<span class="badge '+badgeClass(job.status)+'">'+escHtml(job.status)+'</span>'+
       '</div>'+
-      '<div class="job-meta">'+dateStr+'</div>'+
+      '<div class="job-meta" style="display:flex;gap:10px;align-items:center;" id="job-meta-'+job.id+'">'+dateStr+linkStr+'</div>'+
       '<div class="job-notes">'+escHtml(job.notes||'')+'</div>'+
       '<select class="job-status-select" onchange="updateStatus('+job.id+',this.value)">'+
-        ['Applied','Shortlisted','Interview','Offer','Rejected'].map(function(s){
+        ['Applied','Shortlisted','Interview','Offer','Rejected','Wishlist'].map(function(s){
           return '<option value="'+s+'"'+(s===job.status?' selected':'')+'>'+s+'</option>';
         }).join('')+
       '</select>'+
@@ -540,6 +551,7 @@ function openModal(){
   document.getElementById('f-role').value    = '';
   document.getElementById('f-status').value  = 'Applied';
   document.getElementById('f-date').value    = new Date().toISOString().split('T')[0];
+  document.getElementById('f-link').value    = '';
   document.getElementById('f-notes').value   = '';
   document.getElementById('modal').classList.add('show');
   setTimeout(function(){ document.getElementById('f-company').focus(); }, 80);
@@ -558,6 +570,7 @@ async function addJob(){
   var role    = document.getElementById('f-role').value.trim();
   var status  = document.getElementById('f-status').value;
   var date    = document.getElementById('f-date').value;
+  var link    = document.getElementById('f-link').value.trim();
   var notes   = document.getElementById('f-notes').value.trim();
 
   if(!company || !role){ alert('Company and role are required.'); return; }
@@ -570,7 +583,7 @@ async function addJob(){
       method:'POST',
       credentials:'include',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({company:company, role:role, status:status, date_applied:date||null, notes:notes||null})
+      body:JSON.stringify({company:company, role:role, status:status, date_applied:date||null, link:link||null, notes:notes||null})
     });
     if(!r.ok) throw new Error('Failed');
     closeModal();
@@ -615,6 +628,26 @@ async function deleteJob(id){
     renderJobs(allJobs);
   } catch(e){
     alert('Could not delete. Please try again.');
+  }
+}
+
+async function editLink(id, currentLink, triggerEl){
+  var newLink = prompt('Job link (leave blank to remove):', currentLink || '');
+  if(newLink === null) return; // cancelled
+  newLink = newLink.trim();
+
+  try{
+    await fetch('/jobs/'+id, {
+      method:'PUT',
+      credentials:'include',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({link: newLink || ''})
+    });
+    var job = allJobs.find(function(j){ return j.id===id; });
+    if(job) job.link = newLink || null;
+    renderJobs(allJobs);
+  } catch(e){
+    alert('Could not update link. Please try again.');
   }
 }
 

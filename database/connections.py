@@ -182,6 +182,11 @@ def init_db():
         ADD COLUMN IF NOT EXISTS plan_generated_at TIMESTAMP
     """)
 
+    cursor.execute("""
+        ALTER TABLE job_applications
+        ADD COLUMN IF NOT EXISTS link TEXT
+    """)
+
     conn.commit()
     conn.close()
 
