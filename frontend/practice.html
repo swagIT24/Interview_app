@@ -338,12 +338,13 @@ body:not(.dark) .ss-heading{color:#1a1d2e;}
       <button class="start-btn" id="start-btn" onclick="startSession()">Start session →</button>
     </div>
 
-    <div class="roleplay-card fl" id="l-roleplay">
-      <div class="ctitle">AI Roleplay Mode</div>
+    <!-- Roleplay hidden for EC2 deploy — re-enable with ONNX VAD -->
+    <div class="roleplay-card fl" id="l-roleplay" style="opacity:0.6;">
+      <div class="ctitle">AI Roleplay Mode <span class="badge-weak" style="margin-left:6px;vertical-align:middle;">Coming soon</span></div>
       <div class="rp-desc">Have a real conversation with AI. No buttons — just speak naturally.</div>
       <div style="font-size:11px;color:rgba(255,255,255,0.3);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;">Scenario</div>
-      <input class="field-inp" id="scenario" placeholder="e.g. Salary negotiation, Difficult job interview, Cold sales call" style="margin-bottom:12px;" />
-      <button class="rp-btn" id="rp-start-btn" onclick="startRoleplay()">🎭 Start Roleplay</button>
+      <input class="field-inp" id="scenario" placeholder="e.g. Salary negotiation, Difficult job interview, Cold sales call" style="margin-bottom:12px;" disabled />
+      <button class="rp-btn" id="rp-start-btn" onclick="startRoleplay()" disabled aria-disabled="true" title="Coming soon">🎭 Start Roleplay</button>
     </div>
 
     <div class="tip-card fl" id="l-tip">
