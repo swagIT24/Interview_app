@@ -9,7 +9,9 @@ from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 from database.connections import init_db
-from routes import interviwe, auth, voice, resume, jobs, roleplay, profile_setup, dashboard, plan
+# Roleplay disabled for EC2 deploy — re-enable with ONNX VAD
+# from routes import interviwe, auth, voice, resume, jobs, roleplay, profile_setup, dashboard, plan
+from routes import interviwe, auth, voice, resume, jobs, profile_setup, dashboard, plan
 from services.limiter import limiter
 
 MAX_BODY_SIZE = 10 * 1024 * 1024  # 10 MB
@@ -64,7 +66,8 @@ app.include_router(auth.router)
 app.include_router(voice.router)
 app.include_router(resume.router)
 app.include_router(jobs.router)
-app.include_router(roleplay.router)
+# Roleplay disabled for EC2 deploy — re-enable with ONNX VAD
+# app.include_router(roleplay.router)
 app.include_router(profile_setup.router)
 app.include_router(dashboard.router)
 app.include_router(plan.router)
