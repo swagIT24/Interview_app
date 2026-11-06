@@ -190,6 +190,22 @@
 
     .signup-link a:hover { text-decoration: underline; }
 
+    /* ── Forgot password link ── */
+    .forgot-link {
+      text-align: right;
+      font-size: 0.85rem;
+      margin-top: -8px;
+      margin-bottom: 20px;
+    }
+
+    .forgot-link a {
+      color: var(--primary);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .forgot-link a:hover { text-decoration: underline; }
+
     /* ── Responsive ── */
     @media (max-width: 480px) {
       .card { padding: 32px 24px; }
@@ -238,6 +254,8 @@
         <input id="password" type="password" placeholder="••••••••" autocomplete="current-password" />
       </div>
     </div>
+
+    <p class="forgot-link"><a href="/forgot-password">Forgot password?</a></p>
 
     <button class="btn btn-primary" type="button" onclick="login()">Sign In</button>
 

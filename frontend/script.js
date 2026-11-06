@@ -314,6 +314,76 @@ async function register() {
 }
 
 
+/* ================= FORGOT PASSWORD ================= */
+
+let _resetStep = 1;
+let _resetEmail = "";
+
+async function forgotPassword() {
+    const msg = document.getElementById("reset-message");
+    msg.classList.remove("success");
+
+    if (_resetStep === 1) {
+        const email = document.getElementById("reset-email").value.trim();
+
+        if (!email) {
+            msg.innerText = "Please enter your email.";
+            return;
+        }
+
+        const response = await fetch("/forgot-password", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            _resetEmail = email;
+            _resetStep = 2;
+
+            document.getElementById("otp-field").style.display = "block";
+            document.getElementById("new-password-field").style.display = "block";
+            document.getElementById("reset-email").disabled = true;
+            document.getElementById("reset-btn").innerText = "Reset Password";
+            document.getElementById("reset-subtitle").innerText =
+                "Enter the code we emailed you along with your new password.";
+
+            msg.classList.add("success");
+            msg.innerText = data.message || "Reset code sent. Check your inbox.";
+        } else {
+            msg.innerText = data.detail || "Failed to send reset code.";
+        }
+
+    } else {
+        const otp = document.getElementById("reset-otp").value.trim();
+        const newPassword = document.getElementById("reset-new-password").value;
+
+        if (!otp || !newPassword) {
+            msg.innerText = "Please enter the code and your new password.";
+            return;
+        }
+
+        const response = await fetch("/reset-password", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: _resetEmail, otp, new_password: newPassword })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            msg.classList.add("success");
+            msg.innerText = "Password reset! Redirecting to login...";
+            setTimeout(() => { window.location.href = "/"; }, 1500);
+        } else {
+            msg.innerText = data.detail || "Password reset failed.";
+        }
+    }
+}
+
+
 /* ================= LOGOUT ================= */
 
 window.logout = async function () {
