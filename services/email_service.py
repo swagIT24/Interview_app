@@ -26,6 +26,21 @@ def send_otp_email(to_email, otp):
         raise
 
 
+def send_password_reset_email(to_email, otp):
+    api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
+    send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+        to=[{"email": to_email}],
+        sender={"name": "Opunto", "email": "opuntoai@gmail.com"},
+        subject="Reset your Opunto password",
+        html_content=f"<p>Your password reset code is: <strong>{otp}</strong></p><p>This code expires in 5 minutes. If you didn't request this, you can safely ignore this email.</p>"
+    )
+    try:
+        api_instance.send_transac_email(send_smtp_email)
+    except ApiException as e:
+        print(f"Brevo API error: {e}")
+        raise
+
+
 def generate_otp():
     return str(random.randint(100000, 999999))
 

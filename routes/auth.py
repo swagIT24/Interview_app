@@ -1,12 +1,16 @@
+import logging
 from fastapi import APIRouter, HTTPException, Response, Request, Depends
-from models.auth_schemas import RegisterRequest, LoginRequest, TokenResponse, VerifyOtpRegisterRequest
+from models.auth_schemas import (
+    RegisterRequest, LoginRequest, TokenResponse, VerifyOtpRegisterRequest,
+    ForgotPasswordRequest, ResetPasswordRequest,
+)
 from services.auth_service import hash_password, verify_password, create_access_token
-from database.connections import create_user, get_user_by_email
+from database.connections import create_user, get_user_by_email, update_user_password
 from services.auth_service import create_refresh_token, decode_access_token, verify_refresh_token
 from database.connections import get_connection
 from services.auth_service import get_current_user
 from services.limiter import limiter
-from services.email_service import create_otp_record, send_otp_email, verify_otp
+from services.email_service import create_otp_record, send_otp_email, verify_otp, send_password_reset_email
 
 router = APIRouter()
 
@@ -106,6 +110,44 @@ def login(request: Request, data: LoginRequest, response: Response):
         "refresh_token": refresh_token,
         "profile_completed": profile_completed
     }
+
+@router.post("/forgot-password")
+@limiter.limit("3/minute")
+def forgot_password(request: Request, data: ForgotPasswordRequest):
+    user = get_user_by_email(data.email)
+
+    # Always return the same response so this endpoint can't be used to
+    # enumerate which emails are registered.
+    if user:
+        otp = create_otp_record(data.email)
+        try:
+            send_password_reset_email(data.email, otp)
+        except Exception:
+            # Don't leak email-provider failures to the client - that would
+            # let an attacker distinguish "registered + provider down" from
+            # "not registered" by response code alone. Log and move on.
+            logging.exception("Failed to send password reset email to %s", data.email)
+
+    return {"message": "If an account with that email exists, a reset code has been sent"}
+
+
+@router.post("/reset-password")
+@limiter.limit("5/minute")
+def reset_password(request: Request, data: ResetPasswordRequest):
+    is_valid, message = verify_otp(data.email, data.otp)
+
+    if not is_valid:
+        raise HTTPException(status_code=400, detail=message)
+
+    user = get_user_by_email(data.email)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    hashed_pw = hash_password(data.new_password)
+    update_user_password(data.email, hashed_pw)
+
+    return {"message": "Password reset successful"}
+
 
 @router.post("/logout")
 def logout(response: Response):

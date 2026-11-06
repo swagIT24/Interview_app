@@ -208,6 +208,20 @@ def create_user(name: str, email: str, hashed_password: str):
     return user_id
 
 
+def update_user_password(email: str, hashed_password: str):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        UPDATE users
+        SET hashed_password = %s, refresh_token = NULL
+        WHERE email = %s
+    """, (hashed_password, email))
+
+    conn.commit()
+    conn.close()
+
+
 def get_user_by_email(email: str):
     conn = get_connection()
     cursor = conn.cursor()

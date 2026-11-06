@@ -84,6 +84,10 @@ def serve_landing():
 def serve_register():
     return FileResponse("frontend/register.html")
 
+@app.get("/forgot-password")
+def serve_forgot_password():
+    return FileResponse("frontend/forgot-password.html")
+
 @app.get("/dashboard")
 def serve_dashboard():
     return FileResponse("frontend/dashboard.html")
